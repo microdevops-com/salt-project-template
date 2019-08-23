@@ -1,0 +1,1 @@
+../../formulas/sysadmws-formula/pillar/pkg/redis-server.sls

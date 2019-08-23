@@ -1,0 +1,14 @@
+stages:
+  - pull
+
+salt_master_pull:
+  tags:
+    - __RUNNER_TAG__
+  stage: pull
+  only:
+    refs:
+      - master
+  script:
+    - chmod 600 .gitlab-ci/__DEPLOY_KEY__
+    - ssh -o BatchMode=yes -o StrictHostKeyChecking=no -i .gitlab-ci/__DEPLOY_KEY__ __DEPLOY_USER__@__SALT_MASTER_1_NAME__
+    - ssh -o BatchMode=yes -o StrictHostKeyChecking=no -i .gitlab-ci/__DEPLOY_KEY__ __DEPLOY_USER__@__SALT_MASTER_2_NAME__

@@ -1,0 +1,1 @@
+../../formulas/sysadmws-formula/pillar/bulk_log/enabled.sls

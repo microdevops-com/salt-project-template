@@ -1,0 +1,14 @@
+notify_devilry:
+  enabled: True
+  telegram:
+    'SysadmWS Alarms':
+      token: '__TELEGRAM_TOKEN__'
+      chat_id: '__TELEGRAM_CHAT_ID__'
+  notify:
+    default:
+      telegram:
+        - 'SysadmWS Alarms'
+      rate_limit:
+        - 60
+        - 240
+        - 480

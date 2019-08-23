@@ -1,0 +1,1 @@
+../../formulas/sysadmws-formula/pillar/netdata/3d.sls

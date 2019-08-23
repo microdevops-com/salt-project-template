@@ -1,0 +1,1 @@
+../../formulas/sysadmws-formula/pillar/mysql_replica_checker/enabled.sls
