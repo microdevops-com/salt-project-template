@@ -55,7 +55,7 @@ function sed_inplace () {
 
 function add_submodule () {
 	pushd $2
-	git submodule add --name $1 -b master -- $3
+	git submodule add --force --name $1 -b master -- $3
 	popd
 }
 
