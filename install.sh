@@ -53,6 +53,12 @@ function sed_inplace () {
 		$1
 }
 
+function add_submodule () {
+	pushd $2
+	git submodule add --name $1 -b master -- $3
+	popd
+}
+
 # Copy templates
 
 rsync_with_delete .githooks $1/.githooks
@@ -62,7 +68,13 @@ mkdir -p $1/.gitlab-ci
 rsync_without_delete files $1/files
 sed_inplace $1/files/notify_devilry/sysadmws/notify_devilry.yaml.jinja
 
-rsync_with_delete formulas $1/formulas
+rsync_without_delete formulas $1/formulas
+add_submodule sysadmws-formula $1/formulas https://github.com/sysadmws/sysadmws-formula.git
+add_submodule users-formula $1/formulas https://github.com/sysadmws/users-formula.git
+add_submodule postgres-formula $1/formulas https://github.com/sysadmws/postgres-formula.git
+add_submodule vim-formula $1/formulas https://github.com/sysadmws/vim-formula.git
+add_submodule pip-formula $1/formulas https://github.com/sysadmws/pip-formula.git
+add_submodule lxd-formula $1/formulas https://github.com/sysadmws/lxd-formula.git
 
 rsync_without_delete pillar $1/pillar
 sed_inplace $1/pillar/pkg/sysadmws/forward_root_email.sls
@@ -78,3 +90,7 @@ cp .gitignore $1/.gitignore
 
 cp .gitlab-ci.yml $1/.gitlab-ci.yml
 sed_inplace $1/.gitlab-ci.yml
+
+# Init submodules
+git submodule init
+git submodule update --recursive -f --checkout
