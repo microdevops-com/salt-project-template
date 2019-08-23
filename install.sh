@@ -92,5 +92,7 @@ cp .gitlab-ci.yml $1/.gitlab-ci.yml
 sed_inplace $1/.gitlab-ci.yml
 
 # Init submodules
+pushd $1
 git submodule init
 git submodule update --recursive -f --checkout
+popd
