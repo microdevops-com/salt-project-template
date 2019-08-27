@@ -76,6 +76,8 @@ sed_inplace $1/pillar/telegram/sysadmws_alarms.sls
 
 rsync_with_delete reactor $1/reactor
 
+rsync_with_delete scripts $1/scripts
+
 rsync_without_delete salt $1/salt
 
 cp .gitignore $1/.gitignore
