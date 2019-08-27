@@ -11,9 +11,6 @@ if [ $(basename $(pwd)) != ".salt-project-template" ]; then
 	exit 1
 fi
 		
-if [ -z ${RUNNER_TAG} ]; then echo Var missing; exit 1; fi
-if [ -z ${DEPLOY_KEY} ]; then echo Var missing; exit 1; fi
-if [ -z ${DEPLOY_USER} ]; then echo Var missing; exit 1; fi
 if [ -z ${TELEGRAM_TOKEN} ]; then echo Var missing; exit 1; fi
 if [ -z ${TELEGRAM_CHAT_ID} ]; then echo Var missing; exit 1; fi
 if [ -z ${ROOT_EMAIL} ]; then echo Var missing; exit 1; fi
@@ -38,9 +35,6 @@ function rsync_without_delete () {
 
 function sed_inplace () {
 	sed -i \
-		-e "s/__RUNNER_TAG__/${RUNNER_TAG}/g" \
-		-e "s/__DEPLOY_KEY__/${DEPLOY_KEY}/g" \
-		-e "s/__DEPLOY_USER__/${DEPLOY_USER}/g" \
 		-e "s/__TELEGRAM_TOKEN__/${TELEGRAM_TOKEN}/g" \
 		-e "s/__TELEGRAM_CHAT_ID__/${TELEGRAM_CHAT_ID}/g" \
 		-e "s/__ROOT_EMAIL__/${ROOT_EMAIL}/g" \
@@ -62,8 +56,6 @@ function add_submodule () {
 # Copy templates
 
 rsync_with_delete .githooks $1/.githooks
-
-mkdir -p $1/.gitlab-ci
 
 rsync_without_delete files $1/files
 sed_inplace $1/files/notify_devilry/sysadmws/notify_devilry.yaml.jinja

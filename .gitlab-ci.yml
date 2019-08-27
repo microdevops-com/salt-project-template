@@ -1,14 +1,20 @@
 stages:
   - pull
 
-salt_master_pull:
-  tags:
-    - __RUNNER_TAG__
+.salt_master_pull:
   stage: pull
   only:
     refs:
       - master
   script:
-    - chmod 600 .gitlab-ci/__DEPLOY_KEY__
-    - ssh -o BatchMode=yes -o StrictHostKeyChecking=no -i .gitlab-ci/__DEPLOY_KEY__ __DEPLOY_USER__@__SALT_MASTER_1_NAME__
-    - ssh -o BatchMode=yes -o StrictHostKeyChecking=no -i .gitlab-ci/__DEPLOY_KEY__ __DEPLOY_USER__@__SALT_MASTER_2_NAME__
+    - sudo /srv/scripts/ci_sudo/salt_master_pull.sh
+
+salt_master_pull_salt_master_1:
+  extends: .salt_master_pull
+  tags:
+    - __SALT_MASTER_1_NAME__
+
+salt_master_pull_salt_master_1:
+  extends: .salt_master_pull
+  tags:
+    - __SALT_MASTER_2_NAME__

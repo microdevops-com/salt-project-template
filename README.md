@@ -11,10 +11,7 @@ git submodule add --name .salt-project-template -b master -- https://github.com/
 ## Run install.sh
 ```
 cd .salt-project-template
-RUNNER_TAG=xxx \
-	DEPLOY_KEY=xxx \
-	DEPLOY_USER=xxx \
-	TELEGRAM_TOKEN=xxx \
+TELEGRAM_TOKEN=xxx \
 	TELEGRAM_CHAT_ID=xxx \
 	ROOT_EMAIL=xxx \
 	SALT_MINION_VERSION=xxx \
