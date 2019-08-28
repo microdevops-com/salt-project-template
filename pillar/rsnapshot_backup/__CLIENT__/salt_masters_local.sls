@@ -1,7 +1,7 @@
 rsnapshot_backup:
   sources:
 
-    SALT_MASTER_1_NAME:
+    __SALT_MASTER_1_NAME__:
       - type: RSYNC_SSH
         data:
           - UBUNTU
@@ -10,10 +10,10 @@ rsnapshot_backup:
         checks:
           - type: .backup
         backups:
-          - host: SALT_MASTER_1_NAME
-            path: /var/backups/SALT_MASTER_1_NAME
+          - host: __SALT_MASTER_1_NAME__
+            path: /var/backups/__SALT_MASTER_1_NAME__
 
-    SALT_MASTER_2_NAME:
+    __SALT_MASTER_2_NAME__:
       - type: RSYNC_SSH
         data:
           - UBUNTU
@@ -22,5 +22,5 @@ rsnapshot_backup:
         checks:
           - type: .backup
         backups:
-          - host: SALT_MASTER_2_NAME
-            path: /var/backups/SALT_MASTER_2_NAME
+          - host: __SALT_MASTER_2_NAME__
+            path: /var/backups/__SALT_MASTER_2_NAME__
