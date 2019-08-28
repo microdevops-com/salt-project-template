@@ -20,6 +20,7 @@ if [ -z ${SALT_MASTER_1_IP} ]; then echo Var missing; exit 1; fi
 if [ -z ${SALT_MASTER_2_NAME} ]; then echo Var missing; exit 1; fi
 if [ -z ${SALT_MASTER_2_IP} ]; then echo Var missing; exit 1; fi
 if [ -z ${STAGING_SALT_MASTER} ]; then echo Var missing; exit 1; fi
+if [ -z ${CLIENT} ]; then echo Var missing; exit 1; fi
 
 # Functions
 
@@ -44,6 +45,7 @@ function sed_inplace () {
 		-e "s/__SALT_MASTER_2_NAME__/${SALT_MASTER_2_NAME}/g" \
 		-e "s/__SALT_MASTER_2_IP__/${SALT_MASTER_2_IP}/g" \
 		-e "s/__STAGING_SALT_MASTER__/${STAGING_SALT_MASTER}/g" \
+		-e "s/__CLIENT__/${CLIENT}/g" \
 		$1
 }
 
@@ -73,6 +75,10 @@ sed_inplace $1/pillar/pkg/sysadmws/forward_root_email.sls
 sed_inplace $1/pillar/salt/minion.sls
 sed_inplace $1/pillar/staging/staging.sls
 sed_inplace $1/pillar/telegram/sysadmws_alarms.sls
+
+mv -f $1/pillar/rsnapshot_backup/__CLIENT__/* $1/pillar/rsnapshot_backup/${CLIENT}
+rm -rf $1/pillar/rsnapshot_backup/__CLIENT__
+sed_inplace $1/pillar/rsnapshot_backup/${CLIENT}/salt_masters_local.sls
 
 rsync_with_delete reactor $1/reactor
 
