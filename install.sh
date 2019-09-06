@@ -19,6 +19,8 @@ if [ -z ${SALT_MASTER_1_NAME} ]; then echo Var missing; exit 1; fi
 if [ -z ${SALT_MASTER_1_IP} ]; then echo Var missing; exit 1; fi
 if [ -z ${SALT_MASTER_2_NAME} ]; then echo Var missing; exit 1; fi
 if [ -z ${SALT_MASTER_2_IP} ]; then echo Var missing; exit 1; fi
+if [ -z ${SALT_MASTER_PORT_1} ]; then echo Var missing; exit 1; fi
+if [ -z ${SALT_MASTER_PORT_2} ]; then echo Var missing; exit 1; fi
 if [ -z ${STAGING_SALT_MASTER} ]; then echo Var missing; exit 1; fi
 if [ -z ${CLIENT} ]; then echo Var missing; exit 1; fi
 
@@ -44,6 +46,8 @@ function sed_inplace () {
 		-e "s/__SALT_MASTER_1_IP__/${SALT_MASTER_1_IP}/g" \
 		-e "s/__SALT_MASTER_2_NAME__/${SALT_MASTER_2_NAME}/g" \
 		-e "s/__SALT_MASTER_2_IP__/${SALT_MASTER_2_IP}/g" \
+		-e "s/__SALT_MASTER_PORT_1__/${SALT_MASTER_PORT_1}/g" \
+		-e "s/__SALT_MASTER_PORT_2__/${SALT_MASTER_PORT_2}/g" \
 		-e "s/__STAGING_SALT_MASTER__/${STAGING_SALT_MASTER}/g" \
 		-e "s/__CLIENT__/${CLIENT}/g" \
 		$1
