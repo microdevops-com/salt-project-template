@@ -25,6 +25,7 @@ if [ -z ${SALT_MASTER_PORT_1} ]; then echo Var missing; exit 1; fi
 if [ -z ${SALT_MASTER_PORT_2} ]; then echo Var missing; exit 1; fi
 if [ -z ${STAGING_SALT_MASTER} ]; then echo Var missing; exit 1; fi
 if [ -z ${CLIENT} ]; then echo Var missing; exit 1; fi
+if [ -z ${DEFAULT_TZ} ]; then echo Var missing; exit 1; fi
 
 # Functions
 
@@ -54,6 +55,7 @@ function sed_inplace () {
 		-e "s/__SALT_MASTER_PORT_2__/${SALT_MASTER_PORT_2}/g" \
 		-e "s/__STAGING_SALT_MASTER__/${STAGING_SALT_MASTER}/g" \
 		-e "s/__CLIENT__/${CLIENT}/g" \
+		-e "s/__DEFAULT_TZ__/${DEFAULT_TZ}/g" \
 		$1
 }
 
@@ -83,6 +85,7 @@ sed_inplace $1/pillar/pkg/sysadmws/forward_root_email.sls
 sed_inplace $1/pillar/salt/minion.sls
 sed_inplace $1/pillar/staging/staging.sls
 sed_inplace $1/pillar/telegram/sysadmws_alarms.sls
+sed_inplace $1/pillar/top_sls/_salt_masters.sls
 
 mkdir -p $1/pillar/rsnapshot_backup/${CLIENT}
 mv -f $1/pillar/rsnapshot_backup/__CLIENT__/* $1/pillar/rsnapshot_backup/${CLIENT}

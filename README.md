@@ -25,5 +25,6 @@ TELEGRAM_TOKEN=xxx \
 	SALT_MASTER_PORT_2=xxx \
 	STAGING_SALT_MASTER=xxx \
 	CLIENT=xxx \
+	DEFAULT_TZ=xxx \
 	./install.sh ../some/salt/repo/path
 ```
