@@ -8,11 +8,11 @@ ufw_simple:
       proto: 'tcp'
       from:
         {{ vars['All_Servers'] }}
-      to_port: '__SALT_MASTER_PORT_1__,__SALT_MASTER_PORT_1__'
+      to_port: '__SALT_MASTER_PORT_1__,__SALT_MASTER_PORT_2__'
   delete:
     allow:
       salt:
         proto: 'tcp'
         from:
           {{ vars['Delete_All_Servers'] }}
-        to_port: '__SALT_MASTER_PORT_1__,__SALT_MASTER_PORT_1__'
+        to_port: '__SALT_MASTER_PORT_1__,__SALT_MASTER_PORT_2__'
