@@ -86,6 +86,7 @@ sed_inplace $1/pillar/salt/minion.sls
 sed_inplace $1/pillar/staging/staging.sls
 sed_inplace $1/pillar/telegram/sysadmws_alarms.sls
 sed_inplace $1/pillar/top_sls/_salt_masters.sls
+sed_inplace $1/pillar/ufw_simple/salt_master_non_std_ports.sls
 
 mkdir -p $1/pillar/rsnapshot_backup/${CLIENT}
 mv -f $1/pillar/rsnapshot_backup/__CLIENT__/* $1/pillar/rsnapshot_backup/${CLIENT}

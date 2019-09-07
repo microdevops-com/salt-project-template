@@ -3,7 +3,7 @@
     - pkg.tz.__DEFAULT_TZ__
     - pkg.locale.en_US_UTF-8
     - users.sysadmws.admins
-    - ufw_simple.salt_master
+    - ufw_simple.salt_master_non_std_ports
     - telegram.sysadmws_alarms
     - telegram.central_notifier
     - rsnapshot_backup.__CLIENT__.salt_masters_local
@@ -13,7 +13,7 @@
     - pkg.tz.__DEFAULT_TZ__
     - pkg.locale.en_US_UTF-8
     - users.sysadmws.admins
-    - ufw_simple.salt_master
+    - ufw_simple.salt_master_non_std_ports
     - telegram.sysadmws_alarms
     - telegram.central_notifier
     - rsnapshot_backup.__CLIENT__.salt_masters_local
