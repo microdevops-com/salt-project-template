@@ -1,5 +1,7 @@
 stages:
   - pull
+  - check
+  - run
 
 .salt_master_pull:
   stage: pull
@@ -16,5 +18,56 @@ salt_master_pull_1:
 
 salt_master_pull_2:
   extends: .salt_master_pull
+  tags:
+    - __SALT_MASTER_2_NAME__
+
+.count_alive_minions:
+  stage: check
+  only:
+    refs:
+      - /^run_.*/
+    variables:
+      - $SALT_TIMEOUT
+      - $SALT_MINION
+      - $SALT_CMD
+  # Send collected alive_minions to next stage as artifacts
+  artifacts:
+    paths:
+      - alive_minions
+  script:
+    - .gitlab-server-job/count_alive_minions.sh
+
+count_alive_minions_1:
+  extends: .count_alive_minions
+  tags:
+    - __SALT_MASTER_1_NAME__
+
+count_alive_minions_2:
+  extends: .count_alive_minions
+  tags:
+    - __SALT_MASTER_2_NAME__
+
+.salt_cmd:
+  stage: run
+  only:
+    refs:
+      - /^run_.*/
+    variables:
+      - $SALT_TIMEOUT
+      - $SALT_MINION
+      - $SALT_CMD
+  script:
+    # Check at least one master has one needed minion
+    - .gitlab-server-job/check_alive_minions.sh
+    # Run Salt Command
+    - .gitlab-server-job/salt_cmd.sh
+
+salt_cmd_1:
+  extends: .salt_cmd
+  tags:
+    - __SALT_MASTER_1_NAME__
+
+salt_cmd_2:
+  extends: .salt_cmd
   tags:
     - __SALT_MASTER_2_NAME__
