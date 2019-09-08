@@ -1,4 +1,0 @@
-[submodule ".gitlab-server-job"]
-	path = .gitlab-server-job
-	url = https://github.com/sysadmws/gitlab-server-job
-	branch = master
