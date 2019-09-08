@@ -9,12 +9,12 @@ stages:
   script:
     - sudo /srv/scripts/ci_sudo/salt_master_pull.sh
 
-salt_master_pull_salt_master_1:
+salt_master_pull_1:
   extends: .salt_master_pull
   tags:
     - __SALT_MASTER_1_NAME__
 
-salt_master_pull_salt_master_2:
+salt_master_pull_2:
   extends: .salt_master_pull
   tags:
     - __SALT_MASTER_2_NAME__

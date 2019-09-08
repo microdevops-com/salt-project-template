@@ -1,0 +1,1 @@
+../../formulas/sysadmws-formula/scripts/ci_sudo/salt_cmd.sh
