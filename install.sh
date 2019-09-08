@@ -108,4 +108,6 @@ sed_inplace $1/.gitlab-ci.yml
 pushd $1
 git submodule init
 git submodule update --recursive -f --checkout
+# Pull fresh masters of submodules
+git submodule foreach --recursive git pull
 popd
