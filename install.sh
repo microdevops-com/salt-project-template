@@ -109,5 +109,6 @@ pushd $1
 git submodule init
 git submodule update --recursive -f --checkout
 # Pull fresh masters of submodules
+git submodule foreach "git checkout master && git pull"
 git submodule foreach --recursive git pull
 popd
