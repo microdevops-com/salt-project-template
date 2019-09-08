@@ -3,6 +3,9 @@ stages:
   - check
   - run
 
+variables:
+  GIT_SUBMODULE_STRATEGY: normal
+
 .salt_master_pull:
   stage: pull
   only:
