@@ -29,6 +29,9 @@ salt_master_pull_2:
   only:
     refs:
       - /^run_.*/
+    variables:
+      # This var should be set on all job types, if removed - broken pipeline will run on tag creation
+      - $SALT_MINION
   # Send collected alive_minions to next stage as artifacts
   artifacts:
     paths:
