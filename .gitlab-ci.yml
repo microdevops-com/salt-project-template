@@ -1,7 +1,12 @@
 stages:
   - pull
   - check
-  - run
+  - run_1
+  - run_2
+  - run_3
+  - run_4
+  - run_5
+  - run_6
 
 variables:
   GIT_SUBMODULE_STRATEGY: normal
@@ -50,7 +55,7 @@ count_alive_minions_2:
     - __SALT_MASTER_2_NAME__
 
 .salt_cmd:
-  stage: run
+  stage: run_1
   only:
     refs:
       - /^run_.*/
@@ -75,7 +80,7 @@ salt_cmd_2:
     - __SALT_MASTER_2_NAME__
 
 .rsnapshot_backup_update_config:
-  stage: run
+  stage: run_1
   only:
     refs:
       - /^run_.*/
@@ -89,12 +94,37 @@ salt_cmd_2:
     # Run Salt Command
     - .gitlab-server-job/rsnapshot_backup_update_config.sh
 
-salt_cmd_1:
+rsnapshot_backup_update_config_1:
   extends: .rsnapshot_backup_update_config
   tags:
     - __SALT_MASTER_1_NAME__
 
-salt_cmd_2:
+rsnapshot_backup_update_config_2:
   extends: .rsnapshot_backup_update_config
+  tags:
+    - __SALT_MASTER_2_NAME__
+
+.rsnapshot_backup_sync:
+  stage: run_2
+  only:
+    refs:
+      - /^run_.*/
+    variables:
+      - $SERVER_TIMEOUT
+      - $SALT_MINION
+      - $RSNAPSHOT_BACKUP_TYPE
+  script:
+    # Check at least one master has one needed minion
+    - .gitlab-server-job/check_alive_minions.sh
+    # Run Salt Command
+    - .gitlab-server-job/rsnapshot_backup_sync.sh
+
+rsnapshot_backup_sync_1:
+  extends: .rsnapshot_backup_sync
+  tags:
+    - __SALT_MASTER_1_NAME__
+
+rsnapshot_backup_sync_2:
+  extends: .rsnapshot_backup_sync
   tags:
     - __SALT_MASTER_2_NAME__
