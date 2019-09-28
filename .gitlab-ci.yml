@@ -74,3 +74,28 @@ salt_cmd_2:
   extends: .salt_cmd
   tags:
     - __SALT_MASTER_2_NAME__
+
+.rsnapshot_backup_update_config:
+  stage: run
+  only:
+    refs:
+      - /^run_.*/
+    variables:
+      - $SERVER_TIMEOUT
+      - $SERVER_FQDN
+      - $RSNAPSHOT_BACKUP_TYPE
+  script:
+    # Check at least one master has one needed minion
+    - .gitlab-server-job/check_alive_minions.sh
+    # Run Salt Command
+    - .gitlab-server-job/rsnapshot_backup_update_config.sh
+
+salt_cmd_1:
+  extends: .rsnapshot_backup_update_config
+  tags:
+    - __SALT_MASTER_1_NAME__
+
+salt_cmd_2:
+  extends: .rsnapshot_backup_update_config
+  tags:
+    - __SALT_MASTER_2_NAME__
