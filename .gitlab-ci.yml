@@ -29,10 +29,6 @@ salt_master_pull_2:
   only:
     refs:
       - /^run_.*/
-    variables:
-      - $SALT_TIMEOUT
-      - $SALT_MINION
-      - $SALT_CMD
   # Send collected alive_minions to next stage as artifacts
   artifacts:
     paths:
