@@ -60,8 +60,6 @@ count_alive_minions_2:
     refs:
       - /^run_.*/
     variables:
-      - $SALT_TIMEOUT
-      - $SALT_MINION
       - $SALT_CMD
   script:
     # Check at least one master has one needed minion
@@ -85,8 +83,6 @@ salt_cmd_2:
     refs:
       - /^run_.*/
     variables:
-      - $SALT_TIMEOUT
-      - $SALT_MINION
       - $RSNAPSHOT_BACKUP_TYPE
   script:
     # Check at least one master has one needed minion
@@ -110,8 +106,6 @@ rsnapshot_backup_update_config_2:
     refs:
       - /^run_.*/
     variables:
-      - $SALT_TIMEOUT
-      - $SALT_MINION
       - $RSNAPSHOT_BACKUP_TYPE
   script:
     # Check at least one master has one needed minion
