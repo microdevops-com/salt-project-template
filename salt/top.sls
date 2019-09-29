@@ -13,6 +13,12 @@ base:
     - netdata.netdata
     - pkg.pkg
     - vim.vim
+    - sysadmws-utils.sysadmws-utils
+    - bulk_log.bulk_log
+    - disk_alert.disk_alert
+    - mysql_queries_log.mysql_queries_log
+    - mysql_replica_checker.mysql_replica_checker
+    - notify_devilry.notify_devilry
 
   # All Ubuntu and Debian
   'G@os:Ubuntu or G@os:Debian':
