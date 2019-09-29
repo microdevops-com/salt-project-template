@@ -85,7 +85,7 @@ salt_cmd_2:
     refs:
       - /^run_.*/
     variables:
-      - $SERVER_TIMEOUT
+      - $SALT_TIMEOUT
       - $SALT_MINION
       - $RSNAPSHOT_BACKUP_TYPE
   script:
@@ -110,7 +110,7 @@ rsnapshot_backup_update_config_2:
     refs:
       - /^run_.*/
     variables:
-      - $SERVER_TIMEOUT
+      - $SALT_TIMEOUT
       - $SALT_MINION
       - $RSNAPSHOT_BACKUP_TYPE
   script:
