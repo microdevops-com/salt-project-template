@@ -1,6 +1,7 @@
 stages:
   - pull
   - check
+  - refresh
   - run_1
   - run_2
   - run_3
@@ -53,6 +54,27 @@ count_alive_minions_2:
   tags:
     - __SALT_MASTER_2_NAME__
 
+.refresh_pillar:
+  stage: refresh
+  only:
+    refs:
+      - /^run_.*/
+    variables:
+      - $SALT_MINION
+  script:
+    - .gitlab-server-job/check_alive_minions.sh
+    - .gitlab-server-job/refresh_pillar.sh
+
+refresh_pillar_1:
+  extends: .refresh_pillar
+  tags:
+    - __SALT_MASTER_1_NAME__
+
+refresh_pillar_2:
+  extends: .refresh_pillar
+  tags:
+    - __SALT_MASTER_2_NAME__
+
 .salt_cmd:
   stage: run_1
   only:
@@ -84,9 +106,7 @@ salt_cmd_2:
     variables:
       - $RSNAPSHOT_BACKUP_TYPE
   script:
-    # Check at least one master has one needed minion
     - .gitlab-server-job/check_alive_minions.sh
-    # Run Salt Command
     - .gitlab-server-job/rsnapshot_backup_update_config.sh
 
 rsnapshot_backup_update_config_1:
@@ -107,9 +127,7 @@ rsnapshot_backup_update_config_2:
     variables:
       - $RSNAPSHOT_BACKUP_TYPE
   script:
-    # Check at least one master has one needed minion
     - .gitlab-server-job/check_alive_minions.sh
-    # Run Salt Command
     - .gitlab-server-job/rsnapshot_backup_sync.sh
 
 rsnapshot_backup_sync_1:
@@ -130,9 +148,7 @@ rsnapshot_backup_sync_2:
     variables:
       - $RSNAPSHOT_BACKUP_TYPE
   script:
-    # Check at least one master has one needed minion
     - .gitlab-server-job/check_alive_minions.sh
-    # Run Salt Command
     - .gitlab-server-job/rsnapshot_backup_rotate.sh
 
 rsnapshot_backup_rotate_1:
@@ -153,9 +169,7 @@ rsnapshot_backup_rotate_2:
     variables:
       - $RSNAPSHOT_BACKUP_TYPE
   script:
-    # Check at least one master has one needed minion
     - .gitlab-server-job/check_alive_minions.sh
-    # Run Salt Command
     - .gitlab-server-job/rsnapshot_backup_check_backup.sh
 
 rsnapshot_backup_check_backup_1:
@@ -176,9 +190,7 @@ rsnapshot_backup_check_backup_2:
     variables:
       - $RSNAPSHOT_BACKUP_TYPE
   script:
-    # Check at least one master has one needed minion
     - .gitlab-server-job/check_alive_minions.sh
-    # Run Salt Command
     - .gitlab-server-job/rsnapshot_backup_check_coverage.sh
 
 rsnapshot_backup_check_coverage_1:
