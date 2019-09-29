@@ -19,6 +19,7 @@ base:
     - pkg.sysadmws.forward_root_email
     - salt.minion
     - ufw_simple.standard
+    - ufw_simple.ssh_from_salt_servers
   
   'G@os:Windows':
     - match: compound
