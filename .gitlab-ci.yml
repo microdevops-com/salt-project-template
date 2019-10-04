@@ -7,6 +7,7 @@ stages:
   - run_3
   - run_4
   - run_5
+  - clean
 
 variables:
   GIT_SUBMODULE_STRATEGY: normal
