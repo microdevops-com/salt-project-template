@@ -79,6 +79,7 @@ add_submodule postgres-formula $1/formulas https://github.com/sysadmws/postgres-
 add_submodule vim-formula $1/formulas https://github.com/sysadmws/vim-formula.git
 add_submodule pip-formula $1/formulas https://github.com/sysadmws/pip-formula.git
 add_submodule .gitlab-server-job $1 https://github.com/sysadmws/gitlab-server-job
+add_submodule .gitlab-ci-functions $1 https://github.com/sysadmws/gitlab-ci-functions
 
 rsync_without_delete pillar $1/pillar
 sed_inplace $1/pillar/pkg/sysadmws/forward_root_email.sls

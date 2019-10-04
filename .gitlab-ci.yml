@@ -11,6 +11,9 @@ stages:
 variables:
   GIT_SUBMODULE_STRATEGY: normal
 
+before_script:
+  - . .gitlab-ci-functions/gitlab.sh
+
 .salt_master_pull:
   stage: pull
   only:
@@ -200,5 +203,20 @@ rsnapshot_backup_check_coverage_1:
 
 rsnapshot_backup_check_coverage_2:
   extends: .rsnapshot_backup_check_coverage
+  tags:
+    - __SALT_MASTER_2_NAME__
+
+.clean_runner_build:
+  stage: clean
+  script:
+    - clean_build_dir
+
+clean_runner_build_1:
+  extends: .clean_runner_build
+  tags:
+    - __SALT_MASTER_1_NAME__
+
+clean_runner_build_2:
+  extends: .clean_runner_build
   tags:
     - __SALT_MASTER_2_NAME__
