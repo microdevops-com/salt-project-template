@@ -16,7 +16,7 @@ before_script:
 
 after_script:
   - . .gitlab-ci-functions/gitlab.sh
-  - clean_build_dir
+  - clean_build_dir "*alive_minions"
 
 .salt_master_pull:
   stage: pull
