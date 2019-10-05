@@ -15,6 +15,7 @@ before_script:
   - . .gitlab-ci-functions/gitlab.sh
 
 after_script:
+  - . .gitlab-ci-functions/gitlab.sh
   - clean_build_dir
 
 .salt_master_pull:
