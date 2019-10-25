@@ -12,7 +12,7 @@ rsnapshot_backup:
         backups:
           - host: __SALT_MASTER_1_NAME__
             path: /var/backups/__SALT_MASTER_1_NAME__
-        rsync_args: --exclude=/home/gitlab-runner
+        rsync_args: --exclude=/home/gitlab-runner --exclude=/var/log/journal
       - type: SUPPRESS_COVERAGE
         data:
           - UBUNTU
@@ -31,7 +31,7 @@ rsnapshot_backup:
         backups:
           - host: __SALT_MASTER_2_NAME__
             path: /var/backups/__SALT_MASTER_2_NAME__
-        rsync_args: --exclude=/home/gitlab-runner
+        rsync_args: --exclude=/home/gitlab-runner --exclude=/var/log/journal
       - type: SUPPRESS_COVERAGE
         data:
           - UBUNTU
