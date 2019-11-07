@@ -33,6 +33,7 @@ salt:
       master_port: __SALT_MASTER_PORT_2__
       verify_master_pubkey_sign: True
       master_type: failover
+      retry_dns: 0
       random_master: True
       master_alive_interval: 60
 {% endif %}
