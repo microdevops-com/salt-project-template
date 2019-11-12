@@ -66,7 +66,7 @@ function sed_inplace () {
 
 function add_submodule () {
 	pushd $2
-	git submodule add --force --name $1 -b master -- $3 $1
+	git submodule status | awk '{print $2}' | grep -q -e "$1" || git submodule add --force --name $1 -b master -- $3 $1
 	popd
 }
 
