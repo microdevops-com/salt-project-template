@@ -12,10 +12,10 @@ variables:
   GIT_SUBMODULE_STRATEGY: normal
 
 before_script:
-  - . .gitlab-ci-functions/gitlab.sh
+  - . .pipeline-cache/gitlab.sh
 
 after_script:
-  - . .gitlab-ci-functions/gitlab.sh
+  - . .pipeline-cache/gitlab.sh
   - clean_build_dir "*alive_minions"
 
 .salt_master_pull:
@@ -49,7 +49,7 @@ salt_master_pull_2:
     paths:
       - alive_minions
   script:
-    - .gitlab-server-job/count_alive_minions.sh
+    - .pipeline-cache/count_alive_minions.sh
 
 count_alive_minions_1:
   extends: .count_alive_minions
@@ -69,8 +69,8 @@ count_alive_minions_2:
     variables:
       - $SALT_MINION
   script:
-    - .gitlab-server-job/check_alive_minions.sh
-    - .gitlab-server-job/refresh_pillar.sh
+    - .pipeline-cache/check_alive_minions.sh
+    - .pipeline-cache/refresh_pillar.sh
 
 refresh_pillar_1:
   extends: .refresh_pillar
@@ -91,9 +91,9 @@ refresh_pillar_2:
       - $SALT_CMD
   script:
     # Check at least one master has one needed minion
-    - .gitlab-server-job/check_alive_minions.sh
+    - .pipeline-cache/check_alive_minions.sh
     # Run Salt Command
-    - .gitlab-server-job/salt_cmd.sh
+    - .pipeline-cache/salt_cmd.sh
 
 salt_cmd_1:
   extends: .salt_cmd
@@ -113,8 +113,8 @@ salt_cmd_2:
     variables:
       - $RSNAPSHOT_BACKUP_TYPE
   script:
-    - .gitlab-server-job/check_alive_minions.sh
-    - .gitlab-server-job/rsnapshot_backup_update_config.sh
+    - .pipeline-cache/check_alive_minions.sh
+    - .pipeline-cache/rsnapshot_backup_update_config.sh
 
 rsnapshot_backup_update_config_1:
   extends: .rsnapshot_backup_update_config
@@ -134,8 +134,8 @@ rsnapshot_backup_update_config_2:
     variables:
       - $RSNAPSHOT_BACKUP_TYPE
   script:
-    - .gitlab-server-job/check_alive_minions.sh
-    - .gitlab-server-job/rsnapshot_backup_sync.sh
+    - .pipeline-cache/check_alive_minions.sh
+    - .pipeline-cache/rsnapshot_backup_sync.sh
 
 rsnapshot_backup_sync_1:
   extends: .rsnapshot_backup_sync
@@ -155,8 +155,8 @@ rsnapshot_backup_sync_2:
     variables:
       - $RSNAPSHOT_BACKUP_TYPE
   script:
-    - .gitlab-server-job/check_alive_minions.sh
-    - .gitlab-server-job/rsnapshot_backup_rotate.sh
+    - .pipeline-cache/check_alive_minions.sh
+    - .pipeline-cache/rsnapshot_backup_rotate.sh
 
 rsnapshot_backup_rotate_1:
   extends: .rsnapshot_backup_rotate
@@ -176,8 +176,8 @@ rsnapshot_backup_rotate_2:
     variables:
       - $RSNAPSHOT_BACKUP_TYPE
   script:
-    - .gitlab-server-job/check_alive_minions.sh
-    - .gitlab-server-job/rsnapshot_backup_check_backup.sh
+    - .pipeline-cache/check_alive_minions.sh
+    - .pipeline-cache/rsnapshot_backup_check_backup.sh
 
 rsnapshot_backup_check_backup_1:
   extends: .rsnapshot_backup_check_backup
@@ -197,8 +197,8 @@ rsnapshot_backup_check_backup_2:
     variables:
       - $RSNAPSHOT_BACKUP_TYPE
   script:
-    - .gitlab-server-job/check_alive_minions.sh
-    - .gitlab-server-job/rsnapshot_backup_check_coverage.sh
+    - .pipeline-cache/check_alive_minions.sh
+    - .pipeline-cache/rsnapshot_backup_check_coverage.sh
 
 rsnapshot_backup_check_coverage_1:
   extends: .rsnapshot_backup_check_coverage

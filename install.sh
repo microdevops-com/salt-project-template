@@ -105,11 +105,28 @@ cp .gitignore $1/.gitignore
 cp .gitlab-ci.yml $1/.gitlab-ci.yml
 sed_inplace $1/.gitlab-ci.yml
 
-# Init submodules
+# Get inside templated repo
 pushd $1
+
+# Init submodules
 git submodule init
 git submodule update --recursive -f --checkout
 # Pull fresh masters of submodules
 git submodule foreach "git checkout master && git pull"
 git submodule foreach --recursive git pull
+
+# Update files needed for pipeline from submodules - this allows to use cached copies and disable submodules within pipeline
+mkdir -p .pipeline-cache
+cp -f .gitlab-ci-functions/gitlab.sh .pipeline-cache
+cp -f .gitlab-server-job/count_alive_minions.sh .pipeline-cache
+cp -f .gitlab-server-job/check_alive_minions.sh .pipeline-cache
+cp -f .gitlab-server-job/refresh_pillar.sh .pipeline-cache
+cp -f .gitlab-server-job/salt_cmd.sh .pipeline-cache
+cp -f .gitlab-server-job/rsnapshot_backup_update_config.sh .pipeline-cache
+cp -f .gitlab-server-job/rsnapshot_backup_sync.sh .pipeline-cache
+cp -f .gitlab-server-job/rsnapshot_backup_rotate.sh .pipeline-cache
+cp -f .gitlab-server-job/rsnapshot_backup_check_backup.sh .pipeline-cache
+cp -f .gitlab-server-job/rsnapshot_backup_check_coverage.sh .pipeline-cache
+
+# Return back
 popd
