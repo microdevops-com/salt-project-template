@@ -51,11 +51,11 @@ function sed_inplace () {
 		-e "s/__SALT_MASTER_1_NAME__/${SALT_MASTER_1_NAME}/g" \
 		-e "s/__SALT_MASTER_1_IP__/${SALT_MASTER_1_IP}/g" \
 		-e "s/__SALT_MASTER_1_EXT_IP__/${SALT_MASTER_1_EXT_IP}/g" \
-		-e "s/__SALT_MASTER_1_SSH_PUB__/${SALT_MASTER_1_SSH_PUB}/g" \
+		-e "s#__SALT_MASTER_1_SSH_PUB__#${SALT_MASTER_1_SSH_PUB}#g" \
 		-e "s/__SALT_MASTER_2_NAME__/${SALT_MASTER_2_NAME}/g" \
 		-e "s/__SALT_MASTER_2_IP__/${SALT_MASTER_2_IP}/g" \
 		-e "s/__SALT_MASTER_2_EXT_IP__/${SALT_MASTER_2_EXT_IP}/g" \
-		-e "s/__SALT_MASTER_2_SSH_PUB__/${SALT_MASTER_2_SSH_PUB}/g" \
+		-e "s#__SALT_MASTER_2_SSH_PUB__#${SALT_MASTER_2_SSH_PUB}#g" \
 		-e "s/__SALT_MASTER_PORT_1__/${SALT_MASTER_PORT_1}/g" \
 		-e "s/__SALT_MASTER_PORT_2__/${SALT_MASTER_PORT_2}/g" \
 		-e "s/__STAGING_SALT_MASTER__/${STAGING_SALT_MASTER}/g" \
