@@ -9,7 +9,7 @@ stages:
   - run_5
 
 variables:
-  GIT_SUBMODULE_STRATEGY: normal
+  GIT_SUBMODULE_STRATEGY: none
 
 before_script:
   - . .pipeline-cache/gitlab.sh
