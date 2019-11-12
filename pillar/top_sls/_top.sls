@@ -17,6 +17,7 @@ base:
     - mysql_queries_log.enabled
     - mysql_replica_checker.enabled
     - pkg.sysadmws.forward_root_email
+    - pkg.ssh_keys.__CLIENT__.salt_masters
     - salt.minion
     - ufw_simple.standard
     - ufw_simple.ssh_from_salt_servers

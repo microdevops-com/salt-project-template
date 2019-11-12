@@ -18,9 +18,11 @@ if [ -z ${SALT_MINION_VERSION} ]; then echo Var missing; exit 1; fi
 if [ -z ${SALT_MASTER_1_NAME} ]; then echo Var missing; exit 1; fi
 if [ -z ${SALT_MASTER_1_IP} ]; then echo Var missing; exit 1; fi
 if [ -z ${SALT_MASTER_1_EXT_IP} ]; then echo Var missing; exit 1; fi
+if [ -z ${SALT_MASTER_1_SSH_PUB} ]; then echo Var missing; exit 1; fi
 if [ -z ${SALT_MASTER_2_NAME} ]; then echo Var missing; exit 1; fi
 if [ -z ${SALT_MASTER_2_IP} ]; then echo Var missing; exit 1; fi
 if [ -z ${SALT_MASTER_2_EXT_IP} ]; then echo Var missing; exit 1; fi
+if [ -z ${SALT_MASTER_2_SSH_PUB} ]; then echo Var missing; exit 1; fi
 if [ -z ${SALT_MASTER_PORT_1} ]; then echo Var missing; exit 1; fi
 if [ -z ${SALT_MASTER_PORT_2} ]; then echo Var missing; exit 1; fi
 if [ -z ${STAGING_SALT_MASTER} ]; then echo Var missing; exit 1; fi
@@ -48,9 +50,11 @@ function sed_inplace () {
 		-e "s/__SALT_MASTER_1_NAME__/${SALT_MASTER_1_NAME}/g" \
 		-e "s/__SALT_MASTER_1_IP__/${SALT_MASTER_1_IP}/g" \
 		-e "s/__SALT_MASTER_1_EXT_IP__/${SALT_MASTER_1_EXT_IP}/g" \
+		-e "s/__SALT_MASTER_1_SSH_PUB__/${SALT_MASTER_1_SSH_PUB}/g" \
 		-e "s/__SALT_MASTER_2_NAME__/${SALT_MASTER_2_NAME}/g" \
 		-e "s/__SALT_MASTER_2_IP__/${SALT_MASTER_2_IP}/g" \
 		-e "s/__SALT_MASTER_2_EXT_IP__/${SALT_MASTER_2_EXT_IP}/g" \
+		-e "s/__SALT_MASTER_2_SSH_PUB__/${SALT_MASTER_2_SSH_PUB}/g" \
 		-e "s/__SALT_MASTER_PORT_1__/${SALT_MASTER_PORT_1}/g" \
 		-e "s/__SALT_MASTER_PORT_2__/${SALT_MASTER_PORT_2}/g" \
 		-e "s/__STAGING_SALT_MASTER__/${STAGING_SALT_MASTER}/g" \
@@ -87,12 +91,18 @@ sed_inplace $1/pillar/salt/minion.sls
 sed_inplace $1/pillar/staging/staging.sls
 sed_inplace $1/pillar/telegram/sysadmws_alarms.sls
 sed_inplace $1/pillar/top_sls/_salt_masters.sls
+sed_inplace $1/pillar/top_sls/_top.sls
 sed_inplace $1/pillar/ufw_simple/salt_master_non_std_ports.sls
 
 mkdir -p $1/pillar/rsnapshot_backup/${CLIENT}
 mv -f $1/pillar/rsnapshot_backup/__CLIENT__/* $1/pillar/rsnapshot_backup/${CLIENT}
 rm -rf $1/pillar/rsnapshot_backup/__CLIENT__
 sed_inplace $1/pillar/rsnapshot_backup/${CLIENT}/salt_masters_local.sls
+
+mkdir -p $1/pillar/pkg/ssh_keys/${CLIENT}
+mv -f $1/pillar/pkg/ssh_keys/__CLIENT__/* $1/pillar/pkg/ssh_keys/${CLIENT}
+rm -rf $1/pillar/pkg/ssh_keys/__CLIENT__
+sed_inplace $1/pillar/pkg/ssh_keys/${CLIENT}/salt_masters.sls
 
 rsync_with_delete reactor $1/reactor
 
