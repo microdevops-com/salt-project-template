@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 # Sanity checks
 if [ -z $1 ]; then
