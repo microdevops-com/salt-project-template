@@ -19,11 +19,11 @@ if [ -z ${SALT_MINION_VERSION} ]; then echo Var missing; exit 1; fi
 if [ -z ${SALT_MASTER_1_NAME} ]; then echo Var missing; exit 1; fi
 if [ -z ${SALT_MASTER_1_IP} ]; then echo Var missing; exit 1; fi
 if [ -z ${SALT_MASTER_1_EXT_IP} ]; then echo Var missing; exit 1; fi
-if [ -z ${SALT_MASTER_1_SSH_PUB} ]; then echo Var missing; exit 1; fi
+if [ -z "${SALT_MASTER_1_SSH_PUB}" ]; then echo Var missing; exit 1; fi
 if [ -z ${SALT_MASTER_2_NAME} ]; then echo Var missing; exit 1; fi
 if [ -z ${SALT_MASTER_2_IP} ]; then echo Var missing; exit 1; fi
 if [ -z ${SALT_MASTER_2_EXT_IP} ]; then echo Var missing; exit 1; fi
-if [ -z ${SALT_MASTER_2_SSH_PUB} ]; then echo Var missing; exit 1; fi
+if [ -z "${SALT_MASTER_2_SSH_PUB}" ]; then echo Var missing; exit 1; fi
 if [ -z ${SALT_MASTER_PORT_1} ]; then echo Var missing; exit 1; fi
 if [ -z ${SALT_MASTER_PORT_2} ]; then echo Var missing; exit 1; fi
 if [ -z ${STAGING_SALT_MASTER} ]; then echo Var missing; exit 1; fi
