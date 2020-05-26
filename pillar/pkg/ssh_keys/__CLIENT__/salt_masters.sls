@@ -1,5 +1,5 @@
 pkg:
-  ssh-auth-keys___CLIENT__:
+  ssh-auth-keys___CLIENT___from-salt-masters:
     when: 'PKG_PKG'
     states:
       - ssh_auth.present:
