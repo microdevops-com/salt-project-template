@@ -111,9 +111,11 @@ rsync_with_delete scripts $1/scripts
 
 rsync_without_delete salt $1/salt
 
-cp .gitignore $1/.gitignore
+cp -f .gitignore $1/.gitignore
 
-cp .gitlab-ci.yml $1/.gitlab-ci.yml
+cp -f .git_pull.sh $1/.git_pull.sh
+
+cp -f .gitlab-ci.yml $1/.gitlab-ci.yml
 sed_inplace $1/.gitlab-ci.yml
 
 # Get inside templated repo
