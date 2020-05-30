@@ -47,7 +47,7 @@ salt_master_pull_2:
   script:
     - . .pipeline-cache/gitlab.sh
     # Clean everything but .pipeline-cache and keep it on next stages as artifact
-    - clean_build_dir ".pipeline-cache"
+    - clean_build_dir "*.pipeline-cache"
     - .pipeline-cache/count_alive_minions.sh
 
 count_alive_minions_1:
