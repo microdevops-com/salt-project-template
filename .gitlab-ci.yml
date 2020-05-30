@@ -14,16 +14,17 @@ variables:
 before_script:
   - . .pipeline-cache/gitlab.sh
 
-after_script:
-  - . .pipeline-cache/gitlab.sh
-  - clean_build_dir "*alive_minions"
-
 .salt_master_pull:
   stage: pull
   only:
     refs:
       - master
+  artifacts:
+    paths:
+      - .pipeline-cache
   script:
+    # Clean everything but .pipeline-cache and keep it on next stages as artifact
+    - clean_build_dir ".pipeline-cache"
     - sudo /srv/scripts/ci_sudo/salt_master_pull.sh
 
 salt_master_pull_1:
@@ -44,10 +45,14 @@ salt_master_pull_2:
     variables:
       # This var should be set on all job types, if removed - broken pipeline will run on tag creation
       - $SALT_MINION
-  # Send collected alive_minions to next stage as artifacts
+  # Send collected alive_minions to next stage as artifacts also
   artifacts:
     paths:
       - alive_minions
+      - .pipeline-cache
+  # Do not fetch code from gitlab, it is not needed, we need only .pipeline-cache for scripts
+  variables:
+    GIT_STRATEGY: none
   script:
     - .pipeline-cache/count_alive_minions.sh
 
@@ -68,6 +73,11 @@ count_alive_minions_2:
       - /^run_.*/
     variables:
       - $SALT_MINION
+  artifacts:
+    paths:
+      - .pipeline-cache
+  variables:
+    GIT_STRATEGY: none
   script:
     - .pipeline-cache/check_alive_minions.sh
     - .pipeline-cache/refresh_pillar.sh
@@ -89,6 +99,11 @@ refresh_pillar_2:
       - /^run_.*/
     variables:
       - $SALT_CMD
+  artifacts:
+    paths:
+      - .pipeline-cache
+  variables:
+    GIT_STRATEGY: none
   script:
     # Check at least one master has one needed minion
     - .pipeline-cache/check_alive_minions.sh
@@ -112,6 +127,11 @@ salt_cmd_2:
       - /^run_.*/
     variables:
       - $RSNAPSHOT_BACKUP_TYPE
+  artifacts:
+    paths:
+      - .pipeline-cache
+  variables:
+    GIT_STRATEGY: none
   script:
     - .pipeline-cache/check_alive_minions.sh
     - .pipeline-cache/rsnapshot_backup_update_config.sh
@@ -133,6 +153,11 @@ rsnapshot_backup_update_config_2:
       - /^run_.*/
     variables:
       - $RSNAPSHOT_BACKUP_TYPE
+  artifacts:
+    paths:
+      - .pipeline-cache
+  variables:
+    GIT_STRATEGY: none
   script:
     - .pipeline-cache/check_alive_minions.sh
     - .pipeline-cache/rsnapshot_backup_sync.sh
@@ -154,6 +179,11 @@ rsnapshot_backup_sync_2:
       - /^run_.*/
     variables:
       - $RSNAPSHOT_BACKUP_TYPE
+  artifacts:
+    paths:
+      - .pipeline-cache
+  variables:
+    GIT_STRATEGY: none
   script:
     - .pipeline-cache/check_alive_minions.sh
     - .pipeline-cache/rsnapshot_backup_rotate.sh
@@ -175,6 +205,11 @@ rsnapshot_backup_rotate_2:
       - /^run_.*/
     variables:
       - $RSNAPSHOT_BACKUP_TYPE
+  artifacts:
+    paths:
+      - .pipeline-cache
+  variables:
+    GIT_STRATEGY: none
   script:
     - .pipeline-cache/check_alive_minions.sh
     - .pipeline-cache/rsnapshot_backup_check_backup.sh
@@ -196,6 +231,11 @@ rsnapshot_backup_check_backup_2:
       - /^run_.*/
     variables:
       - $RSNAPSHOT_BACKUP_TYPE
+  artifacts:
+    paths:
+      - .pipeline-cache
+  variables:
+    GIT_STRATEGY: none
   script:
     - .pipeline-cache/check_alive_minions.sh
     - .pipeline-cache/rsnapshot_backup_check_coverage.sh
