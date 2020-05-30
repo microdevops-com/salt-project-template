@@ -39,7 +39,7 @@ salt_master_pull_2:
     variables:
       # This var should be set on all job types, if removed - broken pipeline will run on tag creation
       - $SALT_MINION
-  # Send collected alive_minions and .pipeline-cache scripts to next stage as artifacts
+  # Send collected alive_minions and .pipeline-cache scripts to next stages as artifacts
   artifacts:
     paths:
       - alive_minions
