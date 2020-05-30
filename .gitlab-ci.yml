@@ -39,7 +39,7 @@ salt_master_pull_2:
     variables:
       # This var should be set on all job types, if removed - broken pipeline will run on tag creation
       - $SALT_MINION
-  # Send collected alive_minions to next stage as artifacts also
+  # Send collected alive_minions and .pipeline-cache scripts to next stage as artifacts
   artifacts:
     paths:
       - alive_minions
@@ -67,9 +67,6 @@ count_alive_minions_2:
       - /^run_.*/
     variables:
       - $SALT_MINION
-  artifacts:
-    paths:
-      - .pipeline-cache
   # Do not fetch code from gitlab, it is not needed, we need only .pipeline-cache for scripts
   variables:
     GIT_STRATEGY: none
@@ -94,9 +91,6 @@ refresh_pillar_2:
       - /^run_.*/
     variables:
       - $SALT_CMD
-  artifacts:
-    paths:
-      - .pipeline-cache
   variables:
     GIT_STRATEGY: none
   script:
@@ -122,9 +116,6 @@ salt_cmd_2:
       - /^run_.*/
     variables:
       - $RSNAPSHOT_BACKUP_TYPE
-  artifacts:
-    paths:
-      - .pipeline-cache
   variables:
     GIT_STRATEGY: none
   script:
@@ -148,9 +139,6 @@ rsnapshot_backup_update_config_2:
       - /^run_.*/
     variables:
       - $RSNAPSHOT_BACKUP_TYPE
-  artifacts:
-    paths:
-      - .pipeline-cache
   variables:
     GIT_STRATEGY: none
   script:
@@ -174,9 +162,6 @@ rsnapshot_backup_sync_2:
       - /^run_.*/
     variables:
       - $RSNAPSHOT_BACKUP_TYPE
-  artifacts:
-    paths:
-      - .pipeline-cache
   variables:
     GIT_STRATEGY: none
   script:
@@ -200,9 +185,6 @@ rsnapshot_backup_rotate_2:
       - /^run_.*/
     variables:
       - $RSNAPSHOT_BACKUP_TYPE
-  artifacts:
-    paths:
-      - .pipeline-cache
   variables:
     GIT_STRATEGY: none
   script:
@@ -226,9 +208,6 @@ rsnapshot_backup_check_backup_2:
       - /^run_.*/
     variables:
       - $RSNAPSHOT_BACKUP_TYPE
-  artifacts:
-    paths:
-      - .pipeline-cache
   variables:
     GIT_STRATEGY: none
   script:
