@@ -12,6 +12,9 @@ variables:
   GIT_STRATEGY: none
   GIT_SUBMODULE_STRATEGY: none
 
+after_script:
+  - rm -rf alive_minions
+
 .salt_master_pull:
   stage: pull
   only:
@@ -44,6 +47,8 @@ salt_master_pull_2:
       - alive_minions
   script:
     - /srv/.gitlab-server-job/count_alive_minions.sh
+  # Override global after_script with alive_minions removal
+  after_script: []
 
 count_alive_minions_1:
   extends: .count_alive_minions
