@@ -130,18 +130,8 @@ git submodule update --recursive -f --checkout
 git submodule foreach "git checkout master && git pull"
 git submodule foreach --recursive git pull
 
-# Update files needed for pipeline from submodules - this allows to use cached copies and disable submodules within pipeline
-mkdir -p .pipeline-cache
-cp -f .gitlab-ci-functions/gitlab.sh .pipeline-cache
-cp -f .gitlab-server-job/count_alive_minions.sh .pipeline-cache
-cp -f .gitlab-server-job/check_alive_minions.sh .pipeline-cache
-cp -f .gitlab-server-job/refresh_pillar.sh .pipeline-cache
-cp -f .gitlab-server-job/salt_cmd.sh .pipeline-cache
-cp -f .gitlab-server-job/rsnapshot_backup_update_config.sh .pipeline-cache
-cp -f .gitlab-server-job/rsnapshot_backup_sync.sh .pipeline-cache
-cp -f .gitlab-server-job/rsnapshot_backup_rotate.sh .pipeline-cache
-cp -f .gitlab-server-job/rsnapshot_backup_check_backup.sh .pipeline-cache
-cp -f .gitlab-server-job/rsnapshot_backup_check_coverage.sh .pipeline-cache
+# .pipeline-cache is not used anymore
+rm -rf .pipeline-cache
 
 # Return back
 popd

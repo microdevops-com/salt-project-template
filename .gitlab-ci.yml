@@ -39,16 +39,14 @@ salt_master_pull_2:
     variables:
       # This var should be set on all job types, if removed - broken pipeline will run on tag creation
       - $SALT_MINION
-  # Send collected alive_minions and .pipeline-cache scripts to next stages as artifacts
+  variables:
+    GIT_STRATEGY: none
+  # Send collected alive_minions to next stages as artifacts
   artifacts:
     paths:
       - alive_minions
-      - .pipeline-cache
   script:
-    - . .pipeline-cache/gitlab.sh
-    # Clean everything but .pipeline-cache and keep it on next stages as artifact
-    - clean_build_dir "*.pipeline-cache"
-    - .pipeline-cache/count_alive_minions.sh
+    - /srv/.gitlab-server-job/count_alive_minions.sh
 
 count_alive_minions_1:
   extends: .count_alive_minions
@@ -67,12 +65,11 @@ count_alive_minions_2:
       - /^run_.*/
     variables:
       - $SALT_MINION
-  # Do not fetch code from gitlab, it is not needed, we need only .pipeline-cache for scripts
   variables:
     GIT_STRATEGY: none
   script:
-    - .pipeline-cache/check_alive_minions.sh
-    - .pipeline-cache/refresh_pillar.sh
+    - /srv/.gitlab-server-job/check_alive_minions.sh
+    - /srv/.gitlab-server-job/refresh_pillar.sh
 
 refresh_pillar_1:
   extends: .refresh_pillar
@@ -95,9 +92,9 @@ refresh_pillar_2:
     GIT_STRATEGY: none
   script:
     # Check at least one master has one needed minion
-    - .pipeline-cache/check_alive_minions.sh
+    - /srv/.gitlab-server-job/check_alive_minions.sh
     # Run Salt Command
-    - .pipeline-cache/salt_cmd.sh
+    - /srv/.gitlab-server-job/salt_cmd.sh
 
 salt_cmd_1:
   extends: .salt_cmd
@@ -119,8 +116,8 @@ salt_cmd_2:
   variables:
     GIT_STRATEGY: none
   script:
-    - .pipeline-cache/check_alive_minions.sh
-    - .pipeline-cache/rsnapshot_backup_update_config.sh
+    - /srv/.gitlab-server-job/check_alive_minions.sh
+    - /srv/.gitlab-server-job/rsnapshot_backup_update_config.sh
 
 rsnapshot_backup_update_config_1:
   extends: .rsnapshot_backup_update_config
@@ -142,8 +139,8 @@ rsnapshot_backup_update_config_2:
   variables:
     GIT_STRATEGY: none
   script:
-    - .pipeline-cache/check_alive_minions.sh
-    - .pipeline-cache/rsnapshot_backup_sync.sh
+    - /srv/.gitlab-server-job/check_alive_minions.sh
+    - /srv/.gitlab-server-job/rsnapshot_backup_sync.sh
 
 rsnapshot_backup_sync_1:
   extends: .rsnapshot_backup_sync
@@ -165,8 +162,8 @@ rsnapshot_backup_sync_2:
   variables:
     GIT_STRATEGY: none
   script:
-    - .pipeline-cache/check_alive_minions.sh
-    - .pipeline-cache/rsnapshot_backup_rotate.sh
+    - /srv/.gitlab-server-job/check_alive_minions.sh
+    - /srv/.gitlab-server-job/rsnapshot_backup_rotate.sh
 
 rsnapshot_backup_rotate_1:
   extends: .rsnapshot_backup_rotate
@@ -188,8 +185,8 @@ rsnapshot_backup_rotate_2:
   variables:
     GIT_STRATEGY: none
   script:
-    - .pipeline-cache/check_alive_minions.sh
-    - .pipeline-cache/rsnapshot_backup_check_backup.sh
+    - /srv/.gitlab-server-job/check_alive_minions.sh
+    - /srv/.gitlab-server-job/rsnapshot_backup_check_backup.sh
 
 rsnapshot_backup_check_backup_1:
   extends: .rsnapshot_backup_check_backup
@@ -211,8 +208,8 @@ rsnapshot_backup_check_backup_2:
   variables:
     GIT_STRATEGY: none
   script:
-    - .pipeline-cache/check_alive_minions.sh
-    - .pipeline-cache/rsnapshot_backup_check_coverage.sh
+    - /srv/.gitlab-server-job/check_alive_minions.sh
+    - /srv/.gitlab-server-job/rsnapshot_backup_check_coverage.sh
 
 rsnapshot_backup_check_coverage_1:
   extends: .rsnapshot_backup_check_coverage
