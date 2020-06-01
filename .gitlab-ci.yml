@@ -9,6 +9,7 @@ stages:
   - run_5
 
 variables:
+  GIT_STRATEGY: none
   GIT_SUBMODULE_STRATEGY: none
 
 .salt_master_pull:
@@ -16,8 +17,6 @@ variables:
   only:
     refs:
       - master
-  variables:
-    GIT_STRATEGY: none
   script:
     - sudo /srv/scripts/ci_sudo/salt_master_pull.sh
 
@@ -39,8 +38,6 @@ salt_master_pull_2:
     variables:
       # This var should be set on all job types, if removed - broken pipeline will run on tag creation
       - $SALT_MINION
-  variables:
-    GIT_STRATEGY: none
   # Send collected alive_minions to next stages as artifacts
   artifacts:
     paths:
@@ -65,8 +62,6 @@ count_alive_minions_2:
       - /^run_.*/
     variables:
       - $SALT_MINION
-  variables:
-    GIT_STRATEGY: none
   script:
     - /srv/.gitlab-server-job/check_alive_minions.sh
     - /srv/.gitlab-server-job/refresh_pillar.sh
@@ -88,8 +83,6 @@ refresh_pillar_2:
       - /^run_.*/
     variables:
       - $SALT_CMD
-  variables:
-    GIT_STRATEGY: none
   script:
     # Check at least one master has one needed minion
     - /srv/.gitlab-server-job/check_alive_minions.sh
@@ -113,8 +106,6 @@ salt_cmd_2:
       - /^run_.*/
     variables:
       - $RSNAPSHOT_BACKUP_TYPE
-  variables:
-    GIT_STRATEGY: none
   script:
     - /srv/.gitlab-server-job/check_alive_minions.sh
     - /srv/.gitlab-server-job/rsnapshot_backup_update_config.sh
@@ -136,8 +127,6 @@ rsnapshot_backup_update_config_2:
       - /^run_.*/
     variables:
       - $RSNAPSHOT_BACKUP_TYPE
-  variables:
-    GIT_STRATEGY: none
   script:
     - /srv/.gitlab-server-job/check_alive_minions.sh
     - /srv/.gitlab-server-job/rsnapshot_backup_sync.sh
@@ -159,8 +148,6 @@ rsnapshot_backup_sync_2:
       - /^run_.*/
     variables:
       - $RSNAPSHOT_BACKUP_TYPE
-  variables:
-    GIT_STRATEGY: none
   script:
     - /srv/.gitlab-server-job/check_alive_minions.sh
     - /srv/.gitlab-server-job/rsnapshot_backup_rotate.sh
@@ -182,8 +169,6 @@ rsnapshot_backup_rotate_2:
       - /^run_.*/
     variables:
       - $RSNAPSHOT_BACKUP_TYPE
-  variables:
-    GIT_STRATEGY: none
   script:
     - /srv/.gitlab-server-job/check_alive_minions.sh
     - /srv/.gitlab-server-job/rsnapshot_backup_check_backup.sh
@@ -205,8 +190,6 @@ rsnapshot_backup_check_backup_2:
       - /^run_.*/
     variables:
       - $RSNAPSHOT_BACKUP_TYPE
-  variables:
-    GIT_STRATEGY: none
   script:
     - /srv/.gitlab-server-job/check_alive_minions.sh
     - /srv/.gitlab-server-job/rsnapshot_backup_check_coverage.sh
