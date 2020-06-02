@@ -15,10 +15,15 @@ rsnapshot_backup:
         #rsync_args: --exclude=/home/gitlab-runner --exclude=/var/log/journal
       - type: SUPPRESS_COVERAGE
         data:
-          #- UBUNTU
+          - UBUNTU
           - /var/cache/salt
-          #- /srv
+          - /srv
         remote_backups_suppress_reason: No need for remote backups
+      - type: SUPPRESS_COVERAGE
+        data:
+          - UBUNTU
+          - /srv
+        local_backups_suppress_reason: No need for these backups
 
     __SALT_MASTER_2_NAME__:
       - type: RSYNC_SSH
@@ -34,7 +39,12 @@ rsnapshot_backup:
         #rsync_args: --exclude=/home/gitlab-runner --exclude=/var/log/journal
       - type: SUPPRESS_COVERAGE
         data:
-          #- UBUNTU
+          - UBUNTU
           - /var/cache/salt
-          #- /srv
+          - /srv
         remote_backups_suppress_reason: No need for remote backups
+      - type: SUPPRESS_COVERAGE
+        data:
+          - UBUNTU
+          - /srv
+        local_backups_suppress_reason: No need for these backups
