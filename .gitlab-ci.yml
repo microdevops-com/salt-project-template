@@ -1,6 +1,6 @@
 stages:
   - pull
-  - check
+  - count
   - refresh
   - run_1
   - run_2
@@ -34,7 +34,7 @@ salt_master_pull_2:
     - __SALT_MASTER_2_NAME__
 
 .count_alive_minions:
-  stage: check
+  stage: count
   only:
     refs:
       - /^run_.*/
