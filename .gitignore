@@ -1,5 +1,4 @@
 .backup
 *.swp
 pillar/top.sls
-current_container.sls
 scripts/ci_sudo/*.out
