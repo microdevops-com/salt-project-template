@@ -132,6 +132,8 @@ git submodule foreach --recursive git pull
 
 # .pipeline-cache is not used anymore
 rm -rf .pipeline-cache
+# salt/cloud s not used anymore
+rm -f salt/cloud
 
 # Return back
 popd
