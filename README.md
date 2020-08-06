@@ -13,6 +13,8 @@ git submodule add --name .salt-project-template -b master -- https://github.com/
 cd .salt-project-template
 TELEGRAM_TOKEN=xxx \
 	TELEGRAM_CHAT_ID=xxx \
+	ALERTA_URL=xxx \
+	ALERTA_API_KEY=xxx \
 	ROOT_EMAIL=xxx \
 	SALT_MINION_VERSION=xxx \
 	SALT_MASTER_1_NAME=xxx \

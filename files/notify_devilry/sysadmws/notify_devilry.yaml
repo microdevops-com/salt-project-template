@@ -1,0 +1,64 @@
+enabled: True
+
+defaults:
+  environment: infra
+  client: SysadmWS
+  #location: FIXME
+
+alerta:
+
+  SysadmWS:
+    url: __ALERTA_URL__
+    api_key: __ALERTA_API_KEY__
+
+telegram:
+
+  SysadmWS Alarms:
+    token: __TELEGRAM_TOKEN__
+    chat_id: __TELEGRAM_CHAT_ID__
+    sound:
+      - fatal
+      - security
+      - critical
+      - major
+
+chains:
+
+  entrypoint:
+    - name: entrypoint
+      entrypoint: True
+      jump:
+        - alerta_chain
+        - telegram_chain
+
+  alerta_chain:
+    - name: SysadmWS
+      send:
+        alerta:
+          - SysadmWS
+
+  telegram_chain:
+    - name: skip positive
+      match:
+        severity:
+          not_in:
+            - fatal
+            - security
+            - critical
+            - major
+            - minor
+            - warning
+            - informational
+        force_send:
+          in:
+            - false
+      suppress: True
+      chain_break: True
+    - name: SysadmWS Alarms
+      rate_limit:
+        - 60
+        - 240
+        - 480
+      send:
+        telegram:
+          - SysadmWS Alarms

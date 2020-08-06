@@ -46,6 +46,8 @@ function sed_inplace () {
 	sed -i \
 		-e "s/__TELEGRAM_TOKEN__/${TELEGRAM_TOKEN}/g" \
 		-e "s/__TELEGRAM_CHAT_ID__/${TELEGRAM_CHAT_ID}/g" \
+		-e "s/__ALERTA_URL__/${ALERTA_URL}/g" \
+		-e "s/__ALERTA_API_KEY__/${ALERTA_API_KEY}/g" \
 		-e "s/__ROOT_EMAIL__/${ROOT_EMAIL}/g" \
 		-e "s/__SALT_MINION_VERSION__/${SALT_MINION_VERSION}/g" \
 		-e "s/__SALT_MASTER_1_NAME__/${SALT_MASTER_1_NAME}/g" \
@@ -75,7 +77,7 @@ function add_submodule () {
 rsync_with_delete .githooks $1/.githooks
 
 rsync_without_delete files $1/files
-sed_inplace $1/files/notify_devilry/sysadmws/notify_devilry.yaml.jinja
+sed_inplace $1/files/notify_devilry/sysadmws/notify_devilry.yaml
 
 rsync_without_delete formulas $1/formulas
 add_submodule sysadmws-formula $1/formulas https://github.com/sysadmws/sysadmws-formula.git
