@@ -10,6 +10,9 @@ alerta:
   SysadmWS:
     url: __ALERTA_URL__
     api_key: __ALERTA_API_KEY__
+    exception:
+      telegram:
+        - SysadmWS Alarms
 
 telegram:
 
