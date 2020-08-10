@@ -138,6 +138,8 @@ git submodule foreach --recursive git pull
 rm -rf .pipeline-cache
 # salt/cloud is not used anymore
 rm -f salt/cloud
+# salt/unit_status_alert is not used anymore
+rm -f salt/unit_status_alert
 # notify_devilry.yaml.jinja is not used anymore
 rm -f files/notify_devilry/sysadmws/notify_devilry.yaml.jinja
 
