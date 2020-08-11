@@ -7,6 +7,9 @@
     - telegram.sysadmws_alarms
     - telegram.central_notifier
     - rsnapshot_backup.__CLIENT__.salt_masters_local
+    - cmd_check_alert.4min
+    - cmd_check_alert.salt-master
+    - cmd_check_alert.salt-minion
   
   '__SALT_MASTER_2_NAME__':
     - pkg.ssh_keys.sysadmws.backup_servers
@@ -17,3 +20,6 @@
     - telegram.sysadmws_alarms
     - telegram.central_notifier
     - rsnapshot_backup.__CLIENT__.salt_masters_local
+    - cmd_check_alert.4min
+    - cmd_check_alert.salt-master
+    - cmd_check_alert.salt-minion
