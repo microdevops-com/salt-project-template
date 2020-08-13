@@ -16,6 +16,8 @@ if [ -z ${TELEGRAM_TOKEN} ]; then echo Var missing; exit 1; fi
 if [ -z ${TELEGRAM_CHAT_ID} ]; then echo Var missing; exit 1; fi
 if [ -z ${ALERTA_URL} ]; then echo Var missing; exit 1; fi
 if [ -z ${ALERTA_API_KEY} ]; then echo Var missing; exit 1; fi
+if [ -z ${HB_RECEIVER_HN} ]; then echo Var missing; exit 1; fi
+if [ -z ${HB_TOKEN} ]; then echo Var missing; exit 1; fi
 if [ -z ${ROOT_EMAIL} ]; then echo Var missing; exit 1; fi
 if [ -z ${SALT_MINION_VERSION} ]; then echo Var missing; exit 1; fi
 if [ -z ${SALT_MASTER_1_NAME} ]; then echo Var missing; exit 1; fi
@@ -50,6 +52,8 @@ function sed_inplace () {
 		-e "s/__TELEGRAM_CHAT_ID__/${TELEGRAM_CHAT_ID}/g" \
 		-e "s#__ALERTA_URL__#${ALERTA_URL}#g" \
 		-e "s/__ALERTA_API_KEY__/${ALERTA_API_KEY}/g" \
+		-e "s/__HB_RECEIVER_HN__/${HB_RECEIVER_HN}/g" \
+		-e "s/__HB_TOKEN__/${HB_TOKEN}/g" \
 		-e "s/__ROOT_EMAIL__/${ROOT_EMAIL}/g" \
 		-e "s/__SALT_MINION_VERSION__/${SALT_MINION_VERSION}/g" \
 		-e "s/__SALT_MASTER_1_NAME__/${SALT_MASTER_1_NAME}/g" \
