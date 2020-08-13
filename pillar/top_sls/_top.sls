@@ -22,6 +22,7 @@ base:
     - salt.minion
     - ufw_simple.standard
     - ufw_simple.ssh_from_salt_servers
+    - heartbeat_mesh.sysadmws.sender
   
   'G@os:Windows':
     - match: compound
