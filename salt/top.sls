@@ -19,6 +19,7 @@ base:
     - mysql_queries_log.mysql_queries_log
     - mysql_replica_checker.mysql_replica_checker
     - notify_devilry.notify_devilry
+    - heartbeat_mesh.sysadmws.sender
 
   # All Ubuntu and Debian
   'G@os:Ubuntu or G@os:Debian':

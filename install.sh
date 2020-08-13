@@ -102,6 +102,7 @@ sed_inplace $1/pillar/telegram/sysadmws_alarms.sls
 sed_inplace $1/pillar/top_sls/_salt_masters.sls
 sed_inplace $1/pillar/top_sls/_top.sls
 sed_inplace $1/pillar/ufw_simple/salt_master_non_std_ports.sls
+sed_inplace $1/pillar/heartbeat_mesh/sysadmws/sender.sls
 
 rsync_with_delete pillar/sysadmws-utils $1/pillar/sysadmws-utils
 
