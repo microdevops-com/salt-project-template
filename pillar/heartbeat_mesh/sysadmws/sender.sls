@@ -4,5 +4,5 @@ heartbeat_mesh:
     config:
       enabled: True
       receivers:
-        __HB_RECEIVER_HN__
+        __HB_RECEIVER_HN__:
           token: __HB_TOKEN__
