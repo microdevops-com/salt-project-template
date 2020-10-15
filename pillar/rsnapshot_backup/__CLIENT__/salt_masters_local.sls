@@ -5,7 +5,7 @@ rsnapshot_backup:
       - type: RSYNC_SSH
         data:
           #- UBUNTU
-          - /var/cache/salt
+          - /var/log/salt
           #- /srv
         checks:
           - type: .backup
@@ -16,7 +16,7 @@ rsnapshot_backup:
       - type: SUPPRESS_COVERAGE
         data:
           - UBUNTU
-          - /var/cache/salt
+          - /var/log/salt
           - /srv
         remote_backups_suppress_reason: No need for remote backups
       - type: SUPPRESS_COVERAGE
@@ -29,7 +29,7 @@ rsnapshot_backup:
       - type: RSYNC_SSH
         data:
           #- UBUNTU
-          - /var/cache/salt
+          - /var/log/salt
           #- /srv
         checks:
           - type: .backup
@@ -40,7 +40,7 @@ rsnapshot_backup:
       - type: SUPPRESS_COVERAGE
         data:
           - UBUNTU
-          - /var/cache/salt
+          - /var/log/salt
           - /srv
         remote_backups_suppress_reason: No need for remote backups
       - type: SUPPRESS_COVERAGE
