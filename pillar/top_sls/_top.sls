@@ -11,19 +11,21 @@ base:
     - vim.vim
     - pkg.common
     - sysadmws-utils.v1_latest
-    #- sysadmws-utils.v1_keep
     - notify_devilry.sysadmws
     - bulk_log.enabled
     - disk_alert.enabled
     - mysql_queries_log.enabled
     - mysql_replica_checker.enabled
     - pkg.sysadmws.forward_root_email
-    - pkg.ssh_keys.__CLIENT__.salt_masters
-    - salt.minion
+    #salt#- pkg.ssh_keys.__CLIENT__.salt_masters
+    #salt-ssh#- pkg.ssh_keys.__CLIENT__.salt-ssh_runners
+    #salt#- salt.minion
     - ufw_simple.standard
-    - ufw_simple.ssh_from_salt_servers
+    #salt#- ufw_simple.ssh_from_salt_servers
+    #salt-ssh#- ufw_simple.ssh_from_salt-ssh_runners
     - heartbeat_mesh.sysadmws.sender
   
   'G@os:Windows':
     - match: compound
-    - salt.minion
+    #salt#- salt.minion
+    - heartbeat_mesh.sysadmws.sender

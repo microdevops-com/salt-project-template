@@ -18,6 +18,9 @@ TELEGRAM_TOKEN=xxx \
 	HB_RECEIVER_HN=xxx \
 	HB_TOKEN=xxx \
 	ROOT_EMAIL=xxx \
+	CLIENT=xxx \
+	DEFAULT_TZ=xxx \
+	# for salt with masters type
 	SALT_MINION_VERSION=xxx \
 	SALT_MASTER_1_NAME=xxx \
 	SALT_MASTER_1_IP=xxx \
@@ -30,7 +33,25 @@ TELEGRAM_TOKEN=xxx \
 	SALT_MASTER_PORT_1=xxx \
 	SALT_MASTER_PORT_2=xxx \
 	STAGING_SALT_MASTER=xxx \
-	CLIENT=xxx \
-	DEFAULT_TZ=xxx \
+	# for salt-ssh type
+	DEV_RUNNER=xxx \
+	PROD_RUNNER=xxx \
+	SALTSSH_ROOT_ED25519_PUB=xxx \
+	SALTSSH_RUNNER_SOURCE_IP=xxx \
+	SALT_VERSION=xxx \
 	./install.sh ../some/salt/repo/path
+```
+
+## Build docker
+Push and GitLab pipeline should build docker image.
+
+## Salt-SSH
+You can inject ssh agent into docker image:
+```
+docker run -it --rm -v $SSH_AUTH_SOCK:/root/.ssh-agent -e SSH_AUTH_SOCK=/root/.ssh-agent gitlab.example.com:5001/client-salt:master
+```
+
+Test:
+```
+salt-ssh srv1.example.com test.ping
 ```

@@ -1,0 +1,6 @@
+file_roots:
+  base:
+  - /srv/salt
+  - /srv/files
+  - /srv/salt_local
+  - /srv/formulas/_salt

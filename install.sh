@@ -2,37 +2,51 @@
 set -e
 
 # Sanity checks
-if [ -z $1 ]; then
+if [[ -z $1 ]]; then
 	echo ARG1 is required - target dir
 	exit 1
 fi
 
-if [ $(basename $(pwd)) != ".salt-project-template" ]; then
+if [[ -z $2 ]]; then
+	echo ARG2 is required - salt/salt-ssh
+	exit 1
+fi
+
+if [[ $(basename $(pwd)) != ".salt-project-template" ]]; then
 	echo This script should be run from .salt-project-template
 	exit 1
 fi
-		
-if [ -z ${TELEGRAM_TOKEN} ]; then echo Var missing; exit 1; fi
-if [ -z ${TELEGRAM_CHAT_ID} ]; then echo Var missing; exit 1; fi
-if [ -z ${ALERTA_URL} ]; then echo Var missing; exit 1; fi
-if [ -z ${ALERTA_API_KEY} ]; then echo Var missing; exit 1; fi
-if [ -z ${HB_RECEIVER_HN} ]; then echo Var missing; exit 1; fi
-if [ -z ${HB_TOKEN} ]; then echo Var missing; exit 1; fi
-if [ -z ${ROOT_EMAIL} ]; then echo Var missing; exit 1; fi
-if [ -z ${SALT_MINION_VERSION} ]; then echo Var missing; exit 1; fi
-if [ -z ${SALT_MASTER_1_NAME} ]; then echo Var missing; exit 1; fi
-if [ -z ${SALT_MASTER_1_IP} ]; then echo Var missing; exit 1; fi
-if [ -z ${SALT_MASTER_1_EXT_IP} ]; then echo Var missing; exit 1; fi
-if [ -z "${SALT_MASTER_1_SSH_PUB}" ]; then echo Var missing; exit 1; fi
-if [ -z ${SALT_MASTER_2_NAME} ]; then echo Var missing; exit 1; fi
-if [ -z ${SALT_MASTER_2_IP} ]; then echo Var missing; exit 1; fi
-if [ -z ${SALT_MASTER_2_EXT_IP} ]; then echo Var missing; exit 1; fi
-if [ -z "${SALT_MASTER_2_SSH_PUB}" ]; then echo Var missing; exit 1; fi
-if [ -z ${SALT_MASTER_PORT_1} ]; then echo Var missing; exit 1; fi
-if [ -z ${SALT_MASTER_PORT_2} ]; then echo Var missing; exit 1; fi
-if [ -z ${STAGING_SALT_MASTER} ]; then echo Var missing; exit 1; fi
-if [ -z ${CLIENT} ]; then echo Var missing; exit 1; fi
-if [ -z ${DEFAULT_TZ} ]; then echo Var missing; exit 1; fi
+
+if [[ $2 = salt ]]; then
+	if [[ -z ${SALT_MINION_VERSION} ]]; then echo Var missing; exit 1; fi
+	if [[ -z ${SALT_MASTER_1_NAME} ]]; then echo Var missing; exit 1; fi
+	if [[ -z ${SALT_MASTER_1_IP} ]]; then echo Var missing; exit 1; fi
+	if [[ -z ${SALT_MASTER_1_EXT_IP} ]]; then echo Var missing; exit 1; fi
+	if [[ -z "${SALT_MASTER_1_SSH_PUB}" ]]; then echo Var missing; exit 1; fi
+	if [[ -z ${SALT_MASTER_2_NAME} ]]; then echo Var missing; exit 1; fi
+	if [[ -z ${SALT_MASTER_2_IP} ]]; then echo Var missing; exit 1; fi
+	if [[ -z ${SALT_MASTER_2_EXT_IP} ]]; then echo Var missing; exit 1; fi
+	if [[ -z "${SALT_MASTER_2_SSH_PUB}" ]]; then echo Var missing; exit 1; fi
+	if [[ -z ${SALT_MASTER_PORT_1} ]]; then echo Var missing; exit 1; fi
+	if [[ -z ${SALT_MASTER_PORT_2} ]]; then echo Var missing; exit 1; fi
+	if [[ -z ${STAGING_SALT_MASTER} ]]; then echo Var missing; exit 1; fi
+fi
+if [[ $2 = salt-ssh ]]; then
+	if [[ -z ${DEV_RUNNER} ]]; then echo Var missing; exit 1; fi
+	if [[ -z ${PROD_RUNNER} ]]; then echo Var missing; exit 1; fi
+	if [[ -z "${SALTSSH_ROOT_ED25519_PUB}" ]]; then echo Var missing; exit 1; fi
+	if [[ -z ${SALTSSH_RUNNER_SOURCE_IP} ]]; then echo Var missing; exit 1; fi
+	if [[ -z ${SALT_VERSION} ]]; then echo Var missing; exit 1; fi
+fi
+if [[ -z ${CLIENT} ]]; then echo Var missing; exit 1; fi
+if [[ -z ${TELEGRAM_TOKEN} ]]; then echo Var missing; exit 1; fi
+if [[ -z ${TELEGRAM_CHAT_ID} ]]; then echo Var missing; exit 1; fi
+if [[ -z ${ALERTA_URL} ]]; then echo Var missing; exit 1; fi
+if [[ -z ${ALERTA_API_KEY} ]]; then echo Var missing; exit 1; fi
+if [[ -z ${HB_RECEIVER_HN} ]]; then echo Var missing; exit 1; fi
+if [[ -z ${HB_TOKEN} ]]; then echo Var missing; exit 1; fi
+if [[ -z ${ROOT_EMAIL} ]]; then echo Var missing; exit 1; fi
+if [[ -z ${DEFAULT_TZ} ]]; then echo Var missing; exit 1; fi
 
 # Functions
 
@@ -46,8 +60,9 @@ function rsync_without_delete () {
 	rsync -a -v $1/ $2/
 }
 
-function sed_inplace () {
+function sed_inplace_common () {
 	sed -i \
+		-e "s/__CLIENT__/${CLIENT}/g" \
 		-e "s/__TELEGRAM_TOKEN__/${TELEGRAM_TOKEN}/g" \
 		-e "s/__TELEGRAM_CHAT_ID__/${TELEGRAM_CHAT_ID}/g" \
 		-e "s#__ALERTA_URL__#${ALERTA_URL}#g" \
@@ -55,6 +70,12 @@ function sed_inplace () {
 		-e "s/__HB_RECEIVER_HN__/${HB_RECEIVER_HN}/g" \
 		-e "s/__HB_TOKEN__/${HB_TOKEN}/g" \
 		-e "s/__ROOT_EMAIL__/${ROOT_EMAIL}/g" \
+		-e "s/__DEFAULT_TZ__/${DEFAULT_TZ}/g" \
+		$1
+}
+
+function sed_inplace_salt () {
+	sed -i \
 		-e "s/__SALT_MINION_VERSION__/${SALT_MINION_VERSION}/g" \
 		-e "s/__SALT_MASTER_1_NAME__/${SALT_MASTER_1_NAME}/g" \
 		-e "s/__SALT_MASTER_1_IP__/${SALT_MASTER_1_IP}/g" \
@@ -67,8 +88,20 @@ function sed_inplace () {
 		-e "s/__SALT_MASTER_PORT_1__/${SALT_MASTER_PORT_1}/g" \
 		-e "s/__SALT_MASTER_PORT_2__/${SALT_MASTER_PORT_2}/g" \
 		-e "s/__STAGING_SALT_MASTER__/${STAGING_SALT_MASTER}/g" \
-		-e "s/__CLIENT__/${CLIENT}/g" \
-		-e "s/__DEFAULT_TZ__/${DEFAULT_TZ}/g" \
+		-e "s/#salt#//" \
+		-e "/#salt-ssh#/d" \
+		$1
+}
+
+function sed_inplace_salt-ssh () {
+	sed -i \
+		-e "s/__DEV_RUNNER__/${DEV_RUNNER}/g" \
+		-e "s/__PROD_RUNNER__/${PROD_RUNNER}/g" \
+		-e "s#__SALTSSH_ROOT_ED25519_PUB__#${SALTSSH_ROOT_ED25519_PUB}#g" \
+		-e "s/__SALTSSH_RUNNER_SOURCE_IP__/${SALTSSH_RUNNER_SOURCE_IP}/g" \
+		-e "s/__SALT_VERSION__/${SALT_VERSION}/g" \
+		-e "s/#salt-ssh#//" \
+		-e "/#salt#/d" \
 		$1
 }
 
@@ -83,7 +116,7 @@ function add_submodule () {
 rsync_with_delete .githooks $1/.githooks
 
 rsync_without_delete files $1/files
-sed_inplace $1/files/notify_devilry/sysadmws/notify_devilry.yaml
+sed_inplace_common $1/files/notify_devilry/sysadmws/notify_devilry.yaml
 
 rsync_without_delete formulas $1/formulas
 add_submodule sysadmws-formula $1/formulas https://github.com/sysadmws/sysadmws-formula.git
@@ -95,26 +128,57 @@ add_submodule .gitlab-server-job $1 https://github.com/sysadmws/gitlab-server-jo
 add_submodule .gitlab-ci-functions $1 https://github.com/sysadmws/gitlab-ci-functions
 
 rsync_without_delete pillar $1/pillar
-sed_inplace $1/pillar/pkg/sysadmws/forward_root_email.sls
-sed_inplace $1/pillar/salt/minion.sls
-sed_inplace $1/pillar/staging/staging.sls
-sed_inplace $1/pillar/telegram/sysadmws_alarms.sls
-sed_inplace $1/pillar/top_sls/_salt_masters.sls
-sed_inplace $1/pillar/top_sls/_top.sls
-sed_inplace $1/pillar/ufw_simple/salt_master_non_std_ports.sls
-sed_inplace $1/pillar/heartbeat_mesh/sysadmws/sender.sls
+sed_inplace_common $1/pillar/pkg/sysadmws/forward_root_email.sls
+sed_inplace_common $1/pillar/telegram/sysadmws_alarms.sls
+sed_inplace_common $1/pillar/heartbeat_mesh/sysadmws/sender.sls
+
+if [[ $2 = salt ]]; then
+	sed_inplace_common $1/pillar/salt/minion.sls
+	sed_inplace_salt $1/pillar/salt/minion.sls
+	sed_inplace_common $1/pillar/top_sls/_salt_masters.sls
+	sed_inplace_salt $1/pillar/top_sls/_salt_masters.sls
+	sed_inplace_common $1/pillar/top_sls/_top.sls
+	sed_inplace_salt $1/pillar/top_sls/_top.sls
+	sed_inplace_common $1/pillar/ufw_simple/salt_master_non_std_ports.sls
+	sed_inplace_salt $1/pillar/ufw_simple/salt_master_non_std_ports.sls
+	sed_inplace_common $1/pillar/staging/staging.sls
+	sed_inplace_salt $1/pillar/staging/staging.sls
+	rm -f $1/pillar/ufw_simple/ssh_from_salt-ssh_runners.sls
+elif [[ $2 = salt-ssh ]]; then
+	rm -rf $1/pillar/salt
+	rm -f $1/pillar/top_sls/_salt_masters.sls
+	sed_inplace_common $1/pillar/top_sls/_top.sls
+	sed_inplace_salt-ssh $1/pillar/top_sls/_top.sls
+	rm -f $1/pillar/ufw_simple/salt_master_non_std_ports.sls
+	rm -rf $1/pillar/staging
+	sed_inplace_common $1/pillar/ufw_simple/ssh_from_salt-ssh_runners.sls
+	sed_inplace_salt-ssh $1/pillar/ufw_simple/ssh_from_salt-ssh_runners.sls
+fi
 
 rsync_with_delete pillar/sysadmws-utils $1/pillar/sysadmws-utils
 
 mkdir -p $1/pillar/rsnapshot_backup/${CLIENT}
 mv -f $1/pillar/rsnapshot_backup/__CLIENT__/* $1/pillar/rsnapshot_backup/${CLIENT}
 rm -rf $1/pillar/rsnapshot_backup/__CLIENT__
-sed_inplace $1/pillar/rsnapshot_backup/${CLIENT}/salt_masters_local.sls
+if [[ $2 = salt ]]; then
+	sed_inplace_common $1/pillar/rsnapshot_backup/${CLIENT}/salt_masters_local.sls
+	sed_inplace_salt $1/pillar/rsnapshot_backup/${CLIENT}/salt_masters_local.sls
+elif [[ $2 = salt-ssh ]]; then
+	rm -f $1/pillar/rsnapshot_backup/${CLIENT}/salt_masters_local.sls
+fi
 
 mkdir -p $1/pillar/pkg/ssh_keys/${CLIENT}
 mv -f $1/pillar/pkg/ssh_keys/__CLIENT__/* $1/pillar/pkg/ssh_keys/${CLIENT}
 rm -rf $1/pillar/pkg/ssh_keys/__CLIENT__
-sed_inplace $1/pillar/pkg/ssh_keys/${CLIENT}/salt_masters.sls
+if [[ $2 = salt ]]; then
+	sed_inplace_common $1/pillar/pkg/ssh_keys/${CLIENT}/salt_masters.sls
+	sed_inplace_salt $1/pillar/pkg/ssh_keys/${CLIENT}/salt_masters.sls
+	rm -f $1/pillar/pkg/ssh_keys/${CLIENT}/salt-ssh_runners.sls
+elif [[ $2 = salt-ssh ]]; then
+	sed_inplace_common $1/pillar/pkg/ssh_keys/${CLIENT}/salt-ssh_runners.sls
+	sed_inplace_salt-ssh $1/pillar/pkg/ssh_keys/${CLIENT}/salt-ssh_runners.sls
+	rm -f $1/pillar/pkg/ssh_keys/${CLIENT}/salt_masters.sls
+fi
 
 rsync_with_delete reactor $1/reactor
 
@@ -126,8 +190,19 @@ cp -f .gitignore $1/.gitignore
 
 cp -f .git_pull.sh $1/.git_pull.sh
 
-cp -f .gitlab-ci.yml $1/.gitlab-ci.yml
-sed_inplace $1/.gitlab-ci.yml
+if [[ $2 = salt ]]; then
+	cp -f .gitlab-ci.yml.salt $1/.gitlab-ci.yml
+	sed_inplace_common $1/.gitlab-ci.yml
+	sed_inplace_salt $1/.gitlab-ci.yml
+elif [[ $2 = salt-ssh ]]; then
+	cp -f .gitlab-ci.yml.salt-ssh $1/.gitlab-ci.yml
+	sed_inplace_common $1/.gitlab-ci.yml
+	sed_inplace_salt-ssh $1/.gitlab-ci.yml
+	cp -f Dockerfile $1/Dockerfile
+	cp -f entrypoint.sh $1/entrypoint.sh
+	mkdir -p $1/etc/salt
+	cp -f etc/salt/master $1/etc/salt/master
+fi
 
 # Get inside templated repo
 pushd $1

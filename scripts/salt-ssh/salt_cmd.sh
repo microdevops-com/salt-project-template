@@ -1,0 +1,1 @@
+../../formulas/sysadmws-formula/scripts/salt-ssh/salt_cmd.sh
