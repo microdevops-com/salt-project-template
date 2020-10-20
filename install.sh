@@ -39,6 +39,8 @@ if [[ $2 = salt-ssh ]]; then
 	if [[ -z ${SALT_VERSION} ]]; then echo Var missing; exit 1; fi
 fi
 if [[ -z ${CLIENT} ]]; then echo Var missing; exit 1; fi
+if [[ -z ${VENDOR} ]]; then echo Var missing; exit 1; fi
+if [[ -z ${VENDOR_FULL} ]]; then echo Var missing; exit 1; fi
 if [[ -z ${TELEGRAM_TOKEN} ]]; then echo Var missing; exit 1; fi
 if [[ -z ${TELEGRAM_CHAT_ID} ]]; then echo Var missing; exit 1; fi
 if [[ -z ${ALERTA_URL} ]]; then echo Var missing; exit 1; fi
@@ -63,6 +65,8 @@ function rsync_without_delete () {
 function sed_inplace_common () {
 	sed -i \
 		-e "s/__CLIENT__/${CLIENT}/g" \
+		-e "s/__VENDOR__/${VENDOR}/g" \
+		-e "s/__VENDOR_FULL__/${VENDOR_FULL}/g" \
 		-e "s/__TELEGRAM_TOKEN__/${TELEGRAM_TOKEN}/g" \
 		-e "s/__TELEGRAM_CHAT_ID__/${TELEGRAM_CHAT_ID}/g" \
 		-e "s#__ALERTA_URL__#${ALERTA_URL}#g" \
@@ -111,12 +115,20 @@ function add_submodule () {
 	popd
 }
 
+function move_to_templated_dir () {
+	mkdir -p $2
+	mv -f $1/* $2
+	rm -rf $1
+}
+
 # Copy templates
 
 rsync_with_delete .githooks $1/.githooks
 
 rsync_without_delete files $1/files
-sed_inplace_common $1/files/notify_devilry/sysadmws/notify_devilry.yaml
+
+move_to_templated_dir $1/files/notify_devilry/__VENDOR__ $1/files/notify_devilry/${VENDOR}
+sed_inplace_common $1/files/notify_devilry/${VENDOR}/notify_devilry.yaml
 
 rsync_without_delete formulas $1/formulas
 add_submodule sysadmws-formula $1/formulas https://github.com/sysadmws/sysadmws-formula.git
@@ -128,9 +140,18 @@ add_submodule .gitlab-server-job $1 https://github.com/sysadmws/gitlab-server-jo
 add_submodule .gitlab-ci-functions $1 https://github.com/sysadmws/gitlab-ci-functions
 
 rsync_without_delete pillar $1/pillar
-sed_inplace_common $1/pillar/pkg/sysadmws/forward_root_email.sls
-sed_inplace_common $1/pillar/telegram/sysadmws_alarms.sls
-sed_inplace_common $1/pillar/heartbeat_mesh/sysadmws/sender.sls
+
+move_to_templated_dir $1/pillar/pkg/__VENDOR__ $1/pillar/pkg/${VENDOR}
+sed_inplace_common $1/pillar/pkg/${VENDOR}/forward_root_email.sls
+
+mv -f $1/pillar/telegram/__VENDOR___alarms.sls $1/pillar/telegram/${VENDOR}_alarms.sls
+sed_inplace_common $1/pillar/telegram/${VENDOR}_alarms.sls
+
+move_to_templated_dir $1/pillar/heartbeat_mesh/__VENDOR__ $1/pillar/heartbeat_mesh/${VENDOR}
+sed_inplace_common $1/pillar/heartbeat_mesh/${VENDOR}/sender.sls
+
+mv -f $1/pillar/notify_devilry/__VENDOR__.sls $1/pillar/notify_devilry/${VENDOR}.sls
+sed_inplace_common $1/pillar/notify_devilry/${VENDOR}.sls
 
 if [[ $2 = salt ]]; then
 	sed_inplace_common $1/pillar/salt/minion.sls
@@ -157,9 +178,7 @@ fi
 
 rsync_with_delete pillar/sysadmws-utils $1/pillar/sysadmws-utils
 
-mkdir -p $1/pillar/rsnapshot_backup/${CLIENT}
-mv -f $1/pillar/rsnapshot_backup/__CLIENT__/* $1/pillar/rsnapshot_backup/${CLIENT}
-rm -rf $1/pillar/rsnapshot_backup/__CLIENT__
+move_to_templated_dir $1/pillar/rsnapshot_backup/__CLIENT__ $1/pillar/rsnapshot_backup/${CLIENT}
 if [[ $2 = salt ]]; then
 	sed_inplace_common $1/pillar/rsnapshot_backup/${CLIENT}/salt_masters_local.sls
 	sed_inplace_salt $1/pillar/rsnapshot_backup/${CLIENT}/salt_masters_local.sls
@@ -167,9 +186,7 @@ elif [[ $2 = salt-ssh ]]; then
 	rm -f $1/pillar/rsnapshot_backup/${CLIENT}/salt_masters_local.sls
 fi
 
-mkdir -p $1/pillar/pkg/ssh_keys/${CLIENT}
-mv -f $1/pillar/pkg/ssh_keys/__CLIENT__/* $1/pillar/pkg/ssh_keys/${CLIENT}
-rm -rf $1/pillar/pkg/ssh_keys/__CLIENT__
+move_to_templated_dir $1/pillar/pkg/ssh_keys/__CLIENT__ $1/pillar/pkg/ssh_keys/${CLIENT}
 if [[ $2 = salt ]]; then
 	sed_inplace_common $1/pillar/pkg/ssh_keys/${CLIENT}/salt_masters.sls
 	sed_inplace_salt $1/pillar/pkg/ssh_keys/${CLIENT}/salt_masters.sls
@@ -220,8 +237,6 @@ rm -rf .pipeline-cache
 rm -f salt/cloud
 # salt/unit_status_alert is not used anymore
 rm -f salt/unit_status_alert
-# notify_devilry.yaml.jinja is not used anymore
-rm -f files/notify_devilry/sysadmws/notify_devilry.yaml.jinja
 
 # Return back
 popd

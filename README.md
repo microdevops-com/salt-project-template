@@ -19,6 +19,8 @@ TELEGRAM_TOKEN=xxx \
 	HB_TOKEN=xxx \
 	ROOT_EMAIL=xxx \
 	CLIENT=xxx \
+	VENDOR=xxx \
+	VENDOR_FULL=xxx \
 	DEFAULT_TZ=xxx \
 	# for salt with masters type
 	SALT_MINION_VERSION=xxx \
@@ -39,7 +41,7 @@ TELEGRAM_TOKEN=xxx \
 	SALTSSH_ROOT_ED25519_PUB=xxx \
 	SALTSSH_RUNNER_SOURCE_IP=xxx \
 	SALT_VERSION=xxx \
-	./install.sh ../some/salt/repo/path
+	./install.sh ../some/salt/repo/path salt|salt-ssh
 ```
 
 ## Build docker

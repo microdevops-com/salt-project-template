@@ -2,21 +2,21 @@ enabled: True
 
 defaults:
   environment: infra
-  client: SysadmWS
+  client: __VENDOR_FULL__
   #location: FIXME
 
 alerta:
 
-  SysadmWS:
+  __VENDOR_FULL__:
     url: __ALERTA_URL__
     api_key: __ALERTA_API_KEY__
     exception:
       telegram:
-        - SysadmWS Alarms
+        - __VENDOR_FULL__ Alarms
 
 telegram:
 
-  SysadmWS Alarms:
+  __VENDOR_FULL__ Alarms:
     token: __TELEGRAM_TOKEN__
     chat_id: __TELEGRAM_CHAT_ID__
     sound:
@@ -35,10 +35,10 @@ chains:
         - telegram_chain
 
   alerta_chain:
-    - name: SysadmWS
+    - name: __VENDOR_FULL__
       send:
         alerta:
-          - SysadmWS
+          - __VENDOR_FULL__
 
   telegram_chain:
     - name: skip positive
@@ -72,11 +72,11 @@ chains:
             - false
       suppress: True
       chain_break: True
-    - name: SysadmWS Alarms
+    - name: __VENDOR_FULL__ Alarms
       rate_limit:
         - 60
         - 240
         - 480
       send:
         telegram:
-          - SysadmWS Alarms
+          - __VENDOR_FULL__ Alarms
