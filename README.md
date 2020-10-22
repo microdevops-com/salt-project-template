@@ -28,6 +28,7 @@ Run template install:
 
 Fill the repo with additional data:
 - `README.md`
+- `pillar/top_sls` files (see pillar/top_sls/srv1.example.com.example)
 
 For Salt-SSH:
 - `etc/salt/roster` (see roster.example in `.salt-project-template`)
