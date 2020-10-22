@@ -1,0 +1,33 @@
+#!/bin/bash
+cd .salt-project-template
+TELEGRAM_TOKEN=xxx \
+	TELEGRAM_CHAT_ID=xxx \
+	ALERTA_URL=xxx \
+	ALERTA_API_KEY=xxx \
+	HB_RECEIVER_HN=xxx \
+	HB_TOKEN=xxx \
+	ROOT_EMAIL=xxx \
+	CLIENT=xxx \
+	VENDOR=xxx \
+	VENDOR_FULL=xxx \
+	DEFAULT_TZ=xxx \
+	# for salt with masters type
+	SALT_MINION_VERSION=xxx \
+	SALT_MASTER_1_NAME=xxx \
+	SALT_MASTER_1_IP=xxx \
+	SALT_MASTER_1_EXT_IP=xxx \
+	SALT_MASTER_1_SSH_PUB=xxx \
+	SALT_MASTER_2_NAME=xxx \
+	SALT_MASTER_2_IP=xxx \
+	SALT_MASTER_2_EXT_IP=xxx \
+	SALT_MASTER_2_SSH_PUB=xxx \
+	SALT_MASTER_PORT_1=xxx \
+	SALT_MASTER_PORT_2=xxx \
+	STAGING_SALT_MASTER=xxx \
+	# for salt-ssh type
+	DEV_RUNNER=xxx \
+	PROD_RUNNER=xxx \
+	SALTSSH_ROOT_ED25519_PUB=xxx \
+	SALTSSH_RUNNER_SOURCE_IP=xxx \
+	SALT_VERSION=xxx \
+	./install.sh .. salt|salt-ssh

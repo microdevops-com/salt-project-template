@@ -1,0 +1,4 @@
+srv1.example.com:
+  host: srv1.example.com
+  port: 22
+  priv: agent-forwarding
