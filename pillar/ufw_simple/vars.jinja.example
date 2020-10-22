@@ -1,0 +1,22 @@
+{%
+set vars = {
+  'Office_And_VPN': {},
+  'Delete_Office_And_VPN': {},
+  'Backup_Servers': {},
+  'Delete_Backup_Servers': {},
+  'Salt_Servers': {},
+  'Delete_Salt_Servers': {},
+  'All_Servers': {},
+  'Delete_All_Servers': {},
+}
+%}
+
+{% from 'ip/example.jinja' import example with context %}
+{% do vars['Office_And_VPN'].update(example['Office_And_VPN']) %}
+{% do vars['Delete_Office_And_VPN'].update(example['Delete_Office_And_VPN']) %}
+{% do vars['Backup_Servers'].update(example['Backup_Servers']) %}
+{% do vars['Delete_Backup_Servers'].update(example['Delete_Backup_Servers']) %}
+{% do vars['Salt_Servers'].update(example['Salt_Servers']) %}
+{% do vars['Delete_Salt_Servers'].update(example['Delete_Salt_Servers']) %}
+{% do vars['All_Servers'].update(example['All_Servers']) %}
+{% do vars['Delete_All_Servers'].update(example['Delete_All_Servers']) %}

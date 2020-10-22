@@ -26,9 +26,12 @@ Run template install:
 ./template_install.sh
 ```
 
-Fill the repo with additional data:
+Fill the repo with some additional data:
 - `README.md`
 - `pillar/top_sls` files (see pillar/top_sls/srv1.example.com.example)
+- `pillar/users/example/admins.sls`
+- `pillar/ip/example.jinja` (see pillar/ip/example.jinja.example)
+- `pillar/ufw_simple/vars.jinja` (see pillar/ufw_simple/vars.jinja.example)
 
 For Salt-SSH:
 - `etc/salt/roster` (see roster.example in `.salt-project-template`)

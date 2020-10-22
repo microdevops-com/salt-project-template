@@ -1,0 +1,85 @@
+{% set example = {} %}
+ 
+{%
+do example.update({'admins_static_ip': {
+  'John Doe 1':                                 '1.2.3.4',
+  'dev1.example.com':                           '4.3.2.1',
+}})
+%}
+
+{%
+do example.update({'Office_And_VPN': {
+}})
+%}
+{% do example['Office_And_VPN'].update(example['admins_static_ip']) %}
+
+{%
+do example.update({'Delete_Office_And_VPN': {
+}})
+%}
+
+{# hetzner1 #}
+{%
+do example.update({'hetzner1_br0': {
+  'hetzner1.example.com':                       '2.3.4.5',
+  'dev1.example.com':                           '3.4.5.6',
+}})
+%}
+{%
+do example.update({'hetzner1_br0_net': {
+  'netmask':                                    '255.255.255.192',
+  'netmask_short':                              '26',
+  'gateway':                                    '1.1.1.1',
+}})
+%}
+{%
+do example.update({'hetzner1_br0_mac': {
+  '4.4.4.4':                                    '00:50:56:00:33:DD',
+}})
+%}
+{%
+do example.update({'hetzner1_br1': {
+  'hetzner1.example.com':                       '10.0.10.1',
+  '':                                           '10.0.10.2',
+  '':                                           '10.0.10.3',
+  '':                                           '10.0.10.4',
+}})
+%}
+{%
+do example.update({'hetzner1_br1_net': {
+  'netmask':                                    '255.255.255.0',
+  'netmask_short':                              '24',
+  'gateway':                                    '10.0.10.1',
+}})
+%}
+
+{%
+do example.update({'All_Servers': {
+}})
+%}
+{% do example['All_Servers'].update(example['hetzner1_br0']) %}
+
+{%
+do example.update({'Delete_All_Servers': {
+}})
+%}
+
+{%
+do example.update({'Backup_Servers': {
+}})
+%}
+
+{%
+do example.update({'Delete_Backup_Servers': {
+}})
+%}
+
+{%
+do example.update({'Salt_Servers': {
+}})
+%}
+
+{%
+do example.update({'Delete_Salt_Servers': {
+}})
+%}
