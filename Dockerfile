@@ -12,7 +12,7 @@ RUN apt-get update -y \
     && apt-get install -y --no-install-recommends salt-ssh openssh-client
 
 # Add utils
-RUN apt-get install -y --no-install-recommends mc vim telnet iputils-ping curl ccze
+RUN apt-get install -y --no-install-recommends mc vim telnet iputils-ping curl ccze less
 
 # Cleanup
 RUN rm -rf /var/lib/apt/lists/*
