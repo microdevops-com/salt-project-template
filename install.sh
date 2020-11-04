@@ -143,6 +143,10 @@ add_submodule .gitlab-ci-functions $1 https://github.com/sysadmws/gitlab-ci-func
 
 rsync_without_delete pillar $1/pillar
 
+rm -f $1/pillar/ip/example.jinja.example
+rm -f $1/pillar/ufw_simple/vars.jinja.example
+rm -f $1/pillar/top_sls/srv1.example.com.example
+
 move_to_templated_dir $1/pillar/pkg/__VENDOR__ $1/pillar/pkg/${VENDOR}
 sed_inplace_common $1/pillar/pkg/${VENDOR}/forward_root_email.sls
 
