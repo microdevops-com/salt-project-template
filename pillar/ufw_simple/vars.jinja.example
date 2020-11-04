@@ -12,6 +12,7 @@ set vars = {
 %}
 
 {% from 'ip/example.jinja' import example with context %}
+
 {% do vars['Office_And_VPN'].update(example['Office_And_VPN']) %}
 {% do vars['Delete_Office_And_VPN'].update(example['Delete_Office_And_VPN']) %}
 {% do vars['Backup_Servers'].update(example['Backup_Servers']) %}
