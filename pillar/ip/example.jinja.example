@@ -3,7 +3,13 @@
 {%
 do example.update({'admins_static_ip': {
   'John Doe 1':                                 '1.2.3.4',
+}})
+%}
+
+{%
+do example.update({'office_static_ip': {
   'dev1.example.com':                           '4.3.2.1',
+  'vpn1.example.com':                           '5.4.3.2',
 }})
 %}
 
@@ -12,6 +18,7 @@ do example.update({'Office_And_VPN': {
 }})
 %}
 {% do example['Office_And_VPN'].update(example['admins_static_ip']) %}
+{% do example['Office_And_VPN'].update(example['office_static_ip']) %}
 
 {%
 do example.update({'Delete_Office_And_VPN': {
