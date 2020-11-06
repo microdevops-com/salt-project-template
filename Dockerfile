@@ -42,4 +42,4 @@ COPY etc/salt/master /etc/salt/master
 # Prepare pillar top.sls
 WORKDIR /srv
 RUN cat pillar/top_sls/_top.sls > pillar/top.sls && echo "" >> pillar/top.sls
-RUN find pillar/top_sls \( \( -type f -o -type l \) -not -name _top.sls \) -print0 | sort -z | xargs -i -0 bash -c "cat {} >> pillar/top.sls; echo "" >> pillar/top.sls"
+RUN find pillar/top_sls \( \( -type f -o -type l \) -not -name _top.sls -a -not -name *.swp \) -print0 | sort -z | xargs -i -0 bash -c "cat {} >> pillar/top.sls; echo "" >> pillar/top.sls"
