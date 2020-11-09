@@ -41,10 +41,6 @@ fi
 if [[ -z ${CLIENT} ]]; then echo Var missing; exit 1; fi
 if [[ -z ${VENDOR} ]]; then echo Var missing; exit 1; fi
 if [[ -z ${VENDOR_FULL} ]]; then echo Var missing; exit 1; fi
-if [[ -z ${TELEGRAM_TOKEN} ]]; then echo Var missing; exit 1; fi
-if [[ -z ${TELEGRAM_CHAT_ID} ]]; then echo Var missing; exit 1; fi
-if [[ -z ${ALERTA_URL} ]]; then echo Var missing; exit 1; fi
-if [[ -z ${ALERTA_API_KEY} ]]; then echo Var missing; exit 1; fi
 if [[ -z ${HB_RECEIVER_HN} ]]; then echo Var missing; exit 1; fi
 if [[ -z ${HB_TOKEN} ]]; then echo Var missing; exit 1; fi
 if [[ -z ${ROOT_EMAIL} ]]; then echo Var missing; exit 1; fi
@@ -63,14 +59,34 @@ function rsync_without_delete () {
 }
 
 function sed_inplace_common () {
+	if [[ -z ${TELEGRAM_TOKEN} ]]; then
+		local LOCAL_TELEGRAM_TOKEN=__not_set_in_template_install__
+	else
+		local LOCAL_TELEGRAM_TOKEN=${TELEGRAM_TOKEN}
+	fi
+	if [[ -z ${TELEGRAM_CHAT_ID} ]]; then
+		local LOCAL_TELEGRAM_CHAT_ID=__not_set_in_template_install__
+	else
+		local LOCAL_TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
+	fi
+	if [[ -z ${ALERTA_URL} ]]; then
+		local LOCAL_ALERTA_URL=__not_set_in_template_install__
+	else
+		local LOCAL_ALERTA_URL=${ALERTA_URL}
+	fi
+	if [[ -z ${ALERTA_API_KEY} ]]; then
+		local LOCAL_ALERTA_API_KEY=__not_set_in_template_install__
+	else
+		local LOCAL_ALERTA_API_KEY=${ALERTA_API_KEY}
+	fi
 	sed -i \
 		-e "s/__CLIENT__/${CLIENT}/g" \
 		-e "s/__VENDOR__/${VENDOR}/g" \
 		-e "s/__VENDOR_FULL__/${VENDOR_FULL}/g" \
-		-e "s/__TELEGRAM_TOKEN__/${TELEGRAM_TOKEN}/g" \
-		-e "s/__TELEGRAM_CHAT_ID__/${TELEGRAM_CHAT_ID}/g" \
-		-e "s#__ALERTA_URL__#${ALERTA_URL}#g" \
-		-e "s/__ALERTA_API_KEY__/${ALERTA_API_KEY}/g" \
+		-e "s/__TELEGRAM_TOKEN__/${LOCAL_TELEGRAM_TOKEN}/g" \
+		-e "s/__TELEGRAM_CHAT_ID__/${LOCAL_TELEGRAM_CHAT_ID}/g" \
+		-e "s#__ALERTA_URL__#${LOCAL_ALERTA_URL}#g" \
+		-e "s/__ALERTA_API_KEY__/${LOCAL_ALERTA_API_KEY}/g" \
 		-e "s/__HB_RECEIVER_HN__/${HB_RECEIVER_HN}/g" \
 		-e "s/__HB_TOKEN__/${HB_TOKEN}/g" \
 		-e "s/__ROOT_EMAIL__/${ROOT_EMAIL}/g" \
@@ -130,7 +146,16 @@ rsync_without_delete salt_local $1/salt_local
 rsync_without_delete files $1/files
 
 move_to_templated_dir $1/files/notify_devilry/__VENDOR__ $1/files/notify_devilry/${VENDOR}
+
 sed_inplace_common $1/files/notify_devilry/${VENDOR}/notify_devilry.yaml
+# Enable telegram in notify_devilry if needed vars set
+if [[ -n ${TELEGRAM_TOKEN} && -n ${TELEGRAM_CHAT_ID} ]]; then
+	sed -i -e 's/#telegram#//' $1/files/notify_devilry/${VENDOR}/notify_devilry.yaml
+fi
+# Enable alerta in notify_devilry if needed vars set
+if [[ -n ${ALERTA_URL} && -n ${ALERTA_API_KEY} ]]; then
+	sed -i -e 's/#alerta#//' $1/files/notify_devilry/${VENDOR}/notify_devilry.yaml
+fi
 
 rsync_without_delete formulas $1/formulas
 add_submodule sysadmws-formula $1/formulas https://github.com/sysadmws/sysadmws-formula.git

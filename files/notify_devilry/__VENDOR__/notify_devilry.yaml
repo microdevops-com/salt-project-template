@@ -31,8 +31,8 @@ chains:
     - name: entrypoint
       entrypoint: True
       jump:
-        - alerta_chain
-        - telegram_chain
+        #alerta#- alerta_chain
+        #telegram#- telegram_chain
 
   alerta_chain:
     - name: __VENDOR_FULL__
