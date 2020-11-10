@@ -163,6 +163,7 @@ add_submodule users-formula $1/formulas https://github.com/sysadmws/users-formul
 add_submodule postgres-formula $1/formulas https://github.com/sysadmws/postgres-formula.git
 add_submodule vim-formula $1/formulas https://github.com/sysadmws/vim-formula.git
 add_submodule pip-formula $1/formulas https://github.com/sysadmws/pip-formula.git
+add_submodule salt-cloudflare $1/formulas https://github.com/sysadmws/salt-cloudflare.git
 add_submodule .gitlab-server-job $1 https://github.com/sysadmws/gitlab-server-job
 add_submodule .gitlab-ci-functions $1 https://github.com/sysadmws/gitlab-ci-functions
 
