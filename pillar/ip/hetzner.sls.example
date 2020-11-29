@@ -14,3 +14,23 @@ hetzner1.example.com:
     netmask: 255.255.255.0
     cidr: 24
     gateway: 10.0.10.1
+
+hetzner2.example.com:
+  br0:
+    block0:
+      ip:
+        hetzner2.example.com: 2.3.4.5
+        dev2.example.com: 3.4.5.6
+      mac:
+        3.4.5.6: aa:aa:aa:aa:aa:aa
+      netmask: 255.255.255.192
+      cidr: 26
+      gateway: 4.5.6.7
+    block1:
+      ip:
+        dev3.example.com: 3.4.5.6
+      mac:
+        3.4.5.6: aa:aa:aa:aa:aa:aa
+      netmask: 255.255.255.192
+      cidr: 26
+      gateway: 4.5.6.7

@@ -45,6 +45,7 @@ if [[ -z ${HB_RECEIVER_HN} ]]; then echo Var missing; exit 1; fi
 if [[ -z ${HB_TOKEN} ]]; then echo Var missing; exit 1; fi
 if [[ -z ${ROOT_EMAIL} ]]; then echo Var missing; exit 1; fi
 if [[ -z ${DEFAULT_TZ} ]]; then echo Var missing; exit 1; fi
+if [[ -z ${CLIENT_DOMAIN} ]]; then echo Var missing; exit 1; fi
 
 # Functions
 
@@ -91,6 +92,7 @@ function sed_inplace_common () {
 		-e "s/__HB_TOKEN__/${HB_TOKEN}/g" \
 		-e "s/__ROOT_EMAIL__/${ROOT_EMAIL}/g" \
 		-e "s/__DEFAULT_TZ__/${DEFAULT_TZ}/g" \
+		-e "s/__CLIENT_DOMAIN__/${CLIENT_DOMAIN}/g" \
 		$1
 }
 
@@ -173,6 +175,10 @@ rm -f $1/pillar/ip/example.sls.example
 rm -f $1/pillar/ip/hetzner.sls.example
 rm -f $1/pillar/ufw_simple/vars.jinja.example
 rm -f $1/pillar/top_sls/srv1.example.com.example
+
+move_to_templated_dir $1/pillar/bootstrap/__CLIENT__ $1/pillar/bootstrap/${CLIENT}
+rm -f $1/pillar/bootstrap/${CLIENT}/srv1_example_com.example
+sed_inplace_common $1/pillar/bootstrap/${CLIENT}.sls
 
 move_to_templated_dir $1/pillar/pkg/__VENDOR__ $1/pillar/pkg/${VENDOR}
 sed_inplace_common $1/pillar/pkg/${VENDOR}/forward_root_email.sls

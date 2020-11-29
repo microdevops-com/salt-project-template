@@ -29,6 +29,7 @@ Run template install:
 Fill the repo with some additional data:
 - `README.md`
 - `pillar/top_sls` files (see pillar/top_sls/srv1.example.com.example)
+- `pillar/bootstrap` files (see pillar/bootstrap/.../srv1_example_com.example)
 - `pillar/users/example/admins.sls`
 - `pillar/ip/example.jinja` (see pillar/ip/example.jinja.example)
 - `pillar/ufw_simple/vars.jinja` (see pillar/ufw_simple/vars.jinja.example)

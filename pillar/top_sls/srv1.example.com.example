@@ -1,4 +1,5 @@
   'srv1.example.com':
+    - bootstrap.__CLIENT__.srv1_example_com
     - pkg.ssh_keys.__VENDOR__.backup_servers
     - pkg.tz.Etc_UTC
     - pkg.locale.en_US_UTF-8

@@ -24,6 +24,7 @@ base:
     #salt#- ufw_simple.ssh_from_salt_servers
     #salt-ssh#- ufw_simple.ssh_from_salt-ssh_runners
     - heartbeat_mesh.__VENDOR__.sender
+    - bootstrap.__CLIENT__
   
   'G@os:Windows':
     - match: compound
