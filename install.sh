@@ -177,7 +177,7 @@ rm -f $1/pillar/ufw_simple/vars.jinja.example
 rm -f $1/pillar/top_sls/srv1.example.com.example
 
 move_to_templated_dir $1/pillar/bootstrap/__CLIENT__ $1/pillar/bootstrap/${CLIENT}
-rm -f $1/pillar/bootstrap/${CLIENT}/srv1_example_com.example
+rm -f $1/pillar/bootstrap/${CLIENT}/srv1_example_com.sls.example
 mv -f $1/pillar/bootstrap/__CLIENT__.sls $1/pillar/bootstrap/${CLIENT}.sls
 sed_inplace_common $1/pillar/bootstrap/${CLIENT}.sls
 
