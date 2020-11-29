@@ -1,12 +1,13 @@
 bootstrap:
   files:
-    - name: /etc/netplan/01-netcfg.yaml
-      source: salt://bootstrap/files/netplan/2020112901.yaml
-      mode: 0644
-      values:
-        wan_iface: enp35s0
-        mac: aa:aa:aa:aa:aa:aa
-        ipv4_address: 1.2.3.4/32
-        ipv6_address: aaaa:aaa:aa:aaaa::a/64
-        ipv4_gw: 1.2.3.4
-        ipv6_gw: aaaa::1
+    managed:
+      - name: /etc/netplan/01-netcfg.yaml
+        source: salt://bootstrap/files/netplan/2020112901.yaml
+        mode: 0644
+        values:
+          wan_iface: enp35s0
+          mac: aa:aa:aa:aa:aa:aa
+          ipv4_address: 1.2.3.4/32
+          ipv6_address: aaaa:aaa:aa:aaaa::a/64
+          ipv4_gw: 1.2.3.4
+          ipv6_gw: aaaa::1
