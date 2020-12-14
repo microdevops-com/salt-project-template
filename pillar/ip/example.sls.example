@@ -1,11 +1,11 @@
-{% import_yaml 'ip/hetzner.sls' as hetzner %}
+{% import_yaml "ip/hetzner.sls" as hetzner %}
  
 Office_And_VPN:
   John Doe 1: 1.2.3.4
   Example Office 1: 4.3.2.1
-  dev1.example.com: {{ hetzner['hetzner1.example.com']['br0']['ip']['dev1.example.com'] }}
+  dev1.example.com: {{ hetzner["hetzner1.example.com"]["br0"]["ip"]["dev1.example.com"] }}
 Delete_Office_And_VPN: {}
-All_Servers: {{ hetzner['hetzner1.example.com']['br0']['ip'] }}
+All_Servers: {{ hetzner["hetzner1.example.com"]["br0"]["ip"] }}
 Delete_All_Servers: {}
 Backup_Servers: {}
 Delete_Backup_Servers: {}

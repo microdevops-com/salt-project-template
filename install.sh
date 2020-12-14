@@ -150,13 +150,13 @@ rsync_without_delete files $1/files
 move_to_templated_dir $1/files/notify_devilry/__VENDOR__ $1/files/notify_devilry/${VENDOR}
 
 sed_inplace_common $1/files/notify_devilry/${VENDOR}/notify_devilry.yaml
-# Enable telegram in notify_devilry if needed vars set
-if [[ -n ${TELEGRAM_TOKEN} && -n ${TELEGRAM_CHAT_ID} ]]; then
-	sed -i -e 's/#telegram#//' $1/files/notify_devilry/${VENDOR}/notify_devilry.yaml
-fi
 # Enable alerta in notify_devilry if needed vars set
 if [[ -n ${ALERTA_URL} && -n ${ALERTA_API_KEY} ]]; then
 	sed -i -e 's/#alerta#//' $1/files/notify_devilry/${VENDOR}/notify_devilry.yaml
+# Else if no alerta enable telegram in notify_devilry if needed vars set
+# No sense in telegram chain if alerta enabled - dups
+elif [[ -n ${TELEGRAM_TOKEN} && -n ${TELEGRAM_CHAT_ID} ]]; then
+	sed -i -e 's/#telegram#//' $1/files/notify_devilry/${VENDOR}/notify_devilry.yaml
 fi
 
 rsync_without_delete formulas $1/formulas
