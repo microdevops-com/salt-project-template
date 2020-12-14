@@ -18,34 +18,34 @@ if [[ $(basename $(pwd)) != ".salt-project-template" ]]; then
 fi
 
 if [[ $2 = salt ]]; then
-	if [[ -z ${SALT_MINION_VERSION} ]]; then echo Var missing; exit 1; fi
-	if [[ -z ${SALT_MASTER_1_NAME} ]]; then echo Var missing; exit 1; fi
-	if [[ -z ${SALT_MASTER_1_IP} ]]; then echo Var missing; exit 1; fi
-	if [[ -z ${SALT_MASTER_1_EXT_IP} ]]; then echo Var missing; exit 1; fi
-	if [[ -z "${SALT_MASTER_1_SSH_PUB}" ]]; then echo Var missing; exit 1; fi
-	if [[ -z ${SALT_MASTER_2_NAME} ]]; then echo Var missing; exit 1; fi
-	if [[ -z ${SALT_MASTER_2_IP} ]]; then echo Var missing; exit 1; fi
-	if [[ -z ${SALT_MASTER_2_EXT_IP} ]]; then echo Var missing; exit 1; fi
-	if [[ -z "${SALT_MASTER_2_SSH_PUB}" ]]; then echo Var missing; exit 1; fi
-	if [[ -z ${SALT_MASTER_PORT_1} ]]; then echo Var missing; exit 1; fi
-	if [[ -z ${SALT_MASTER_PORT_2} ]]; then echo Var missing; exit 1; fi
-	if [[ -z ${STAGING_SALT_MASTER} ]]; then echo Var missing; exit 1; fi
+	if [[ -z ${SALT_MINION_VERSION} ]]; then echo Var SALT_MINION_VERSION missing; exit 1; fi
+	if [[ -z ${SALT_MASTER_1_NAME} ]]; then echo Var SALT_MASTER_1_NAME missing; exit 1; fi
+	if [[ -z ${SALT_MASTER_1_IP} ]]; then echo Var SALT_MASTER_1_IP missing; exit 1; fi
+	if [[ -z ${SALT_MASTER_1_EXT_IP} ]]; then echo Var SALT_MASTER_1_EXT_IP missing; exit 1; fi
+	if [[ -z "${SALT_MASTER_1_SSH_PUB}" ]]; then echo Var SALT_MASTER_1_SSH_PUB missing; exit 1; fi
+	if [[ -z ${SALT_MASTER_2_NAME} ]]; then echo Var SALT_MASTER_2_NAME missing; exit 1; fi
+	if [[ -z ${SALT_MASTER_2_IP} ]]; then echo Var SALT_MASTER_2_IP missing; exit 1; fi
+	if [[ -z ${SALT_MASTER_2_EXT_IP} ]]; then echo Var SALT_MASTER_2_EXT_IP missing; exit 1; fi
+	if [[ -z "${SALT_MASTER_2_SSH_PUB}" ]]; then echo Var SALT_MASTER_2_SSH_PUB missing; exit 1; fi
+	if [[ -z ${SALT_MASTER_PORT_1} ]]; then echo Var SALT_MASTER_PORT_1 missing; exit 1; fi
+	if [[ -z ${SALT_MASTER_PORT_2} ]]; then echo Var SALT_MASTER_PORT_2 missing; exit 1; fi
+	if [[ -z ${STAGING_SALT_MASTER} ]]; then echo Var STAGING_SALT_MASTER missing; exit 1; fi
 fi
 if [[ $2 = salt-ssh ]]; then
-	if [[ -z ${DEV_RUNNER} ]]; then echo Var missing; exit 1; fi
-	if [[ -z ${PROD_RUNNER} ]]; then echo Var missing; exit 1; fi
-	if [[ -z "${SALTSSH_ROOT_ED25519_PUB}" ]]; then echo Var missing; exit 1; fi
-	if [[ -z ${SALTSSH_RUNNER_SOURCE_IP} ]]; then echo Var missing; exit 1; fi
-	if [[ -z ${SALT_VERSION} ]]; then echo Var missing; exit 1; fi
+	if [[ -z ${DEV_RUNNER} ]]; then echo Var DEV_RUNNER missing; exit 1; fi
+	if [[ -z ${PROD_RUNNER} ]]; then echo Var PROD_RUNNER missing; exit 1; fi
+	if [[ -z "${SALTSSH_ROOT_ED25519_PUB}" ]]; then echo Var SALTSSH_ROOT_ED25519_PUB missing; exit 1; fi
+	if [[ -z ${SALTSSH_RUNNER_SOURCE_IP} ]]; then echo Var SALTSSH_RUNNER_SOURCE_IP missing; exit 1; fi
+	if [[ -z ${SALT_VERSION} ]]; then echo Var SALT_VERSION missing; exit 1; fi
 fi
-if [[ -z ${CLIENT} ]]; then echo Var missing; exit 1; fi
-if [[ -z ${VENDOR} ]]; then echo Var missing; exit 1; fi
-if [[ -z ${VENDOR_FULL} ]]; then echo Var missing; exit 1; fi
-if [[ -z ${HB_RECEIVER_HN} ]]; then echo Var missing; exit 1; fi
-if [[ -z ${HB_TOKEN} ]]; then echo Var missing; exit 1; fi
-if [[ -z ${ROOT_EMAIL} ]]; then echo Var missing; exit 1; fi
-if [[ -z ${DEFAULT_TZ} ]]; then echo Var missing; exit 1; fi
-if [[ -z ${CLIENT_DOMAIN} ]]; then echo Var missing; exit 1; fi
+if [[ -z ${CLIENT} ]]; then echo Var CLIENT missing; exit 1; fi
+if [[ -z ${VENDOR} ]]; then echo Var VENDOR missing; exit 1; fi
+if [[ -z ${VENDOR_FULL} ]]; then echo Var VENDOR_FULL missing; exit 1; fi
+if [[ -z ${HB_RECEIVER_HN} ]]; then echo Var HB_RECEIVER_HN missing; exit 1; fi
+if [[ -z ${HB_TOKEN} ]]; then echo Var HB_TOKEN missing; exit 1; fi
+if [[ -z ${ROOT_EMAIL} ]]; then echo Var ROOT_EMAIL missing; exit 1; fi
+if [[ -z ${DEFAULT_TZ} ]]; then echo Var DEFAULT_TZ missing; exit 1; fi
+if [[ -z ${CLIENT_DOMAIN} ]]; then echo Var CLIENT_DOMAIN missing; exit 1; fi
 
 # Functions
 
