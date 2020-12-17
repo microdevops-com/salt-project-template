@@ -1,0 +1,1 @@
+../../formulas/sysadmws-formula/pillar/pkg/sentry-cli.sls
