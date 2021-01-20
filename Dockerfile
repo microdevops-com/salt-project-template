@@ -36,7 +36,7 @@ COPY salt /srv/salt
 COPY salt_local /srv/salt_local
 COPY scripts /srv/scripts
 COPY README.md /srv/README.md
-COPY etc/salt/roster /etc/salt/roster
+COPY etc/salt/roster* /etc/salt/
 COPY etc/salt/master /etc/salt/master
 
 # Prepare pillar top.sls
