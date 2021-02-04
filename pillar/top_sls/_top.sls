@@ -25,8 +25,10 @@ base:
     #salt-ssh#- ufw_simple.ssh_from_salt-ssh_runners
     - heartbeat_mesh.__VENDOR__.sender
     - bootstrap.__CLIENT__
+    - hosts.__VENDOR__
   
   'G@os:Windows':
     - match: compound
     #salt#- salt.minion
     - heartbeat_mesh.__VENDOR__.sender
+    - hosts.__VENDOR__
