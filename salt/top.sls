@@ -4,6 +4,7 @@ base:
   'G@kernel:Windows':
     - match: compound
     - users.windows
+    - hosts
 
   # All Linux
   'G@kernel:Linux':
@@ -21,6 +22,7 @@ base:
     - notify_devilry.notify_devilry
     - cmd_check_alert.cmd_check_alert
     - heartbeat_mesh.sender
+    - hosts
 
   # All Ubuntu and Debian
   'G@os:Ubuntu or G@os:Debian':
