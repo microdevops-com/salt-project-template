@@ -33,6 +33,7 @@ Fill the repo with some additional data:
 - `pillar/users/example/admins.sls`
 - `pillar/ip/example.jinja` (see pillar/ip/example.jinja.example)
 - `pillar/ufw_simple/vars.jinja` (see pillar/ufw_simple/vars.jinja.example)
+- `pillar/hosts/example.sls` (see https://github.com/sysadmws/sysadmws-formula/blob/master/hosts/pillar.example - static hosts file, recommended to distribute heartbeat_receivers, alerta hosts here)
 
 For Salt-SSH:
 - `etc/salt/roster` (see roster.example in `.salt-project-template`)
