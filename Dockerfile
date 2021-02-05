@@ -14,6 +14,14 @@ RUN apt-get update -y \
 # Add utils
 RUN apt-get install -y --no-install-recommends mc vim telnet iputils-ping curl ccze less
 
+# Add sysadmws-utils for notify_devilry
+RUN apt-key adv --keyserver keyserver.ubuntu.com --recv 2E7DCF8C && echo "deb https://repo.sysadm.ws/sysadmws-apt/ any main" >> /etc/apt/sources.list.d/sysadmws.list \
+    && apt-get update -y \
+    && apt-get install -y --no-install-recommends sysadmws-utils-v1
+
+# Copy notify_devilry.yaml from repo
+COPY files/notify_devilry/__VENDOR__/notify_devilry.yaml /opt/sysadmws/notify_devilry/notify_devilry.yaml
+
 # Cleanup
 RUN rm -rf /var/lib/apt/lists/*
 

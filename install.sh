@@ -256,6 +256,7 @@ elif [[ $2 = salt-ssh ]]; then
 	sed_inplace_common $1/.gitlab-ci.yml
 	sed_inplace_salt-ssh $1/.gitlab-ci.yml
 	cp -f Dockerfile $1/Dockerfile
+	sed_inplace_common $1/Dockerfile
 	cp -f entrypoint.sh $1/entrypoint.sh
 	mkdir -p $1/etc/salt
 	cp -f etc/salt/master $1/etc/salt/master

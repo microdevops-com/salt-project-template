@@ -50,6 +50,8 @@ salt_cmd:
       - $SALT_CMD
   script:
     - /srv/scripts/salt-ssh/salt_cmd.sh "${SALT_MINION}" "${SALT_CMD}"
+  after_script:
+    - /srv/scripts/salt-ssh/send_notify_devilry.sh
 
 rsnapshot_backup_update_config:
   tags:
@@ -63,6 +65,8 @@ rsnapshot_backup_update_config:
       - $RSNAPSHOT_BACKUP_TYPE
   script:
     - /srv/scripts/salt-ssh/rsnapshot_backup_update_config.sh "${SALT_MINION}"
+  after_script:
+    - /srv/scripts/salt-ssh/send_notify_devilry.sh
 
 rsnapshot_backup_sync:
   tags:
@@ -76,6 +80,8 @@ rsnapshot_backup_sync:
       - $RSNAPSHOT_BACKUP_TYPE
   script:
     - /srv/scripts/salt-ssh/rsnapshot_backup_sync.sh "${SALT_MINION}" "${RSNAPSHOT_BACKUP_TYPE}" "${SSH_HOST}" "${SSH_PORT}" "${SSH_JUMP}"
+  after_script:
+    - /srv/scripts/salt-ssh/send_notify_devilry.sh
 
 rsnapshot_backup_rotate:
   tags:
@@ -89,6 +95,8 @@ rsnapshot_backup_rotate:
       - $RSNAPSHOT_BACKUP_TYPE
   script:
     - /srv/scripts/salt-ssh/rsnapshot_backup_rotate.sh "${SALT_MINION}" "${RSNAPSHOT_BACKUP_TYPE}" "${SSH_HOST}" "${SSH_PORT}" "${SSH_JUMP}"
+  after_script:
+    - /srv/scripts/salt-ssh/send_notify_devilry.sh
 
 rsnapshot_backup_check_backup:
   tags:
@@ -102,6 +110,8 @@ rsnapshot_backup_check_backup:
       - $RSNAPSHOT_BACKUP_TYPE
   script:
     - /srv/scripts/salt-ssh/rsnapshot_backup_check_backup.sh "${SALT_MINION}" "${RSNAPSHOT_BACKUP_TYPE}" "${SSH_HOST}" "${SSH_PORT}" "${SSH_JUMP}"
+  after_script:
+    - /srv/scripts/salt-ssh/send_notify_devilry.sh
 
 rsnapshot_backup_check_coverage:
   tags:
@@ -115,3 +125,5 @@ rsnapshot_backup_check_coverage:
       - $RSNAPSHOT_BACKUP_TYPE
   script:
     - /srv/scripts/salt-ssh/rsnapshot_backup_check_coverage.sh "${SALT_MINION}"
+  after_script:
+    - /srv/scripts/salt-ssh/send_notify_devilry.sh
