@@ -13,6 +13,7 @@ variables:
   GIT_SUBMODULE_STRATEGY: none
 
 after_script:
+  - /srv/.gitlab-server-job/send_notify_devilry.sh
   - rm -rf alive_minions
 
 .salt_master_pull:
