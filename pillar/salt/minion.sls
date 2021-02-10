@@ -17,13 +17,13 @@ salt:
     config:
 {% if grains['fqdn'] == "__SALT_MASTER_1_NAME__" %}
       master: __SALT_MASTER_1_NAME__
-      publish_port: 4505
-      master_port: 4506
+      publish_port: __SALT_MASTER_PORT_1__
+      master_port: __SALT_MASTER_PORT_2__
       verify_master_pubkey_sign: True
 {% elif grains['fqdn'] == "__SALT_MASTER_2_NAME__" %}
       master: __SALT_MASTER_2_NAME__
-      publish_port: 4505
-      master_port: 4506
+      publish_port: __SALT_MASTER_PORT_1__
+      master_port: __SALT_MASTER_PORT_2__
       verify_master_pubkey_sign: True
 {% else %}
       master:
