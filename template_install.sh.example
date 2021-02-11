@@ -8,6 +8,7 @@ TELEGRAM_TOKEN=xxx \
 	HB_TOKEN=xxx \
 	ROOT_EMAIL=xxx \
 	CLIENT=xxx \
+	CLIENT_FULL=xxx \
 	VENDOR=xxx \
 	VENDOR_FULL=xxx \
 	DEFAULT_TZ=xxx \

@@ -39,6 +39,7 @@ if [[ $2 = salt-ssh ]]; then
 	if [[ -z ${SALT_VERSION} ]]; then echo Var SALT_VERSION missing; exit 1; fi
 fi
 if [[ -z ${CLIENT} ]]; then echo Var CLIENT missing; exit 1; fi
+if [[ -z ${CLIENT_FULL} ]]; then echo Var CLIENT_FULL missing; exit 1; fi
 if [[ -z ${VENDOR} ]]; then echo Var VENDOR missing; exit 1; fi
 if [[ -z ${VENDOR_FULL} ]]; then echo Var VENDOR_FULL missing; exit 1; fi
 if [[ -z ${HB_RECEIVER_HN} ]]; then echo Var HB_RECEIVER_HN missing; exit 1; fi
@@ -82,6 +83,7 @@ function sed_inplace_common () {
 	fi
 	sed -i \
 		-e "s/__CLIENT__/${CLIENT}/g" \
+		-e "s/__CLIENT_FULL__/${CLIENT_FULL}/g" \
 		-e "s/__VENDOR__/${VENDOR}/g" \
 		-e "s/__VENDOR_FULL__/${VENDOR_FULL}/g" \
 		-e "s/__TELEGRAM_TOKEN__/${LOCAL_TELEGRAM_TOKEN}/g" \

@@ -2,7 +2,7 @@ enabled: True
 
 defaults:
   environment: infra
-  client: __VENDOR_FULL__
+  client: __CLIENT_FULL__
   #location: FIXME
 
 alerta:
