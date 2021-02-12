@@ -4,10 +4,14 @@ salt:
     hosts:
 {% if grains['fqdn'] == "__SALT_MASTER_1_NAME__" %}
       - name: __SALT_MASTER_1_NAME__
-        ip: __SALT_MASTER_1_IP__
+        ip:
+          - __SALT_MASTER_1_IP__
+          - 127.0.1.1
 {% elif grains['fqdn'] == "__SALT_MASTER_2_NAME__" %}
       - name: __SALT_MASTER_2_NAME__
-        ip: __SALT_MASTER_2_IP__
+        ip:
+          - __SALT_MASTER_2_IP__
+          - 127.0.1.1
 {% else %}
       - name: __SALT_MASTER_1_NAME__
         ip: __SALT_MASTER_1_EXT_IP__
