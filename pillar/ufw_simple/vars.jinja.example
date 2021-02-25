@@ -11,7 +11,7 @@ set vars = {
 }
 %}
 
-{% from 'ip/example.jinja' import example with context %}
+{% import_yaml 'ip/example.sls' as example %}
 
 {% do vars['Office_And_VPN'].update(example['Office_And_VPN']) %}
 {% do vars['Delete_Office_And_VPN'].update(example['Delete_Office_And_VPN']) %}
