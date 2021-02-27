@@ -10,6 +10,7 @@
     - cmd_check_alert.4min
     - cmd_check_alert.salt-master
     - cmd_check_alert.salt-minion
+    - salt.master
   
   '__SALT_MASTER_2_NAME__':
     - pkg.ssh_keys.__VENDOR__.backup_servers
@@ -23,3 +24,4 @@
     - cmd_check_alert.4min
     - cmd_check_alert.salt-master
     - cmd_check_alert.salt-minion
+    - salt.master

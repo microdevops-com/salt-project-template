@@ -198,6 +198,8 @@ sed_inplace_common $1/pillar/notify_devilry/${VENDOR}.sls
 if [[ $2 = salt ]]; then
 	sed_inplace_common $1/pillar/salt/minion.sls
 	sed_inplace_salt $1/pillar/salt/minion.sls
+	sed_inplace_common $1/pillar/salt/master.sls
+	sed_inplace_salt $1/pillar/salt/master.sls
 	sed_inplace_common $1/pillar/top_sls/_salt_masters.sls
 	sed_inplace_salt $1/pillar/top_sls/_salt_masters.sls
 	sed_inplace_common $1/pillar/top_sls/_top.sls
