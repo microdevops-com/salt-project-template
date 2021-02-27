@@ -15,5 +15,11 @@ salt:
       ret_port: __SALT_MASTER_PORT_2__
       ping_on_rotate: True
 
+{% if grains['fqdn'] == "__SALT_MASTER_1_NAME__" %}
 include:
-  - salt.master_pki
+  - salt.master_1_pki
+{% endif %}
+{% if grains['fqdn'] == "__SALT_MASTER_2_NAME__" %}
+include:
+  - salt.master_2_pki
+{% endif %}
