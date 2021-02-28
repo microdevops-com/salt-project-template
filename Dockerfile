@@ -39,7 +39,6 @@ RUN mkdir -p /srv
 COPY files /srv/files
 COPY formulas /srv/formulas
 COPY pillar /srv/pillar
-COPY reactor /srv/reactor
 COPY salt /srv/salt
 COPY salt_local /srv/salt_local
 COPY scripts /srv/scripts

@@ -242,8 +242,6 @@ elif [[ $2 = salt-ssh ]]; then
 	rm -f $1/pillar/pkg/ssh_keys/${CLIENT}/salt_masters.sls
 fi
 
-rsync_with_delete reactor $1/reactor
-
 rsync_with_delete scripts $1/scripts
 
 rsync_without_delete salt $1/salt
