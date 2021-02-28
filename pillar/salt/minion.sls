@@ -46,4 +46,4 @@ salt:
     grains_file_rm: True
 
 include:
-  - salt.minion_pki_{{ grains["fqdn"]|replace(".", "_") }}
+  - salt.minion_{{ grains["fqdn"]|replace(".", "_") }}
