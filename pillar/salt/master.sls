@@ -1,5 +1,6 @@
 salt:
   master:
+    version: __SALT_MASTER_VERSION__
     config:
       file_roots:
         base:
