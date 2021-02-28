@@ -31,7 +31,7 @@ Fill the repo with some additional data:
 - `pillar/top_sls` files (see pillar/top_sls/srv1.example.com.example)
 - `pillar/bootstrap` files (see pillar/bootstrap/.../srv1_example_com.example)
 - `pillar/users/example/admins.sls`
-- `pillar/ip/example.jinja` (see pillar/ip/example.jinja.example)
+- `pillar/ip/example/example.sls` (see pillar/ip/example/example.sls.example)
 - `pillar/ufw_simple/vars.jinja` (see pillar/ufw_simple/vars.jinja.example)
 - `pillar/hosts/example.sls` (see https://github.com/sysadmws/sysadmws-formula/blob/master/hosts/pillar.example - static hosts file, recommended to distribute heartbeat_receivers, alerta hosts here)
 
