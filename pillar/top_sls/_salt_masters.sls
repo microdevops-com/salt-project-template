@@ -4,8 +4,6 @@
     - pkg.locale.en_US_UTF-8
     - users.__VENDOR__.admins
     - ufw_simple.salt_master_non_std_ports
-    - telegram.__VENDOR___alarms
-    - telegram.central_notifier
     - rsnapshot_backup.__CLIENT__.salt_masters_local
     - cmd_check_alert.4min
     - cmd_check_alert.salt-master
@@ -18,8 +16,6 @@
     - pkg.locale.en_US_UTF-8
     - users.__VENDOR__.admins
     - ufw_simple.salt_master_non_std_ports
-    - telegram.__VENDOR___alarms
-    - telegram.central_notifier
     - rsnapshot_backup.__CLIENT__.salt_masters_local
     - cmd_check_alert.4min
     - cmd_check_alert.salt-master

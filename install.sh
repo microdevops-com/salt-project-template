@@ -187,9 +187,6 @@ sed_inplace_common $1/pillar/bootstrap/${CLIENT}.sls
 move_to_templated_dir $1/pillar/pkg/__VENDOR__ $1/pillar/pkg/${VENDOR}
 sed_inplace_common $1/pillar/pkg/${VENDOR}/forward_root_email.sls
 
-mv -f $1/pillar/telegram/__VENDOR___alarms.sls $1/pillar/telegram/${VENDOR}_alarms.sls
-sed_inplace_common $1/pillar/telegram/${VENDOR}_alarms.sls
-
 move_to_templated_dir $1/pillar/heartbeat_mesh/__VENDOR__ $1/pillar/heartbeat_mesh/${VENDOR}
 sed_inplace_common $1/pillar/heartbeat_mesh/${VENDOR}/sender.sls
 
