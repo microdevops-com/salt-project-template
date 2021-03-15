@@ -45,6 +45,7 @@ COPY scripts /srv/scripts
 COPY README.md /srv/README.md
 COPY etc/salt/roster* /etc/salt/
 COPY etc/salt/master /etc/salt/master
+COPY include /srv/include
 
 # Prepare pillar top.sls
 WORKDIR /srv
