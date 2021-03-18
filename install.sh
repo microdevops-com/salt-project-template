@@ -263,7 +263,7 @@ sed_inplace_common $1/Dockerfile
 cp -f entrypoint.sh $1/entrypoint.sh
 mkdir -p $1/etc/salt
 cp -f etc/salt/master $1/etc/salt/master
-mkdir -p $1/include
+rsync_without_delete include $1/include
 
 # Get inside templated repo
 pushd $1
