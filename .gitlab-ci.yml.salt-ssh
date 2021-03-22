@@ -17,7 +17,7 @@ build:
   stage: build
   variables:
     GIT_STRATEGY: fetch
-    GIT_SUBMODULE_STRATEGY: recursive
+    GIT_SUBMODULE_STRATEGY: normal
   script:
     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
     - echo IMAGE - $CI_REGISTRY/$CI_PROJECT_PATH:$CI_COMMIT_REF_SLUG
