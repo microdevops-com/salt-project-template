@@ -4,6 +4,5 @@
     - pkg.tz.Etc_UTC
     - pkg.locale.en_US_UTF-8
     - users.__VENDOR__.admins
-    - ufw_simple.standard
     - rsnapshot_backup.__CLIENT__.backup
     - app.__CLIENT__.dev
