@@ -40,6 +40,8 @@ salt:
       retry_dns: 0
       random_master: True
       master_alive_interval: 60
+      master_tries: -1
+      ping_interval: 1
 {% endif %}
       grains:
         fqdn: {{ grains['fqdn'] }}
