@@ -23,10 +23,11 @@ base:
     - cmd_check_alert.cmd_check_alert
     - heartbeat_mesh.sender
     - hosts
+    - ufw_simple.ufw_simple
+    - ufw
 
   # All Ubuntu and Debian
   'G@os:Ubuntu or G@os:Debian':
     - match: compound
     - bash.bash_completions
     - bash.bash_misc
-    - ufw_simple.ufw_simple
