@@ -5,7 +5,6 @@
     - users.__VENDOR__.admins
     - ufw_simple.salt_master_non_std_ports
     - rsnapshot_backup.__CLIENT__.salt_masters_local
-    - cmd_check_alert.4min
     - cmd_check_alert.salt-master
     - cmd_check_alert.salt-minion
     - salt.master
@@ -17,7 +16,6 @@
     - users.__VENDOR__.admins
     - ufw_simple.salt_master_non_std_ports
     - rsnapshot_backup.__CLIENT__.salt_masters_local
-    - cmd_check_alert.4min
     - cmd_check_alert.salt-master
     - cmd_check_alert.salt-minion
     - salt.master
