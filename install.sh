@@ -281,6 +281,10 @@ rm -rf .pipeline-cache
 rm -f salt/cloud
 # salt/unit_status_alert is not used anymore
 rm -f salt/unit_status_alert
+# some cmd_check_alert files are not used anymore
+rm -rf files/cmd_check_alert
+rm -rf pillar/cmd_check_alert/2min.sls
+rm -rf pillar/cmd_check_alert/4min.sls
 
 # Return back
 popd

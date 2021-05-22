@@ -20,7 +20,7 @@ base:
     - mysql_queries_log.mysql_queries_log
     - mysql_replica_checker.mysql_replica_checker
     - notify_devilry.notify_devilry
-    - cmd_check_alert.cmd_check_alert
+    - cmd_check_alert
     - heartbeat_mesh.sender
     - hosts
     - ufw_simple.ufw_simple
