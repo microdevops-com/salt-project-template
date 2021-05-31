@@ -26,6 +26,7 @@ base:
     - heartbeat_mesh.__VENDOR__.sender
     - bootstrap.__CLIENT__
     - hosts.__VENDOR__
+    - cmd_check_alert.common
   
   'G@os:Windows':
     - match: compound
