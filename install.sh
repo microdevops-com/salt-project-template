@@ -278,13 +278,15 @@ git submodule foreach --recursive git pull
 # .pipeline-cache is not used anymore
 rm -rf .pipeline-cache
 # salt/cloud is not used anymore
-rm -f salt/cloud
+rm -rf salt/cloud
 # salt/unit_status_alert is not used anymore
-rm -f salt/unit_status_alert
+rm -rf salt/unit_status_alert
 # some cmd_check_alert files are not used anymore
 rm -rf files/cmd_check_alert
 rm -rf pillar/cmd_check_alert/2min.sls
 rm -rf pillar/cmd_check_alert/4min.sls
+# remove win salt minion exe
+rm -rf files/salt/Salt-Minion-3001.4-Py3-AMD64-Setup.exe
 
 # Return back
 popd
