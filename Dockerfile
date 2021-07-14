@@ -12,7 +12,7 @@ RUN apt-get update -y \
     && apt-get install -y --no-install-recommends salt-ssh openssh-client
 
 # Add utils
-RUN apt-get install -y --no-install-recommends mc vim telnet iputils-ping curl ccze less
+RUN apt-get install -y --no-install-recommends mc vim telnet iputils-ping curl ccze less jq
 
 # Add sysadmws-utils for notify_devilry
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv 2E7DCF8C && echo "deb https://repo.sysadm.ws/sysadmws-apt/ any main" >> /etc/apt/sources.list.d/sysadmws.list \
