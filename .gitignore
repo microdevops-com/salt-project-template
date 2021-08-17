@@ -3,3 +3,4 @@
 *.swp
 pillar/top.sls
 scripts/ci_sudo/*.out
+.iml
