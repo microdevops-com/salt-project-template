@@ -46,6 +46,7 @@ COPY README.md /srv/README.md
 COPY etc/salt/roster* /etc/salt/
 COPY etc/salt/master /etc/salt/master
 COPY include /srv/include
+COPY .salt-ssh-hooks /.salt-ssh-hooks
 
 # Prepare pillar top.sls
 WORKDIR /srv
