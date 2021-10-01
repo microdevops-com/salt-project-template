@@ -96,6 +96,7 @@ function sed_inplace_common () {
 		-e "s/__ROOT_EMAIL__/${ROOT_EMAIL}/g" \
 		-e "s/__DEFAULT_TZ__/${DEFAULT_TZ}/g" \
 		-e "s/__CLIENT_DOMAIN__/${CLIENT_DOMAIN}/g" \
+		-e "s/__SALT_VERSION__/${SALT_VERSION}/g" \
 		$1
 }
 
@@ -125,7 +126,6 @@ function sed_inplace_salt-ssh () {
 		-e "s/__PROD_RUNNER__/${PROD_RUNNER}/g" \
 		-e "s#__SALTSSH_ROOT_ED25519_PUB__#${SALTSSH_ROOT_ED25519_PUB}#g" \
 		-e "s/__SALTSSH_RUNNER_SOURCE_IP__/${SALTSSH_RUNNER_SOURCE_IP}/g" \
-		-e "s/__SALT_VERSION__/${SALT_VERSION}/g" \
 		-e "s/#salt-ssh#//" \
 		-e "/#salt#/d" \
 		$1

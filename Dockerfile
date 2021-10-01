@@ -3,7 +3,7 @@ FROM ubuntu:focal
 ENV DEBIAN_FRONTEND noninteractive
 
 # Add salt repo and install salt-ssh
-ARG SALT_VERSION=3001
+ARG SALT_VERSION=__SALT_VERSION__
 RUN apt-get update -y \
     && apt-get -qy install wget gnupg lsb-release \
     && echo "deb http://repo.saltstack.com/py3/ubuntu/$(lsb_release -sr)/amd64/${SALT_VERSION} $(lsb_release -sc) main" >> /etc/apt/sources.list.d/saltstack.list \
