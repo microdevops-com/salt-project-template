@@ -20,6 +20,7 @@ fi
 if [[ $2 = salt ]]; then
 	if [[ -z ${SALT_MINION_VERSION} ]]; then echo Var SALT_MINION_VERSION missing; exit 1; fi
 	if [[ -z ${SALT_MASTER_VERSION} ]]; then echo Var SALT_MASTER_VERSION missing; exit 1; fi
+	if [[ -z ${SALT_VERSION} ]]; then echo Var SALT_VERSION missing; exit 1; fi
 	if [[ -z ${SALT_MASTER_1_NAME} ]]; then echo Var SALT_MASTER_1_NAME missing; exit 1; fi
 	if [[ -z ${SALT_MASTER_1_IP} ]]; then echo Var SALT_MASTER_1_IP missing; exit 1; fi
 	if [[ -z ${SALT_MASTER_1_EXT_IP} ]]; then echo Var SALT_MASTER_1_EXT_IP missing; exit 1; fi
