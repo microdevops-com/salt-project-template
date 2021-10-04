@@ -150,6 +150,8 @@ rsync_with_delete .githooks $1/.githooks
 
 rsync_without_delete salt_local $1/salt_local
 
+rsync_without_delete .salt-ssh-hooks $1/.salt-ssh-hooks
+
 rsync_without_delete files $1/files
 
 move_to_templated_dir $1/files/notify_devilry/__VENDOR__ $1/files/notify_devilry/${VENDOR}
