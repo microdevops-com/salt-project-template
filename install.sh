@@ -289,7 +289,10 @@ rm -rf files/cmd_check_alert
 rm -rf pillar/cmd_check_alert/2min.sls
 rm -rf pillar/cmd_check_alert/4min.sls
 # remove win salt minion exe
-rm -rf files/salt/Salt-Minion-3001.4-Py3-AMD64-Setup.exe
+rm -f files/salt/Salt-Minion-3001.4-Py3-AMD64-Setup.exe
+# remove alerta leftovers
+rm -f files/app/alerta
+rm -f pillar/pkg/alerta-urlmon.sls
 
 # Return back
 popd
