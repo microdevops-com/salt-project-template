@@ -1,0 +1,15 @@
+{%
+set vars = {
+  'Office_And_VPN': {},
+  'Backup_Servers': {},
+  'Salt_Servers': {},
+  'All_Servers': {},
+}
+%}
+
+{% import_yaml 'ip/example.sls' as example %}
+
+{% do vars['Office_And_VPN'].update(example['Office_And_VPN']) %}
+{% do vars['Backup_Servers'].update(example['Backup_Servers']) %}
+{% do vars['Salt_Servers'].update(example['Salt_Servers']) %}
+{% do vars['All_Servers'].update(example['All_Servers']) %}
