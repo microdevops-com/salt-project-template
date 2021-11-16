@@ -179,6 +179,7 @@ add_submodule .gitlab-ci-functions $1 https://github.com/sysadmws/gitlab-ci-func
 rsync_without_delete pillar $1/pillar
 
 rm -rf $1/pillar/ip/example
+rm -f $1/pillar/ufw/vars.jinja.example
 rm -f $1/pillar/ufw_simple/vars.jinja.example
 rm -f $1/pillar/top_sls/srv1.example.com.example
 
