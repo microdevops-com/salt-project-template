@@ -206,18 +206,24 @@ if [[ $2 = salt ]]; then
 	sed_inplace_salt $1/pillar/top_sls/_salt_masters.sls
 	sed_inplace_common $1/pillar/top_sls/_top.sls
 	sed_inplace_salt $1/pillar/top_sls/_top.sls
+	sed_inplace_common $1/pillar/ufw/salt_master_non_std_ports.sls
+	sed_inplace_salt $1/pillar/ufw/salt_master_non_std_ports.sls
 	sed_inplace_common $1/pillar/ufw_simple/salt_master_non_std_ports.sls
 	sed_inplace_salt $1/pillar/ufw_simple/salt_master_non_std_ports.sls
 	sed_inplace_common $1/pillar/staging/staging.sls
 	sed_inplace_salt $1/pillar/staging/staging.sls
+	rm -f $1/pillar/ufw/ssh_from_salt-ssh_runners.sls
 	rm -f $1/pillar/ufw_simple/ssh_from_salt-ssh_runners.sls
 elif [[ $2 = salt-ssh ]]; then
 	rm -rf $1/pillar/salt
 	rm -f $1/pillar/top_sls/_salt_masters.sls
 	sed_inplace_common $1/pillar/top_sls/_top.sls
 	sed_inplace_salt-ssh $1/pillar/top_sls/_top.sls
+	rm -f $1/pillar/ufw/salt_master_non_std_ports.sls
 	rm -f $1/pillar/ufw_simple/salt_master_non_std_ports.sls
 	rm -rf $1/pillar/staging
+	sed_inplace_common $1/pillar/ufw/ssh_from_salt-ssh_runners.sls
+	sed_inplace_salt-ssh $1/pillar/ufw/ssh_from_salt-ssh_runners.sls
 	sed_inplace_common $1/pillar/ufw_simple/ssh_from_salt-ssh_runners.sls
 	sed_inplace_salt-ssh $1/pillar/ufw_simple/ssh_from_salt-ssh_runners.sls
 fi
