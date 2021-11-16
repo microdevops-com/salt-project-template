@@ -32,7 +32,7 @@ Fill the repo with some additional data:
 - `pillar/bootstrap` files (see pillar/bootstrap/.../srv1_example_com.example)
 - `pillar/users/example/admins.sls`
 - `pillar/ip/example/example.sls` (see pillar/ip/example/example.sls.example)
-- `pillar/ufw_simple/vars.jinja` (see pillar/ufw_simple/vars.jinja.example)
+- `pillar/ufw_simple/vars.jinja` (see pillar/ufw_simple/vars.jinja.example) or `pillar/ufw/vars.jinja` (see pillar/ufw/vars.jinja.example)
 - `pillar/hosts/example.sls` (see https://github.com/sysadmws/sysadmws-formula/blob/master/hosts/pillar.example - static hosts file, recommended to distribute heartbeat_receivers, alerta hosts here)
 
 For Salt-SSH:
