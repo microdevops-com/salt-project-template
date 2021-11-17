@@ -1,8 +1,8 @@
 {% from "ufw/vars.jinja" import vars with context %}
 
-ufw_simple:
+ufw:
   allow:
-    salt:
+    salt_master_non_std_ports:
       proto: tcp
       from:
         {{ vars["All_Servers"] }}
