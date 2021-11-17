@@ -20,9 +20,9 @@ base:
     #salt#- pkg.ssh_keys.__CLIENT__.salt_masters
     #salt-ssh#- pkg.ssh_keys.__CLIENT__.salt-ssh_runners
     #salt#- salt.minion
-    - ufw_simple.standard
-    #salt#- ufw_simple.ssh_from_salt_servers
-    #salt-ssh#- ufw_simple.ssh_from_salt-ssh_runners
+    - __UFW__.standard
+    #salt#- __UFW__.ssh_from_salt_servers
+    #salt-ssh#- __UFW__.ssh_from_salt-ssh_runners
     - heartbeat_mesh.__VENDOR__.sender
     - bootstrap.__CLIENT__
     - hosts.__VENDOR__

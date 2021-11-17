@@ -98,6 +98,7 @@ function sed_inplace_common () {
 		-e "s/__DEFAULT_TZ__/${DEFAULT_TZ}/g" \
 		-e "s/__CLIENT_DOMAIN__/${CLIENT_DOMAIN}/g" \
 		-e "s/__SALT_VERSION__/${SALT_VERSION}/g" \
+		-e "s/__UFW__/${UFW}/g" \
 		$1
 }
 
