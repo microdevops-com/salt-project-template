@@ -25,6 +25,7 @@ base:
     - hosts
     - ufw_simple.ufw_simple
     - ufw
+    - salt.minion
 
   # All Ubuntu and Debian
   'G@os:Ubuntu or G@os:Debian':
