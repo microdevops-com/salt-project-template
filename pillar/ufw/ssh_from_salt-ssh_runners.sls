@@ -1,4 +1,4 @@
-ufw_simple:
+ufw:
   allow:
     ssh_from_salt-ssh_runners:
       proto: tcp
