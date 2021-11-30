@@ -1,6 +1,6 @@
 #!/bin/bash
 set -e
-git pull
+git pull --no-tags
 git fetch --prune origin +refs/tags/*:refs/tags/*
 git submodule init
 git submodule update -f --checkout
