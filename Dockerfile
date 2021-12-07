@@ -3,13 +3,14 @@ FROM ubuntu:focal
 ENV DEBIAN_FRONTEND noninteractive
 
 # Add salt repo and install salt-ssh
+# salt-minion added for --local pillar tests
 ARG SALT_VERSION=__SALT_VERSION__
 RUN apt-get update -y \
     && apt-get -qy install wget gnupg lsb-release \
     && echo "deb http://repo.saltstack.com/py3/ubuntu/$(lsb_release -sr)/amd64/${SALT_VERSION} $(lsb_release -sc) main" >> /etc/apt/sources.list.d/saltstack.list \
     && wget -qO - https://repo.saltstack.com/py3/ubuntu/$(lsb_release -sr)/amd64/${SALT_VERSION}/SALTSTACK-GPG-KEY.pub | apt-key add -
 RUN apt-get update -y \
-    && apt-get install -y --no-install-recommends salt-ssh openssh-client
+    && apt-get install -y --no-install-recommends salt-minion salt-ssh openssh-client
 
 # Add utils
 RUN apt-get install -y --no-install-recommends mc vim telnet iputils-ping curl ccze less jq
@@ -47,6 +48,7 @@ COPY etc/salt/roster* /etc/salt/
 COPY etc/salt/master /etc/salt/master
 COPY include /srv/include
 COPY .salt-ssh-hooks /.salt-ssh-hooks
+COPY .check_pillar_for_roster.sh /.check_pillar_for_roster.sh
 
 # Prepare pillar top.sls
 WORKDIR /srv

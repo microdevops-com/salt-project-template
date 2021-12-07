@@ -256,8 +256,9 @@ rsync_without_delete salt $1/salt
 
 cp -f .gitignore $1/.gitignore
 cp -f .dockerignore $1/.dockerignore
-
 cp -f .git_pull.sh $1/.git_pull.sh
+cp -f .check_pillar_for_roster.sh $1/.check_pillar_for_roster.sh
+cp -f check_pillar.sh $1/check_pillar.sh
 
 if [[ $2 = salt ]]; then
 	cp -f .gitlab-ci.yml.salt $1/.gitlab-ci.yml
