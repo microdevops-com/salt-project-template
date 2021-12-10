@@ -37,18 +37,18 @@ CMD ["/bin/bash"]
 
 # Fill the Salt in (this and next step should be in the end as they change layers each time)
 RUN mkdir -p /srv
-COPY files /srv/files
 COPY formulas /srv/formulas
-COPY pillar /srv/pillar
 COPY salt /srv/salt
 COPY salt_local /srv/salt_local
 COPY scripts /srv/scripts
-COPY README.md /srv/README.md
-COPY etc/salt/roster* /etc/salt/
-COPY etc/salt/master /etc/salt/master
 COPY include /srv/include
-COPY .salt-ssh-hooks /.salt-ssh-hooks
 COPY .check_pillar_for_roster.sh /.check_pillar_for_roster.sh
+COPY .salt-ssh-hooks /.salt-ssh-hooks
+COPY etc/salt/master /etc/salt/master
+COPY etc/salt/roster* /etc/salt/
+COPY README.md /srv/README.md
+COPY files /srv/files
+COPY pillar /srv/pillar
 
 # Prepare pillar top.sls
 WORKDIR /srv
