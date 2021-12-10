@@ -1,7 +1,7 @@
 FROM ubuntu:focal
 
-ENV DEBIAN_FRONTEND noninteractive
-ENV TZ "__ADMIN_TZ__"
+ENV DEBIAN_FRONTEND=noninteractive
+ENV TZ="__ADMIN_TZ__"
 
 # Add salt repo and install salt-ssh
 # salt-minion added for --local pillar tests
