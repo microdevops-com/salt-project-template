@@ -1,6 +1,7 @@
 FROM ubuntu:focal
 
 ENV DEBIAN_FRONTEND noninteractive
+ENV TZ "__ADMIN_TZ__"
 
 # Add salt repo and install salt-ssh
 # salt-minion added for --local pillar tests
@@ -13,7 +14,7 @@ RUN apt-get update -y \
     && apt-get install -y --no-install-recommends salt-minion salt-ssh openssh-client
 
 # Add utils
-RUN apt-get install -y --no-install-recommends mc vim telnet iputils-ping curl ccze less jq
+RUN apt-get install -y --no-install-recommends mc vim telnet iputils-ping curl ccze less jq dnsutils
 
 # Add sysadmws-utils for notify_devilry
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv 2E7DCF8C && echo "deb https://repo.sysadm.ws/sysadmws-apt/ any main" >> /etc/apt/sources.list.d/sysadmws.list \
