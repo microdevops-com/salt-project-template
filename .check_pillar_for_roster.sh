@@ -28,7 +28,7 @@ checkPillars() {
     local grainsFqdn
     local saltCallErrors
     local errors
-    local servers="$(grep -oP "^[^\s:]+" /etc/salt/roster)"
+    local servers="$(grep -oP "^[^\s:]+" /etc/salt/roster | grep -v -e "^#")"
 
     for SERVER in ${servers[@]}; do
 
