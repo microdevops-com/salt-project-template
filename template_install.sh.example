@@ -25,7 +25,6 @@ TELEGRAM_TOKEN=xxx \
 	SALT_MASTER_2_SSH_PUB=xxx \
 	SALT_MASTER_PORT_1=xxx \
 	SALT_MASTER_PORT_2=xxx \
-	STAGING_SALT_MASTER=xxx \
 	# for salt-ssh type
 	DEV_RUNNER=xxx \
 	PROD_RUNNER=xxx \

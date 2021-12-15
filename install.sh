@@ -31,7 +31,6 @@ if [[ $2 = salt ]]; then
 	if [[ -z "${SALT_MASTER_2_SSH_PUB}" ]]; then echo Var SALT_MASTER_2_SSH_PUB missing; exit 1; fi
 	if [[ -z ${SALT_MASTER_PORT_1} ]]; then echo Var SALT_MASTER_PORT_1 missing; exit 1; fi
 	if [[ -z ${SALT_MASTER_PORT_2} ]]; then echo Var SALT_MASTER_PORT_2 missing; exit 1; fi
-	if [[ -z ${STAGING_SALT_MASTER} ]]; then echo Var STAGING_SALT_MASTER missing; exit 1; fi
 fi
 if [[ $2 = salt-ssh ]]; then
 	if [[ -z ${DEV_RUNNER} ]]; then echo Var DEV_RUNNER missing; exit 1; fi
@@ -117,7 +116,6 @@ function sed_inplace_salt () {
 		-e "s#__SALT_MASTER_2_SSH_PUB__#${SALT_MASTER_2_SSH_PUB}#g" \
 		-e "s/__SALT_MASTER_PORT_1__/${SALT_MASTER_PORT_1}/g" \
 		-e "s/__SALT_MASTER_PORT_2__/${SALT_MASTER_PORT_2}/g" \
-		-e "s/__STAGING_SALT_MASTER__/${STAGING_SALT_MASTER}/g" \
 		-e "s/#salt#//" \
 		-e "/#salt-ssh#/d" \
 		$1
@@ -212,8 +210,6 @@ if [[ $2 = salt ]]; then
 	sed_inplace_salt $1/pillar/ufw/salt_master_non_std_ports.sls
 	sed_inplace_common $1/pillar/ufw_simple/salt_master_non_std_ports.sls
 	sed_inplace_salt $1/pillar/ufw_simple/salt_master_non_std_ports.sls
-	sed_inplace_common $1/pillar/staging/staging.sls
-	sed_inplace_salt $1/pillar/staging/staging.sls
 	rm -f $1/pillar/ufw/ssh_from_salt-ssh_runners.sls
 	rm -f $1/pillar/ufw_simple/ssh_from_salt-ssh_runners.sls
 elif [[ $2 = salt-ssh ]]; then
@@ -223,7 +219,6 @@ elif [[ $2 = salt-ssh ]]; then
 	sed_inplace_salt-ssh $1/pillar/top_sls/_top.sls
 	rm -f $1/pillar/ufw/salt_master_non_std_ports.sls
 	rm -f $1/pillar/ufw_simple/salt_master_non_std_ports.sls
-	rm -rf $1/pillar/staging
 	sed_inplace_common $1/pillar/ufw/ssh_from_salt-ssh_runners.sls
 	sed_inplace_salt-ssh $1/pillar/ufw/ssh_from_salt-ssh_runners.sls
 	sed_inplace_common $1/pillar/ufw_simple/ssh_from_salt-ssh_runners.sls
@@ -304,6 +299,8 @@ rm -f files/salt/Salt-Minion-3001.4-Py3-AMD64-Setup.exe
 # remove alerta leftovers
 rm -f files/app/alerta
 rm -f pillar/pkg/alerta-urlmon.sls
+# remove staging leftovers
+rm -rf pillar/staging
 
 # Return back
 popd
