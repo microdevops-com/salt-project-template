@@ -17,4 +17,4 @@ salt:
       ping_on_rotate: True
 
 include:
-  - salt.master_{{ grains["fqdn"]|replace(".", "_") }}
+  - salt.master_{{ grains["id"]|replace(".", "_") }}

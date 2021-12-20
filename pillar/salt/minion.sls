@@ -2,12 +2,12 @@ salt:
   minion:
     version: __SALT_MINION_VERSION__
     hosts:
-{% if grains['fqdn'] == "__SALT_MASTER_1_NAME__" %}
+{% if grains["id"] == "__SALT_MASTER_1_NAME__" %}
       - name: __SALT_MASTER_1_NAME__
         ip:
           - __SALT_MASTER_1_IP__
           - 127.0.1.1
-{% elif grains['fqdn'] == "__SALT_MASTER_2_NAME__" %}
+{% elif grains["id"] == "__SALT_MASTER_2_NAME__" %}
       - name: __SALT_MASTER_2_NAME__
         ip:
           - __SALT_MASTER_2_IP__
@@ -19,12 +19,12 @@ salt:
         ip: __SALT_MASTER_2_EXT_IP__
 {% endif %}
     config:
-{% if grains['fqdn'] == "__SALT_MASTER_1_NAME__" %}
+{% if grains["id"] == "__SALT_MASTER_1_NAME__" %}
       master: __SALT_MASTER_1_NAME__
       publish_port: __SALT_MASTER_PORT_1__
       master_port: __SALT_MASTER_PORT_2__
       verify_master_pubkey_sign: True
-{% elif grains['fqdn'] == "__SALT_MASTER_2_NAME__" %}
+{% elif grains["id"] == "__SALT_MASTER_2_NAME__" %}
       master: __SALT_MASTER_2_NAME__
       publish_port: __SALT_MASTER_PORT_1__
       master_port: __SALT_MASTER_PORT_2__
@@ -44,8 +44,8 @@ salt:
       ping_interval: 1
 {% endif %}
       grains:
-        fqdn: {{ grains['fqdn'] }}
+        fqdn: {{ grains["id"] }}
     grains_file_rm: True
 
 include:
-  - salt.minion_{{ grains["fqdn"]|replace(".", "_") }}
+  - salt.minion_{{ grains["id"]|replace(".", "_") }}
