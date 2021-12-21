@@ -36,6 +36,11 @@ prepare_salt_call_environment() {
     rm -rf "${environment}"/*                # ensure environment is clean
     cp -R /etc/salt/. "${environment}"       # idempotent copy of /etc/salt
     set_fqdn "${fqdn}" "${environment}"      # set fqdn in environment
+
+    mkdir -p "${environment}/var/cache" "${environment}/var/run"
+    printf '%s: %s\n' "cachedir" "${environment}/var/cache" \
+                      "pidfile" "${environment}/var/run/salt-minion.pid" > "${environment}/minion"
+
 }
 
 chekc_pillars() {
