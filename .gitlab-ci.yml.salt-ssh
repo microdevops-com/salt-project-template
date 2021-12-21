@@ -35,9 +35,9 @@ push:
     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
     - echo IMAGE - $CI_REGISTRY/$CI_PROJECT_PATH:$CI_COMMIT_REF_SLUG
     - docker push $CI_REGISTRY/$CI_PROJECT_PATH:$CI_COMMIT_REF_SLUG
-  except:
+  only:
     refs:
-      - /^run_.*/
+      - master
 
 salt_cmd:
   tags:
