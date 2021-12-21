@@ -22,6 +22,7 @@ build:
     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
     - echo IMAGE - $CI_REGISTRY/$CI_PROJECT_PATH:$CI_COMMIT_REF_SLUG
     - docker build --pull -t $CI_REGISTRY/$CI_PROJECT_PATH:$CI_COMMIT_REF_SLUG --build-arg SALT_VERSION=__SALT_VERSION__ .
+    - docker run --rm $CI_REGISTRY/$CI_PROJECT_PATH:$CI_COMMIT_REF_SLUG -- /.check_pillar_for_roster.sh
   except:
     refs:
       - /^run_.*/

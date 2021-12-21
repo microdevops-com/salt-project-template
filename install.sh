@@ -18,6 +18,7 @@ if [[ $(basename $(pwd)) != ".salt-project-template" ]]; then
 fi
 
 if [[ $2 = salt ]]; then
+	if [[ -z ${DEV_RUNNER} ]]; then echo Var DEV_RUNNER missing; exit 1; fi
 	if [[ -z ${SALT_MINION_VERSION} ]]; then echo Var SALT_MINION_VERSION missing; exit 1; fi
 	if [[ -z ${SALT_MASTER_VERSION} ]]; then echo Var SALT_MASTER_VERSION missing; exit 1; fi
 	if [[ -z ${SALT_VERSION} ]]; then echo Var SALT_VERSION missing; exit 1; fi
@@ -99,6 +100,7 @@ function sed_inplace_common () {
 		-e "s/__SALT_VERSION__/${SALT_VERSION}/g" \
 		-e "s/__UFW__/${UFW}/g" \
 		-e "s#__ADMIN_TZ__#$(cat /etc/timezone)#g" \
+		-e "s/__DEV_RUNNER__/${DEV_RUNNER}/g" \
 		$1
 }
 
@@ -123,7 +125,6 @@ function sed_inplace_salt () {
 
 function sed_inplace_salt-ssh () {
 	sed -i \
-		-e "s/__DEV_RUNNER__/${DEV_RUNNER}/g" \
 		-e "s/__PROD_RUNNER__/${PROD_RUNNER}/g" \
 		-e "s#__SALTSSH_ROOT_ED25519_PUB__#${SALTSSH_ROOT_ED25519_PUB}#g" \
 		-e "s/__SALTSSH_RUNNER_SOURCE_IP__/${SALTSSH_RUNNER_SOURCE_IP}/g" \

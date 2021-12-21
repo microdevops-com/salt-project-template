@@ -1,4 +1,5 @@
 stages:
+  - check
   - pull
   - count
   - refresh
@@ -15,6 +16,23 @@ variables:
 after_script:
   - /srv/.gitlab-server-job/send_notify_devilry.sh
   - rm -rf alive_minions
+
+check_pillar:
+  tags:
+    - __DEV_RUNNER__
+  stage: check
+  variables:
+    GIT_STRATEGY: fetch
+    GIT_SUBMODULE_STRATEGY: normal
+  script:
+    #- docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY # no need to login and push to gitlab right now, but keep schema compatible for future
+    - echo IMAGE - $CI_REGISTRY/$CI_PROJECT_PATH:$CI_COMMIT_REF_SLUG
+    - docker build --pull -t $CI_REGISTRY/$CI_PROJECT_PATH:$CI_COMMIT_REF_SLUG --build-arg SALT_VERSION=3001 .
+    - docker run --rm $CI_REGISTRY/$CI_PROJECT_PATH:$CI_COMMIT_REF_SLUG -- /.check_pillar_for_roster.sh
+    #- docker push $CI_REGISTRY/$CI_PROJECT_PATH:$CI_COMMIT_REF_SLUG # no need to login and push to gitlab right now, but keep schema compatible for future
+  except:
+    refs:
+      - /^run_.*/
 
 .salt_master_pull:
   stage: pull

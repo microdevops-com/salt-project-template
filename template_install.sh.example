@@ -13,6 +13,7 @@ TELEGRAM_TOKEN=xxx \
 	VENDOR_FULL=xxx \
 	DEFAULT_TZ=xxx \
 	CLIENT_DOMAIN=xxx \
+	DEV_RUNNER=xxx \
 	# for salt with masters type
 	SALT_MINION_VERSION=xxx \
 	SALT_MASTER_1_NAME=xxx \
@@ -26,7 +27,6 @@ TELEGRAM_TOKEN=xxx \
 	SALT_MASTER_PORT_1=xxx \
 	SALT_MASTER_PORT_2=xxx \
 	# for salt-ssh type
-	DEV_RUNNER=xxx \
 	PROD_RUNNER=xxx \
 	SALTSSH_ROOT_ED25519_PUB=xxx \
 	SALTSSH_RUNNER_SOURCE_IP=xxx \
