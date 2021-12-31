@@ -302,6 +302,8 @@ rm -f files/app/alerta
 rm -f pillar/pkg/alerta-urlmon.sls
 # remove staging leftovers
 rm -rf pillar/staging
+# remove old unneeded pillar
+rm -f pillar/rsnapshot_backup/backup_server.sls
 
 # Return back
 popd
