@@ -96,7 +96,7 @@ main() {
     done
     printf "${_C}Done spawning jobs${_RS}\n"
 
-    printf "${_C}Wait untill all checks pass${_RS}\n"
+    printf "${_C}Wait until all checks pass${_RS}\n"
     while [[ ${#job_pids[@]} -ge 1 ]]; do
         sleep 0.5;
         job_pids=($(jobs -pr))
