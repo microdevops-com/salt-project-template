@@ -46,6 +46,7 @@ COPY include /srv/include
 COPY .check_pillar_for_roster.sh /.check_pillar_for_roster.sh
 COPY .salt-ssh-hooks /.salt-ssh-hooks
 COPY etc/salt/master /etc/salt/master
+COPY etc/salt/master.d /etc/salt/master.d
 COPY etc/salt/roster* /etc/salt/
 COPY README.md /srv/README.md
 COPY files /srv/files
