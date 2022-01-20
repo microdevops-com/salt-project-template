@@ -1,0 +1,1 @@
+../../formulas/sysadmws-formula/pillar/ufw/nat_masquerade_enp6s0.sls
