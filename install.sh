@@ -273,8 +273,9 @@ fi
 cp -f Dockerfile $1/Dockerfile
 sed_inplace_common $1/Dockerfile
 cp -f entrypoint.sh $1/entrypoint.sh
-mkdir -p $1/etc/salt $1/etc/salt/master.d
+mkdir -p $1/etc/salt $1/etc/salt/master.d $1/etc/ssh
 cp -f etc/salt/master $1/etc/salt/master
+cp -f etc/ssh/ssh_config $1/etc/ssh/ssh_config
 rsync_without_delete etc/salt/master.d $1/etc/salt/master.d
 rsync_without_delete include $1/include
 
