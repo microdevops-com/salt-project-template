@@ -27,9 +27,6 @@ COPY files/notify_devilry/__VENDOR__/notify_devilry.yaml /opt/sysadmws/notify_de
 # Cleanup
 RUN rm -rf /var/lib/apt/lists/*
 
-# Prepare SSH client
-RUN mkdir -p -m 700 /root/.ssh
-RUN echo "StrictHostKeyChecking no" > /etc/ssh/ssh_config.d/salt-ssh.conf
 
 # Entrypoint with roster and salt-ssh key preparations and bash as default cmd
 COPY entrypoint.sh /entrypoint.sh
@@ -37,7 +34,9 @@ ENTRYPOINT ["/entrypoint.sh"]
 CMD ["/bin/bash"]
 
 # Fill the Salt in (this and next step should be in the end as they change layers each time)
-RUN mkdir -p /srv
+RUN mkdir -p -m 700 /root/.ssh
+RUN mkdir -p /srv /ssh-csocks
+COPY etc/ssh/ssh_config /etc/ssh/ssh_config
 COPY formulas /srv/formulas
 COPY salt /srv/salt
 COPY salt_local /srv/salt_local
