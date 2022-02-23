@@ -14,6 +14,7 @@ variables:
   GIT_SUBMODULE_STRATEGY: none
 
 after_script:
+  - . rsnapshot_backup_sync_status # Export RSNAPSHOT_BACKUP_SYNC from artifact
   - /srv/.gitlab-server-job/send_notify_devilry.sh
   - rm -rf alive_minions
 
@@ -151,6 +152,11 @@ rsnapshot_backup_update_config_2:
       - /^run_.*/
     variables:
       - $RSNAPSHOT_BACKUP_TYPE
+  artifacts:
+    paths:
+      - rsnapshot_backup_sync_status
+    when: always
+  allow_failure: True # Even if sync fails, go to rotation, status for alerting is sent as artifact
   script:
     - /srv/.gitlab-server-job/check_alive_minions.sh
     - /srv/.gitlab-server-job/rsnapshot_backup_sync.sh
@@ -173,6 +179,7 @@ rsnapshot_backup_sync_2:
     variables:
       - $RSNAPSHOT_BACKUP_TYPE
   script:
+    - . rsnapshot_backup_sync_status # Export RSNAPSHOT_BACKUP_SYNC from artifact
     - /srv/.gitlab-server-job/check_alive_minions.sh
     - /srv/.gitlab-server-job/rsnapshot_backup_rotate.sh
 
@@ -194,6 +201,7 @@ rsnapshot_backup_rotate_2:
     variables:
       - $RSNAPSHOT_BACKUP_TYPE
   script:
+    - . rsnapshot_backup_sync_status # Export RSNAPSHOT_BACKUP_SYNC from artifact
     - /srv/.gitlab-server-job/check_alive_minions.sh
     - /srv/.gitlab-server-job/rsnapshot_backup_check_backup.sh
 
@@ -215,6 +223,7 @@ rsnapshot_backup_check_backup_2:
     variables:
       - $RSNAPSHOT_BACKUP_TYPE
   script:
+    - . rsnapshot_backup_sync_status # Export RSNAPSHOT_BACKUP_SYNC from artifact
     - /srv/.gitlab-server-job/check_alive_minions.sh
     - /srv/.gitlab-server-job/rsnapshot_backup_check_coverage.sh
 
