@@ -1,1 +1,0 @@
-../../formulas/sysadmws-formula/pillar/cmd_check_alert/exclude_network_iptables_open_from_any_2226.sls
