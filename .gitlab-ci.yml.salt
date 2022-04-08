@@ -44,6 +44,8 @@ check_pillar:
       - master
   script:
     - sudo /srv/scripts/ci_sudo/salt_master_pull.sh
+  # Common after_script not needed on this stage
+  after_script: []
 
 salt_master_pull_1:
   extends: .salt_master_pull
