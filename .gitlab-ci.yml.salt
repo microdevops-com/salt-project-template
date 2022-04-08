@@ -34,6 +34,8 @@ check_pillar:
   except:
     refs:
       - /^run_.*/
+  # Common after_script not needed on this stage
+  after_script: []
 
 .salt_master_pull:
   stage: pull
