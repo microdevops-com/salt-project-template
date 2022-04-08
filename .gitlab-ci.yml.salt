@@ -14,7 +14,7 @@ variables:
   GIT_SUBMODULE_STRATEGY: none
 
 after_script:
-  - . rsnapshot_backup_sync_status # Export RSNAPSHOT_BACKUP_SYNC from artifact
+  - [[ -e rsnapshot_backup_sync_status ]] && . rsnapshot_backup_sync_status || true # Export RSNAPSHOT_BACKUP_SYNC from artifact
   - /srv/.gitlab-server-job/send_notify_devilry.sh
   - rm -rf alive_minions
 
