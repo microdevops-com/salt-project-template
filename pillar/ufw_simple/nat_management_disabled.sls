@@ -1,0 +1,1 @@
+../../formulas/sysadmws-formula/pillar/ufw_simple/nat_management_disabled.sls
