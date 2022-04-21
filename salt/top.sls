@@ -27,8 +27,8 @@ base:
     - ufw
     - salt.minion
 
-  # All Ubuntu and Debian
-  'G@os:Ubuntu or G@os:Debian':
+  # All Ubuntu and Debian and CentOS
+  'G@os:Ubuntu or G@os:Debian or G@os:CentOS':
     - match: compound
     - bash.bash_completions
     - bash.bash_misc
