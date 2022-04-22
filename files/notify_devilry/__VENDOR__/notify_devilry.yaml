@@ -1,4 +1,4 @@
-enabled: True
+enabled: __MONITORING_ENABLED__
 
 defaults:
   environment: infra

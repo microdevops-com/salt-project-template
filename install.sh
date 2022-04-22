@@ -73,6 +73,9 @@ function sed_inplace_common () {
 	else
 		local LOCAL_TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
 	fi
+	if [[ -z ${MONITORING_ENABLED} ]]; then
+		MONITORING_ENABLED=True
+	fi
 	if [[ -z ${ALERTA_URL} ]]; then
 		local LOCAL_ALERTA_URL=__not_set_in_template_install__
 	else
@@ -90,6 +93,7 @@ function sed_inplace_common () {
 		-e "s/__VENDOR_FULL__/${VENDOR_FULL}/g" \
 		-e "s/__TELEGRAM_TOKEN__/${LOCAL_TELEGRAM_TOKEN}/g" \
 		-e "s/__TELEGRAM_CHAT_ID__/${LOCAL_TELEGRAM_CHAT_ID}/g" \
+		-e "s/__MONITORING_ENABLED__/${MONITORING_ENABLED}/g" \
 		-e "s#__ALERTA_URL__#${LOCAL_ALERTA_URL}#g" \
 		-e "s/__ALERTA_API_KEY__/${LOCAL_ALERTA_API_KEY}/g" \
 		-e "s/__HB_RECEIVER_HN__/${HB_RECEIVER_HN}/g" \
