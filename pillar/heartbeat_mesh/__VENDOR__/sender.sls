@@ -2,7 +2,7 @@ heartbeat_mesh:
   sender:
     cron: '*'
     config:
-      enabled: True
+      enabled: __MONITORING_ENABLED__
       receivers:
         __HB_RECEIVER_HN__:
           token: __HB_TOKEN__
