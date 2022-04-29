@@ -13,16 +13,6 @@ variables:
   GIT_STRATEGY: none
   GIT_SUBMODULE_STRATEGY: none
 
-after_script:
-  - |
-    if [[ -e rsnapshot_backup_sync_status ]]; then
-      . rsnapshot_backup_sync_status # Export RSNAPSHOT_BACKUP_SYNC from artifact
-    else
-      true
-    fi
-  - /srv/.gitlab-server-job/send_notify_devilry.sh
-  - rm -rf alive_minions
-
 check_pillar:
   tags:
     - __DEV_RUNNER__
@@ -31,16 +21,12 @@ check_pillar:
     GIT_STRATEGY: fetch
     GIT_SUBMODULE_STRATEGY: normal
   script:
-    #- docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY # no need to login and push to gitlab right now, but keep schema compatible for future
     - echo IMAGE - $CI_REGISTRY/$CI_PROJECT_PATH:$CI_COMMIT_REF_SLUG
     - docker build --pull -t $CI_REGISTRY/$CI_PROJECT_PATH:$CI_COMMIT_REF_SLUG --build-arg SALT_VERSION=3001 .
     - docker run --rm $CI_REGISTRY/$CI_PROJECT_PATH:$CI_COMMIT_REF_SLUG -- /.check_pillar_for_roster.sh
-    #- docker push $CI_REGISTRY/$CI_PROJECT_PATH:$CI_COMMIT_REF_SLUG # no need to login and push to gitlab right now, but keep schema compatible for future
   except:
     refs:
       - /^run_.*/
-  # Common after_script not needed on this stage
-  after_script: []
 
 .salt_master_pull:
   stage: pull
@@ -49,8 +35,6 @@ check_pillar:
       - master
   script:
     - sudo /srv/scripts/ci_sudo/salt_master_pull.sh
-  # Common after_script not needed on this stage
-  after_script: []
 
 salt_master_pull_1:
   extends: .salt_master_pull
@@ -70,14 +54,13 @@ salt_master_pull_2:
     variables:
       # This var should be set on all job types, if removed - broken pipeline will run on tag creation
       - $SALT_MINION
-  # Send collected alive_minions to next stages as artifacts
   artifacts:
     paths:
       - alive_minions
   script:
     - /srv/.gitlab-server-job/count_alive_minions.sh
-  # Override global after_script with alive_minions removal
-  after_script: []
+  after_script:
+    - /srv/.gitlab-server-job/send_notify_devilry.sh
 
 count_alive_minions_1:
   extends: .count_alive_minions
@@ -99,6 +82,9 @@ count_alive_minions_2:
   script:
     - /srv/.gitlab-server-job/check_alive_minions.sh
     - /srv/.gitlab-server-job/refresh_pillar.sh
+  after_script:
+    - /srv/.gitlab-server-job/send_notify_devilry.sh
+    - rm -rf alive_minions
 
 refresh_pillar_1:
   extends: .refresh_pillar
@@ -118,10 +104,11 @@ refresh_pillar_2:
     variables:
       - $SALT_CMD
   script:
-    # Check at least one master has one needed minion
     - /srv/.gitlab-server-job/check_alive_minions.sh
-    # Run Salt Command
     - /srv/.gitlab-server-job/salt_cmd.sh
+  after_script:
+    - /srv/.gitlab-server-job/send_notify_devilry.sh
+    - rm -rf alive_minions
 
 salt_cmd_1:
   extends: .salt_cmd
@@ -143,6 +130,9 @@ salt_cmd_2:
   script:
     - /srv/.gitlab-server-job/check_alive_minions.sh
     - /srv/.gitlab-server-job/rsnapshot_backup_update_config.sh
+  after_script:
+    - /srv/.gitlab-server-job/send_notify_devilry.sh
+    - rm -rf alive_minions
 
 rsnapshot_backup_update_config_1:
   extends: .rsnapshot_backup_update_config
@@ -169,6 +159,9 @@ rsnapshot_backup_update_config_2:
   script:
     - /srv/.gitlab-server-job/check_alive_minions.sh
     - /srv/.gitlab-server-job/rsnapshot_backup_sync.sh
+  after_script:
+    - /srv/.gitlab-server-job/send_notify_devilry.sh
+    - rm -rf alive_minions
 
 rsnapshot_backup_sync_1:
   extends: .rsnapshot_backup_sync
@@ -188,9 +181,13 @@ rsnapshot_backup_sync_2:
     variables:
       - $RSNAPSHOT_BACKUP_TYPE
   script:
-    - . rsnapshot_backup_sync_status # Export RSNAPSHOT_BACKUP_SYNC from artifact
     - /srv/.gitlab-server-job/check_alive_minions.sh
     - /srv/.gitlab-server-job/rsnapshot_backup_rotate.sh
+  after_script:
+    - . rsnapshot_backup_sync_status
+    - /srv/.gitlab-server-job/send_notify_devilry.sh
+    - rm -rf alive_minions
+    - rm -f rsnapshot_backup_sync_status
 
 rsnapshot_backup_rotate_1:
   extends: .rsnapshot_backup_rotate
@@ -210,9 +207,13 @@ rsnapshot_backup_rotate_2:
     variables:
       - $RSNAPSHOT_BACKUP_TYPE
   script:
-    - . rsnapshot_backup_sync_status # Export RSNAPSHOT_BACKUP_SYNC from artifact
     - /srv/.gitlab-server-job/check_alive_minions.sh
     - /srv/.gitlab-server-job/rsnapshot_backup_check_backup.sh
+  after_script:
+    - . rsnapshot_backup_sync_status
+    - /srv/.gitlab-server-job/send_notify_devilry.sh
+    - rm -rf alive_minions
+    - rm -f rsnapshot_backup_sync_status
 
 rsnapshot_backup_check_backup_1:
   extends: .rsnapshot_backup_check_backup
@@ -232,9 +233,13 @@ rsnapshot_backup_check_backup_2:
     variables:
       - $RSNAPSHOT_BACKUP_TYPE
   script:
-    - . rsnapshot_backup_sync_status # Export RSNAPSHOT_BACKUP_SYNC from artifact
     - /srv/.gitlab-server-job/check_alive_minions.sh
     - /srv/.gitlab-server-job/rsnapshot_backup_check_coverage.sh
+  after_script:
+    - . rsnapshot_backup_sync_status
+    - /srv/.gitlab-server-job/send_notify_devilry.sh
+    - rm -rf alive_minions
+    - rm -f rsnapshot_backup_sync_status
 
 rsnapshot_backup_check_coverage_1:
   extends: .rsnapshot_backup_check_coverage

@@ -108,8 +108,9 @@ rsnapshot_backup_rotate:
   script:
     - /srv/scripts/salt-ssh/rsnapshot_backup_rotate.sh "${SALT_MINION}" "${RSNAPSHOT_BACKUP_TYPE}" "${SSH_HOST}" "${SSH_PORT}" "${SSH_JUMP}"
   after_script:
-    - . rsnapshot_backup_sync_status # Export RSNAPSHOT_BACKUP_SYNC from artifact
+    - . rsnapshot_backup_sync_status
     - /srv/scripts/salt-ssh/send_notify_devilry.sh
+    - rm -f rsnapshot_backup_sync_status
 
 rsnapshot_backup_check_backup:
   tags:
@@ -124,8 +125,9 @@ rsnapshot_backup_check_backup:
   script:
     - /srv/scripts/salt-ssh/rsnapshot_backup_check_backup.sh "${SALT_MINION}" "${RSNAPSHOT_BACKUP_TYPE}" "${SSH_HOST}" "${SSH_PORT}" "${SSH_JUMP}"
   after_script:
-    - . rsnapshot_backup_sync_status # Export RSNAPSHOT_BACKUP_SYNC from artifact
+    - . rsnapshot_backup_sync_status
     - /srv/scripts/salt-ssh/send_notify_devilry.sh
+    - rm -f rsnapshot_backup_sync_status
 
 rsnapshot_backup_check_coverage:
   tags:
@@ -140,5 +142,6 @@ rsnapshot_backup_check_coverage:
   script:
     - /srv/scripts/salt-ssh/rsnapshot_backup_check_coverage.sh "${SALT_MINION}"
   after_script:
-    - . rsnapshot_backup_sync_status # Export RSNAPSHOT_BACKUP_SYNC from artifact
+    - . rsnapshot_backup_sync_status
     - /srv/scripts/salt-ssh/send_notify_devilry.sh
+    - rm -f rsnapshot_backup_sync_status
