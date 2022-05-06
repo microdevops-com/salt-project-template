@@ -1,22 +1,30 @@
 FROM ubuntu:focal
 
+SHELL ["/bin/bash", "-c"]
+
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ="__ADMIN_TZ__"
 
 # Add salt repo and install salt-ssh
 # salt-minion added for --local pillar tests
+# Add python3-contextvars, https://github.com/saltstack/salt/pull/61895/files patch for 3004 to fix salt-ssh
 ARG SALT_VERSION=__SALT_VERSION__
-# TODO: 3001 salt moved to archive, tmp fix, return back after upgrading salt
-#RUN apt-get update -y \
-#    && apt-get -qy install wget gnupg lsb-release \
-#    && echo "deb http://repo.saltstack.com/py3/ubuntu/$(lsb_release -sr)/amd64/${SALT_VERSION} $(lsb_release -sc) main" >> /etc/apt/sources.list.d/saltstack.list \
-#    && wget -qO - https://repo.saltstack.com/py3/ubuntu/$(lsb_release -sr)/amd64/${SALT_VERSION}/SALTSTACK-GPG-KEY.pub | apt-key add -
-RUN apt-get update -y \
-    && apt-get -qy install wget gnupg lsb-release \
-    && echo "deb https://archive.repo.saltproject.io/py3/ubuntu/$(lsb_release -sr)/amd64/${SALT_VERSION} $(lsb_release -sc) main" >> /etc/apt/sources.list.d/saltstack.list \
-    && wget -qO - https://archive.repo.saltproject.io/py3/ubuntu/$(lsb_release -sr)/amd64/${SALT_VERSION}/SALTSTACK-GPG-KEY.pub | apt-key add -
-RUN apt-get update -y \
-    && apt-get install -y --no-install-recommends salt-minion salt-ssh openssh-client
+RUN if [[ "${SALT_VERSION}" == "3001" ]]; then \
+      apt-get update -y \
+      && apt-get -qy install wget gnupg lsb-release \
+      && echo "deb https://archive.repo.saltproject.io/py3/ubuntu/$(lsb_release -sr)/amd64/${SALT_VERSION} $(lsb_release -sc) main" >> /etc/apt/sources.list.d/saltstack.list \
+      && wget -qO - https://archive.repo.saltproject.io/py3/ubuntu/$(lsb_release -sr)/amd64/${SALT_VERSION}/SALTSTACK-GPG-KEY.pub | apt-key add - \
+      && apt-get update -y \
+      && apt-get install -y --no-install-recommends salt-minion salt-ssh openssh-client; \
+    else \
+      apt-get update -y \
+      && apt-get -qy install wget gnupg lsb-release \
+      && echo "deb http://repo.saltstack.com/py3/ubuntu/$(lsb_release -sr)/amd64/${SALT_VERSION} $(lsb_release -sc) main" >> /etc/apt/sources.list.d/saltstack.list \
+      && wget -qO - https://repo.saltstack.com/py3/ubuntu/$(lsb_release -sr)/amd64/${SALT_VERSION}/SALTSTACK-GPG-KEY.pub | apt-key add - \
+      && apt-get update -y \
+      && apt-get install -y --no-install-recommends salt-minion salt-ssh openssh-client python3-contextvars \
+      && sed -i -e 's/state = compile_template(/# Make sure SaltCacheLoader use correct fileclient\n                if context is None:\n                  context = {"fileclient": self.client}\n                state = compile_template(/' /usr/lib/python3/dist-packages/salt/state.py; \
+    fi
 
 # Add utils
 RUN apt-get install -y --no-install-recommends mc vim telnet iputils-ping curl ccze less jq dnsutils

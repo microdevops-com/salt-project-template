@@ -22,7 +22,7 @@ check_pillar:
     GIT_SUBMODULE_STRATEGY: normal
   script:
     - echo IMAGE - $CI_REGISTRY/$CI_PROJECT_PATH:$CI_COMMIT_REF_SLUG
-    - docker build --pull -t $CI_REGISTRY/$CI_PROJECT_PATH:$CI_COMMIT_REF_SLUG --build-arg SALT_VERSION=3001 .
+    - docker build --pull -t $CI_REGISTRY/$CI_PROJECT_PATH:$CI_COMMIT_REF_SLUG --build-arg SALT_VERSION=__SALT_VERSION__ .
     - docker run --rm $CI_REGISTRY/$CI_PROJECT_PATH:$CI_COMMIT_REF_SLUG -- /.check_pillar_for_roster.sh
   except:
     refs:
