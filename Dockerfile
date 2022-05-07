@@ -26,6 +26,13 @@ RUN if [[ "${SALT_VERSION}" == "3001" ]]; then \
       && sed -i -e 's/state = compile_template(/# Make sure SaltCacheLoader use correct fileclient\n                if context is None:\n                  context = {"fileclient": self.client}\n                state = compile_template(/' /usr/lib/python3/dist-packages/salt/state.py; \
     fi
 
+# Temp fix https://github.com/saltstack/salt/pull/61064
+# TODO remove when finally merged
+COPY etc/files/_compat.py /etc/files/_compat.py
+RUN if [[ "${SALT_VERSION}" == "3004" ]]; then \
+      cp -f /etc/files/_compat.py /usr/lib/python3/dist-packages/salt/_compat.py; \
+    fi
+
 # Add utils
 RUN apt-get install -y --no-install-recommends mc vim telnet iputils-ping curl ccze less jq dnsutils
 
