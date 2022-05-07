@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 GRAND_EXIT=0
 
 DOCKER_IMAGE="${PWD##*/}:${USER}"
