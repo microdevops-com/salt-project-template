@@ -143,6 +143,16 @@ function add_submodule () {
 	popd
 }
 
+function remove_submodule () {
+	pushd $1
+		if [[ -d "$2/$3" ]]; then
+			git rm "$2/$3"
+			rm -rf .git/modules/$3
+			git config --remove-section submodule.$3
+		fi
+	popd
+}
+
 function move_to_templated_dir () {
 	mkdir -p $2
 	mv -f $1/* $2
@@ -176,10 +186,11 @@ add_submodule sysadmws-formula $1/formulas https://github.com/sysadmws/sysadmws-
 add_submodule users-formula $1/formulas https://github.com/sysadmws/users-formula.git
 add_submodule postgres-formula $1/formulas https://github.com/sysadmws/postgres-formula.git
 add_submodule vim-formula $1/formulas https://github.com/sysadmws/vim-formula.git
-add_submodule pip-formula $1/formulas https://github.com/sysadmws/pip-formula.git
 add_submodule salt-cloudflare $1/formulas https://github.com/sysadmws/salt-cloudflare.git
 add_submodule .gitlab-server-job $1 https://github.com/sysadmws/gitlab-server-job
-add_submodule .gitlab-ci-functions $1 https://github.com/sysadmws/gitlab-ci-functions
+
+remove_submodule $1 formulas pip-formula
+remove_submodule $1 . .gitlab-ci-functions
 
 rsync_without_delete pillar $1/pillar
 
