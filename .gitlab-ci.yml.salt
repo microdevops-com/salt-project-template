@@ -1,5 +1,6 @@
 stages:
   - check
+  - push
   - pull
   - count
   - refresh
@@ -27,6 +28,18 @@ check_pillar:
   except:
     refs:
       - /^run_.*/
+
+push:
+  tags:
+    - __DEV_RUNNER__
+  stage: push
+  script:
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+    - echo IMAGE - $CI_REGISTRY/$CI_PROJECT_PATH:$CI_COMMIT_REF_SLUG
+    - docker push $CI_REGISTRY/$CI_PROJECT_PATH:$CI_COMMIT_REF_SLUG
+  only:
+    refs:
+      - master
 
 .salt_master_pull:
   stage: pull
