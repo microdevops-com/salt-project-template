@@ -1,5 +1,5 @@
 stages:
-  - check
+  - build
   - push
   - pull
   - count
@@ -14,17 +14,17 @@ variables:
   GIT_STRATEGY: none
   GIT_SUBMODULE_STRATEGY: none
 
-check_pillar:
+build:
   tags:
     - __DEV_RUNNER__
-  stage: check
+  stage: build
   variables:
     GIT_STRATEGY: fetch
     GIT_SUBMODULE_STRATEGY: normal
   script:
-    - echo IMAGE - $CI_REGISTRY/$CI_PROJECT_PATH:$CI_COMMIT_REF_SLUG
-    - docker build --pull -t $CI_REGISTRY/$CI_PROJECT_PATH:$CI_COMMIT_REF_SLUG --build-arg SALT_VERSION=__SALT_VERSION__ .
-    - docker run --rm $CI_REGISTRY/$CI_PROJECT_PATH:$CI_COMMIT_REF_SLUG -- /.check_pillar_for_roster.sh
+    - echo IMAGE - $CI_PROJECT_PATH:$CI_PIPELINE_IID
+    - docker build --pull -t $CI_PROJECT_PATH:$CI_PIPELINE_IID --build-arg SALT_VERSION=__SALT_VERSION__ .
+    - docker run --rm $CI_PROJECT_PATH:$CI_PIPELINE_IID -- /.check_pillar_for_roster.sh
   except:
     refs:
       - /^run_.*/
@@ -34,8 +34,9 @@ push:
     - __DEV_RUNNER__
   stage: push
   script:
+    - echo IMAGE - $CI_PROJECT_PATH:$CI_PIPELINE_IID -> $CI_REGISTRY/$CI_PROJECT_PATH:$CI_COMMIT_REF_SLUG
     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
-    - echo IMAGE - $CI_REGISTRY/$CI_PROJECT_PATH:$CI_COMMIT_REF_SLUG
+    - docker tag $CI_PROJECT_PATH:$CI_PIPELINE_IID $CI_REGISTRY/$CI_PROJECT_PATH:$CI_COMMIT_REF_SLUG
     - docker push $CI_REGISTRY/$CI_PROJECT_PATH:$CI_COMMIT_REF_SLUG
   only:
     refs:
