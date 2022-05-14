@@ -23,7 +23,7 @@ build:
     GIT_SUBMODULE_STRATEGY: normal
   script:
     - echo IMAGE - $CI_PROJECT_PATH:$CI_PIPELINE_IID
-    - docker build --pull -t $CI_PROJECT_PATH:$CI_PIPELINE_IID --build-arg SALT_VERSION=__SALT_VERSION__ .
+    - docker build --pull --tag $CI_PROJECT_PATH:$CI_PIPELINE_IID --build-arg SALT_VERSION=__SALT_VERSION__ .
     - docker run --rm $CI_PROJECT_PATH:$CI_PIPELINE_IID -- /.check_pillar_for_roster.sh
   except:
     refs:
