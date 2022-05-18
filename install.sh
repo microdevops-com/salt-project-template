@@ -212,10 +212,12 @@ sed_inplace_common $1/pillar/pkg/${VENDOR}/forward_root_email.sls
 
 move_to_templated_dir $1/pillar/heartbeat_mesh/__VENDOR__ $1/pillar/heartbeat_mesh/${VENDOR}
 sed_inplace_common $1/pillar/heartbeat_mesh/${VENDOR}/sender.sls
-sed_inplace_common $1/pillar/heartbeat_mesh/${VENDOR}/sender_disabled.sls
+sed_inplace_common $1/pillar/heartbeat_mesh/${VENDOR}/sender.jinja.sls
 
 mv -f $1/pillar/notify_devilry/__VENDOR__.sls $1/pillar/notify_devilry/${VENDOR}.sls
 sed_inplace_common $1/pillar/notify_devilry/${VENDOR}.sls
+mv -f $1/pillar/notify_devilry/__VENDOR__.jinja.sls $1/pillar/notify_devilry/${VENDOR}.jinja.sls
+sed_inplace_common $1/pillar/notify_devilry/${VENDOR}.jinja.sls
 
 if [[ $2 = salt ]]; then
 	sed_inplace_common $1/pillar/salt/minion.sls
