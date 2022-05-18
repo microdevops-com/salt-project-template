@@ -172,13 +172,16 @@ rsync_without_delete files $1/files
 move_to_templated_dir $1/files/notify_devilry/__VENDOR__ $1/files/notify_devilry/${VENDOR}
 
 sed_inplace_common $1/files/notify_devilry/${VENDOR}/notify_devilry.yaml
+sed_inplace_common $1/files/notify_devilry/${VENDOR}/notify_devilry_disabled.yaml
 # Enable alerta in notify_devilry if needed vars set
 if [[ -n ${ALERTA_URL} && -n ${ALERTA_API_KEY} ]]; then
 	sed -i -e 's/#alerta#//' $1/files/notify_devilry/${VENDOR}/notify_devilry.yaml
+	sed -i -e 's/#alerta#//' $1/files/notify_devilry/${VENDOR}/notify_devilry_disabled.yaml
 # Else if no alerta enable telegram in notify_devilry if needed vars set
 # No sense in telegram chain if alerta enabled - dups
 elif [[ -n ${TELEGRAM_TOKEN} && -n ${TELEGRAM_CHAT_ID} ]]; then
 	sed -i -e 's/#telegram#//' $1/files/notify_devilry/${VENDOR}/notify_devilry.yaml
+	sed -i -e 's/#telegram#//' $1/files/notify_devilry/${VENDOR}/notify_devilry_disabled.yaml
 fi
 
 rsync_without_delete formulas $1/formulas
@@ -209,6 +212,7 @@ sed_inplace_common $1/pillar/pkg/${VENDOR}/forward_root_email.sls
 
 move_to_templated_dir $1/pillar/heartbeat_mesh/__VENDOR__ $1/pillar/heartbeat_mesh/${VENDOR}
 sed_inplace_common $1/pillar/heartbeat_mesh/${VENDOR}/sender.sls
+sed_inplace_common $1/pillar/heartbeat_mesh/${VENDOR}/sender_disabled.sls
 
 mv -f $1/pillar/notify_devilry/__VENDOR__.sls $1/pillar/notify_devilry/${VENDOR}.sls
 sed_inplace_common $1/pillar/notify_devilry/${VENDOR}.sls
