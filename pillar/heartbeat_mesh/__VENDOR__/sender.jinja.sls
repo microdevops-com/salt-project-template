@@ -9,7 +9,7 @@ if grains["id"] in [
 "{{ asset_fqdn }}", 
 {% endif %}
 {% endfor %}
-]" 
+]
 %{{ "}" }}
       enabled: __MONITORING_ENABLED__
 {{ "{" }}% else %{{ "}" }}

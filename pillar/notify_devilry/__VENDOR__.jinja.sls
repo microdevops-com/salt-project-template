@@ -6,7 +6,7 @@ if grains["id"] in [
 "{{ asset_fqdn }}", 
 {% endif %}
 {% endfor %}
-]" 
+]
 %{{ "}" }}
   config_file: salt://notify_devilry/__VENDOR__/notify_devilry.yaml
 {{ "{" }}% else %{{ "}" }}
