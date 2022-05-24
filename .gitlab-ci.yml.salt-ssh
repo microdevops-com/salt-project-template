@@ -18,37 +18,36 @@ build:
   variables:
     GIT_STRATEGY: fetch
     GIT_SUBMODULE_STRATEGY: normal
+  rules:
+    - if: $SALT_CMD || $RSNAPSHOT_BACKUP_TYPE
+      when: never
+    - if: $CI_COMMIT_REF_NAME
   script:
     - echo IMAGE $CI_PROJECT_PATH:$CI_PIPELINE_ID
     - docker build --pull --tag $CI_PROJECT_PATH:$CI_PIPELINE_ID --build-arg SALT_VERSION=__SALT_VERSION__ .
     - docker run --rm $CI_PROJECT_PATH:$CI_PIPELINE_ID -- /.check_pillar_for_roster.sh
-  except:
-    refs:
-      - /^run_.*/
 
 push:
   tags:
     - __DEV_RUNNER__
   stage: push
+  rules:
+    - if: $SALT_CMD || $RSNAPSHOT_BACKUP_TYPE
+      when: never
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
   script:
     - echo IMAGE $CI_PROJECT_PATH:$CI_PIPELINE_ID "->" $CI_REGISTRY/$CI_PROJECT_PATH:$CI_COMMIT_REF_SLUG
     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
     - docker tag $CI_PROJECT_PATH:$CI_PIPELINE_ID $CI_REGISTRY/$CI_PROJECT_PATH:$CI_COMMIT_REF_SLUG
     - docker push $CI_REGISTRY/$CI_PROJECT_PATH:$CI_COMMIT_REF_SLUG
-  only:
-    refs:
-      - master
 
 salt_cmd:
   tags:
     - __PROD_RUNNER__
   stage: run_1
   image: $CI_REGISTRY/$CI_PROJECT_PATH:master
-  only:
-    refs:
-      - /^run_.*/
-    variables:
-      - $SALT_CMD
+  rules:
+    - if: $SALT_CMD && $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
   script:
     - /srv/scripts/salt-ssh/salt_cmd.sh "${SALT_MINION}" "${SALT_CMD}"
   after_script:
@@ -59,11 +58,8 @@ rsnapshot_backup_update_config:
     - __PROD_RUNNER__
   stage: run_1
   image: $CI_REGISTRY/$CI_PROJECT_PATH:master
-  only:
-    refs:
-      - /^run_.*/
-    variables:
-      - $RSNAPSHOT_BACKUP_TYPE
+  rules:
+    - if: $RSNAPSHOT_BACKUP_TYPE && $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
   script:
     - /srv/scripts/salt-ssh/rsnapshot_backup_update_config.sh "${SALT_MINION}"
   after_script:
@@ -74,11 +70,8 @@ rsnapshot_backup_sync:
     - __PROD_RUNNER__
   stage: run_2
   image: $CI_REGISTRY/$CI_PROJECT_PATH:master
-  only:
-    refs:
-      - /^run_.*/
-    variables:
-      - $RSNAPSHOT_BACKUP_TYPE
+  rules:
+    - if: $RSNAPSHOT_BACKUP_TYPE && $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
   artifacts:
     paths:
       - rsnapshot_backup_sync_status
@@ -100,11 +93,8 @@ rsnapshot_backup_rotate:
     - __PROD_RUNNER__
   stage: run_3
   image: $CI_REGISTRY/$CI_PROJECT_PATH:master
-  only:
-    refs:
-      - /^run_.*/
-    variables:
-      - $RSNAPSHOT_BACKUP_TYPE
+  rules:
+    - if: $RSNAPSHOT_BACKUP_TYPE && $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
   script:
     - /srv/scripts/salt-ssh/rsnapshot_backup_rotate.sh "${SALT_MINION}" "${RSNAPSHOT_BACKUP_TYPE}" "${SSH_HOST}" "${SSH_PORT}" "${SSH_JUMP}"
   after_script:
@@ -117,11 +107,8 @@ rsnapshot_backup_check_backup:
     - __PROD_RUNNER__
   stage: run_4
   image: $CI_REGISTRY/$CI_PROJECT_PATH:master
-  only:
-    refs:
-      - /^run_.*/
-    variables:
-      - $RSNAPSHOT_BACKUP_TYPE
+  rules:
+    - if: $RSNAPSHOT_BACKUP_TYPE && $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
   script:
     - /srv/scripts/salt-ssh/rsnapshot_backup_check_backup.sh "${SALT_MINION}" "${RSNAPSHOT_BACKUP_TYPE}" "${SSH_HOST}" "${SSH_PORT}" "${SSH_JUMP}"
   after_script:
@@ -134,11 +121,8 @@ rsnapshot_backup_check_coverage:
     - __PROD_RUNNER__
   stage: run_5
   image: $CI_REGISTRY/$CI_PROJECT_PATH:master
-  only:
-    refs:
-      - /^run_.*/
-    variables:
-      - $RSNAPSHOT_BACKUP_TYPE
+  rules:
+    - if: $RSNAPSHOT_BACKUP_TYPE && $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
   script:
     - /srv/scripts/salt-ssh/rsnapshot_backup_check_coverage.sh "${SALT_MINION}"
   after_script:

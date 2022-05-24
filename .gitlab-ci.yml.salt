@@ -21,32 +21,35 @@ build:
   variables:
     GIT_STRATEGY: fetch
     GIT_SUBMODULE_STRATEGY: normal
+  rules:
+    - if: $SALT_CMD || $RSNAPSHOT_BACKUP_TYPE
+      when: never
+    - if: $CI_COMMIT_REF_NAME
   script:
     - echo IMAGE $CI_PROJECT_PATH:$CI_PIPELINE_ID
     - docker build --pull --tag $CI_PROJECT_PATH:$CI_PIPELINE_ID --build-arg SALT_VERSION=__SALT_VERSION__ .
     - docker run --rm $CI_PROJECT_PATH:$CI_PIPELINE_ID -- /.check_pillar_for_roster.sh
-  except:
-    refs:
-      - /^run_.*/
 
 push:
   tags:
     - __DEV_RUNNER__
   stage: push
+  rules:
+    - if: $SALT_CMD || $RSNAPSHOT_BACKUP_TYPE
+      when: never
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
   script:
     - echo IMAGE $CI_PROJECT_PATH:$CI_PIPELINE_ID "->" $CI_REGISTRY/$CI_PROJECT_PATH:$CI_COMMIT_REF_SLUG
     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
     - docker tag $CI_PROJECT_PATH:$CI_PIPELINE_ID $CI_REGISTRY/$CI_PROJECT_PATH:$CI_COMMIT_REF_SLUG
     - docker push $CI_REGISTRY/$CI_PROJECT_PATH:$CI_COMMIT_REF_SLUG
-  only:
-    refs:
-      - master
 
 .salt_master_pull:
   stage: pull
-  only:
-    refs:
-      - master
+  rules:
+    - if: $SALT_CMD || $RSNAPSHOT_BACKUP_TYPE
+      when: never
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
   script:
     - sudo /srv/scripts/ci_sudo/salt_master_pull.sh
 
@@ -62,12 +65,8 @@ salt_master_pull_2:
 
 .count_alive_minions:
   stage: count
-  only:
-    refs:
-      - /^run_.*/
-    variables:
-      # This var should be set on all job types, if removed - broken pipeline will run on tag creation
-      - $SALT_MINION
+  rules:
+    - if: $SALT_MINION && $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
   artifacts:
     paths:
       - alive_minions
@@ -88,11 +87,8 @@ count_alive_minions_2:
 
 .refresh_pillar:
   stage: refresh
-  only:
-    refs:
-      - /^run_.*/
-    variables:
-      - $SALT_MINION
+  rules:
+    - if: $SALT_MINION && $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
   script:
     - /srv/.gitlab-server-job/check_alive_minions.sh
     - /srv/.gitlab-server-job/refresh_pillar.sh
@@ -112,11 +108,8 @@ refresh_pillar_2:
 
 .salt_cmd:
   stage: run_1
-  only:
-    refs:
-      - /^run_.*/
-    variables:
-      - $SALT_CMD
+  rules:
+    - if: $SALT_CMD && $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
   script:
     - /srv/.gitlab-server-job/check_alive_minions.sh
     - /srv/.gitlab-server-job/salt_cmd.sh
@@ -136,11 +129,8 @@ salt_cmd_2:
 
 .rsnapshot_backup_update_config:
   stage: run_1
-  only:
-    refs:
-      - /^run_.*/
-    variables:
-      - $RSNAPSHOT_BACKUP_TYPE
+  rules:
+    - if: $RSNAPSHOT_BACKUP_TYPE && $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
   script:
     - /srv/.gitlab-server-job/check_alive_minions.sh
     - /srv/.gitlab-server-job/rsnapshot_backup_update_config.sh
@@ -160,11 +150,8 @@ rsnapshot_backup_update_config_2:
 
 .rsnapshot_backup_sync:
   stage: run_2
-  only:
-    refs:
-      - /^run_.*/
-    variables:
-      - $RSNAPSHOT_BACKUP_TYPE
+  rules:
+    - if: $RSNAPSHOT_BACKUP_TYPE && $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
   artifacts:
     paths:
       - rsnapshot_backup_sync_status
@@ -189,11 +176,8 @@ rsnapshot_backup_sync_2:
 
 .rsnapshot_backup_rotate:
   stage: run_3
-  only:
-    refs:
-      - /^run_.*/
-    variables:
-      - $RSNAPSHOT_BACKUP_TYPE
+  rules:
+    - if: $RSNAPSHOT_BACKUP_TYPE && $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
   script:
     - /srv/.gitlab-server-job/check_alive_minions.sh
     - /srv/.gitlab-server-job/rsnapshot_backup_rotate.sh
@@ -215,11 +199,8 @@ rsnapshot_backup_rotate_2:
 
 .rsnapshot_backup_check_backup:
   stage: run_4
-  only:
-    refs:
-      - /^run_.*/
-    variables:
-      - $RSNAPSHOT_BACKUP_TYPE
+  rules:
+    - if: $RSNAPSHOT_BACKUP_TYPE && $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
   script:
     - /srv/.gitlab-server-job/check_alive_minions.sh
     - /srv/.gitlab-server-job/rsnapshot_backup_check_backup.sh
@@ -241,11 +222,8 @@ rsnapshot_backup_check_backup_2:
 
 .rsnapshot_backup_check_coverage:
   stage: run_5
-  only:
-    refs:
-      - /^run_.*/
-    variables:
-      - $RSNAPSHOT_BACKUP_TYPE
+  rules:
+    - if: $RSNAPSHOT_BACKUP_TYPE && $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
   script:
     - /srv/.gitlab-server-job/check_alive_minions.sh
     - /srv/.gitlab-server-job/rsnapshot_backup_check_coverage.sh
