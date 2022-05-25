@@ -21,6 +21,7 @@ if [[ $2 = salt ]]; then
 	if [[ -z ${DEV_RUNNER} ]]; then echo Var DEV_RUNNER missing; exit 1; fi
 	if [[ -z ${SALT_MINION_VERSION} ]]; then echo Var SALT_MINION_VERSION missing; exit 1; fi
 	if [[ -z ${SALT_MASTER_VERSION} ]]; then echo Var SALT_MASTER_VERSION missing; exit 1; fi
+	if [[ -z ${SALT_MASTER_THREADS} ]]; then echo Var SALT_MASTER_THREADS missing; exit 1; fi
 	if [[ -z ${SALT_VERSION} ]]; then echo Var SALT_VERSION missing; exit 1; fi
 	if [[ -z ${SALT_MASTER_1_NAME} ]]; then echo Var SALT_MASTER_1_NAME missing; exit 1; fi
 	if [[ -z ${SALT_MASTER_1_IP} ]]; then echo Var SALT_MASTER_1_IP missing; exit 1; fi
@@ -112,6 +113,7 @@ function sed_inplace_salt () {
 	sed -i \
 		-e "s/__SALT_MINION_VERSION__/${SALT_MINION_VERSION}/g" \
 		-e "s/__SALT_MASTER_VERSION__/${SALT_MASTER_VERSION}/g" \
+		-e "s/__SALT_MASTER_THREADS__/${SALT_MASTER_THREADS}/g" \
 		-e "s/__SALT_MASTER_1_NAME__/${SALT_MASTER_1_NAME}/g" \
 		-e "s/__SALT_MASTER_1_IP__/${SALT_MASTER_1_IP}/g" \
 		-e "s/__SALT_MASTER_1_EXT_IP__/${SALT_MASTER_1_EXT_IP}/g" \

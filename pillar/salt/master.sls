@@ -10,7 +10,8 @@ salt:
           - /srv/formulas/_salt
       interface: 0.0.0.0
       presence_events: True
-      worker_threads: 4
+      worker_threads: __SALT_MASTER_THREADS__
+      sock_pool_size: __SALT_MASTER_THREADS__
       master_sign_pubkey: True
       publish_port: __SALT_MASTER_PORT_1__
       ret_port: __SALT_MASTER_PORT_2__
