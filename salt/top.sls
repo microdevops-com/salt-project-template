@@ -26,6 +26,7 @@ base:
     - ufw_simple.ufw_simple
     - ufw
     - salt.minion
+    - sysctl
 
   # All Ubuntu and Debian and CentOS
   'G@os:Ubuntu or G@os:Debian or G@os:CentOS':
