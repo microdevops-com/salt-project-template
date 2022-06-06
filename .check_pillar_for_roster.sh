@@ -43,7 +43,7 @@ prepare_salt_call_environment() {
 
 }
 
-chekc_pillars() {
+check_pillars() {
     local fqdn="${1}"
     local environment="${2}"
     local salt_call_stdout_errors=''
@@ -91,7 +91,7 @@ main() {
             job_pids=($(jobs -pr))
             [[ ${#job_pids[@]} -ge ${BATCH} ]] && sleep 0.2s || break
         done
-        chekc_pillars "${fqdn}" "${envs[$fqdn]}" &
+        check_pillars "${fqdn}" "${envs[$fqdn]}" &
         pids+=($!)
     done
     printf "${_C}Done spawning jobs${_RS}\n"
