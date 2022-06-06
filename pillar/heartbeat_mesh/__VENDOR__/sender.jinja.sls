@@ -17,4 +17,5 @@ if grains["id"] in [
 {{ "{" }}% endif %{{ "}" }}
       receivers:
         __HB_RECEIVER_HN__:
+          resource: {{ grains["id"] }}
           token: __HB_TOKEN__
