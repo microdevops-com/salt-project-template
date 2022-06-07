@@ -4,6 +4,7 @@ defaults:
   environment: infra
   client: __CLIENT_FULL__
   #location: FIXME
+  group: {{ group }}
 
 alerta:
 

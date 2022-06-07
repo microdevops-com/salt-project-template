@@ -12,3 +12,5 @@ if grains["id"] in [
 {{ "{" }}% else %{{ "}" }}
   config_file: salt://notify_devilry/__VENDOR__/notify_devilry_disabled.yaml
 {{ "{" }}% endif %{{ "}" }}
+  defaults:
+    group: {{ "{{" }} grains["id"] {{ "}}" }}
