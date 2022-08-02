@@ -319,6 +319,8 @@ git submodule foreach --recursive git pull
 rm -rf .pipeline-cache
 # salt/cloud is not used anymore
 rm -rf salt/cloud
+# salt/rvm is not used anymore
+rm -rf salt/rvm
 # salt/unit_status_alert is not used anymore
 rm -rf salt/unit_status_alert
 # some cmd_check_alert files are not used anymore
@@ -334,6 +336,7 @@ rm -f pillar/pkg/alerta-urlmon.sls
 rm -rf pillar/staging
 # remove old unneeded pillar
 rm -f pillar/rsnapshot_backup/backup_server.sls
+rm -rf pillar/rvm
 
 # Return back
 popd
