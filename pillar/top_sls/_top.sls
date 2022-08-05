@@ -27,6 +27,7 @@ base:
     - bootstrap.__CLIENT__
     - hosts.__VENDOR__
     - cmd_check_alert.common
+    - cmd_check_alert.syshealth
   
   'G@os:Windows':
     - match: compound
