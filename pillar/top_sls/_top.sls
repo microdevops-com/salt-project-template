@@ -28,6 +28,7 @@ base:
     - hosts.__VENDOR__
     - cmd_check_alert.common
     - cmd_check_alert.syshealth
+    - ssh_keys.__VENDOR__.root
   
   'G@os:Windows':
     - match: compound
