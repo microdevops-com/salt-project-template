@@ -338,8 +338,8 @@ rm -rf pillar/staging
 rm -f pillar/rsnapshot_backup/backup_server.sls
 rm -rf pillar/rvm
 # remove pkg/ssh_keys
-rm -f pillar/pkg/${CLIENT}/salt-ssh_runners.sls
-rm -f pillar/pkg/${CLIENT}/salt_masters.sls
+rm -f pillar/pkg/ssh_keys/${CLIENT}/salt-ssh_runners.sls
+rm -f pillar/pkg/ssh_keys/${CLIENT}/salt_masters.sls
 
 # Return back
 popd
