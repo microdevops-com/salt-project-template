@@ -1,5 +1,4 @@
   '__SALT_MASTER_1_NAME__':
-    - pkg.ssh_keys.__VENDOR__.backup_servers
     - pkg.tz.__DEFAULT_TZ__
     - pkg.locale.en_US_UTF-8
     - users.__VENDOR__.admins
@@ -10,7 +9,6 @@
     - salt.master
   
   '__SALT_MASTER_2_NAME__':
-    - pkg.ssh_keys.__VENDOR__.backup_servers
     - pkg.tz.__DEFAULT_TZ__
     - pkg.locale.en_US_UTF-8
     - users.__VENDOR__.admins
