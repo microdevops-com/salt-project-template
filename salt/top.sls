@@ -27,6 +27,7 @@ base:
     - ufw
     - salt.minion
     - sysctl
+    - ssh_keys
 
   # All Ubuntu and Debian and CentOS
   'G@os:Ubuntu or G@os:Debian or G@os:CentOS':
