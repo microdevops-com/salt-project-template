@@ -38,7 +38,7 @@ RUN if [[ "${SALT_VERSION}" == "3004" ]]; then \
 RUN apt-get install -y --no-install-recommends mc vim telnet iputils-ping curl ccze less jq dnsutils
 
 # Add sysadmws-utils for notify_devilry
-RUN apt-key adv --keyserver keyserver.ubuntu.com --recv 2E7DCF8C && echo "deb https://repo.sysadm.ws/sysadmws-apt/ any main" >> /etc/apt/sources.list.d/sysadmws.list \
+RUN apt-key adv --keyserver keyserver.ubuntu.com --recv 2E7DCF8C && echo "deb [arch=amd64] https://repo.sysadm.ws/sysadmws-apt/ any main" >> /etc/apt/sources.list.d/sysadmws.list \
     && apt-get update -y \
     && apt-get install -y --no-install-recommends sysadmws-utils-v1
 
