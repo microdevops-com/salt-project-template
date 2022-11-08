@@ -16,6 +16,7 @@ base:
     - disk_alert.enabled
     - mysql_queries_log.enabled
     - mysql_replica_checker.enabled
+    - mysql_increment_checker.enabled
     - pkg.__VENDOR__.forward_root_email
     #salt#- ssh_keys.__CLIENT__.salt_masters
     #salt-ssh#- ssh_keys.__CLIENT__.salt-ssh_runners

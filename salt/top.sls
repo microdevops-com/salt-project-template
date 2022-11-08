@@ -19,6 +19,7 @@ base:
     - disk_alert
     - mysql_queries_log
     - mysql_replica_checker
+    - mysql_increment_checker
     - notify_devilry
     - cmd_check_alert
     - heartbeat_mesh.sender
