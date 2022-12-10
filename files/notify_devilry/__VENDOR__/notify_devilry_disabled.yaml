@@ -1,9 +1,9 @@
 enabled: False
 
 defaults:
-  environment: infra
+  environment: {{ environment }}
   client: __CLIENT_FULL__
-  #location: FIXME
+  location: {{ location }}
   group: {{ group }}
 
 alerta:
@@ -13,11 +13,11 @@ alerta:
     api_key: __ALERTA_API_KEY__
     exception:
       telegram:
-        - __VENDOR_FULL__ Alarms
+        - __VENDOR_FULL__ Exceptions
 
 telegram:
 
-  __VENDOR_FULL__ Alarms:
+  __VENDOR_FULL__ Exceptions:
     token: __TELEGRAM_TOKEN__
     chat_id: __TELEGRAM_CHAT_ID__
     sound:
@@ -32,52 +32,10 @@ chains:
     - name: entrypoint
       entrypoint: True
       jump:
-        #alerta#- alerta_chain
-        #telegram#- telegram_chain
+        - alerta_chain
 
   alerta_chain:
     - name: __VENDOR_FULL__
       send:
         alerta:
           - __VENDOR_FULL__
-
-  telegram_chain:
-    - name: skip positive
-      match:
-        severity:
-          not_in:
-            - fatal
-            - security
-            - critical
-            - major
-            - minor
-            - warning
-            - informational
-        force_send:
-          in:
-            - false
-      suppress: True
-      chain_break: True
-    - name: skip heartbeat flood
-      match:
-        event:
-          in:
-            - heartbeat_mesh_heartbeat_ok
-            - heartbeat_mesh_heartbeat_config_missing
-            - heartbeat_mesh_heartbeat_config_exist
-            - heartbeat_mesh_heartbeat_not_registered
-            - heartbeat_mesh_heartbeat_registered
-            - heartbeat_mesh_receiver_activity_ok
-        force_send:
-          in:
-            - false
-      suppress: True
-      chain_break: True
-    - name: __VENDOR_FULL__ Alarms
-      rate_limit:
-        - 60
-        - 240
-        - 480
-      send:
-        telegram:
-          - __VENDOR_FULL__ Alarms
