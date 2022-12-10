@@ -15,6 +15,15 @@ set location_per_server = {
 {% endfor %}
 }
 %{{ "}" }}
+{{ "{" }}%
+set description_per_server = {
+{% for asset_fqdn, asset_dicts in asset_dicts["_self"].items() | sort(attribute="0") %}
+{% if asset_dicts["kind"] == "server" %}
+  "{{ asset_fqdn }}": "{{ asset_dicts["description"] if "description" in asset_dicts else "" }}",
+{% endif %}
+{% endfor %}
+}
+%{{ "}" }}
 notify_devilry:
 {{ "{" }}%
 if grains["id"] in [
@@ -33,3 +42,4 @@ if grains["id"] in [
     group: {{ "{{" }} grains["id"] {{ "}}" }}
     environment: {{ "{{" }} env_per_server[grains["id"]] if grains["id"] in env_per_server else "infra" {{ "}}" }}
     location: {{ "{{" }} location_per_server[grains["id"]] if grains["id"] in location_per_server else "" {{ "}}" }}
+    description: {{ "{{" }} description_per_server[grains["id"]] if grains["id"] in description_per_server else "" {{ "}}" }}

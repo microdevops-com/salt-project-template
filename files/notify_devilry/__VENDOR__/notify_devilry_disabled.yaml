@@ -5,6 +5,7 @@ defaults:
   client: __CLIENT_FULL__
   location: {{ location }}
   group: {{ group }}
+  description: {{ description }}
 
 alerta:
 
