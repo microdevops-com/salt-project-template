@@ -6,6 +6,7 @@ set env_per_server = {
 {% endif %}
 {% endfor %}
 }
+%{{ "}" }}
 {{ "{" }}%
 set location_per_server = {
 {% for asset_fqdn, asset_dicts in asset_dicts["_self"].items() | sort(attribute="0") %}
