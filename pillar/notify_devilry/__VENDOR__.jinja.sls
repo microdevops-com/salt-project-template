@@ -1,3 +1,20 @@
+{{ "{" }}%
+set env_per_server = {
+{% for asset_fqdn, asset_dicts in asset_dicts["_self"].items() | sort(attribute="0") %}
+{% if asset_dicts["kind"] == "server" %}
+  "{{ asset_fqdn }}": "{{ asset_dicts["environment"] if "environment" in asset_dicts else "infra" }}",
+{% endif %}
+{% endfor %}
+}
+{{ "{" }}%
+set location_per_server = {
+{% for asset_fqdn, asset_dicts in asset_dicts["_self"].items() | sort(attribute="0") %}
+{% if asset_dicts["kind"] == "server" %}
+  "{{ asset_fqdn }}": "{{ asset_dicts["location"] if "location" in asset_dicts else "" }}",
+{% endif %}
+{% endfor %}
+}
+%{{ "}" }}
 notify_devilry:
 {{ "{" }}%
 if grains["id"] in [
@@ -7,19 +24,6 @@ if grains["id"] in [
 {% endif %}
 {% endfor %}
 ]
-%{{ "}" }}
-{{ "{" }}%
-set env_per_server = {
-{% for asset_fqdn, asset_dicts in asset_dicts["_self"].items() | sort(attribute="0") %}
-  "{{ asset_fqdn }}": "{{ asset_dicts["environment"] if "environment" in asset_dicts else "infra" }}",
-{% endfor %}
-}
-{{ "{" }}%
-set location_per_server = {
-{% for asset_fqdn, asset_dicts in asset_dicts["_self"].items() | sort(attribute="0") %}
-  "{{ asset_fqdn }}": "{{ asset_dicts["location"] if "location" in asset_dicts else "" }}",
-{% endfor %}
-}
 %{{ "}" }}
   config_file: salt://notify_devilry/__VENDOR__/notify_devilry.yaml
 {{ "{" }}% else %{{ "}" }}
