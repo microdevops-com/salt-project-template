@@ -2,6 +2,8 @@ heartbeat_mesh:
   receiver:
     config:
       enabled: True
+      notify_devilry_sleep: 1 
+      queue_threshold: 1000
       clients:
 {% for client_name, client_vars in clients.items() | sort(attribute="0") %}
 {%   if "templates" in client_vars["configuration_management"] %}
