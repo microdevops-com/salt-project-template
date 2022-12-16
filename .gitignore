@@ -5,3 +5,4 @@ pillar/top.sls
 files/untracked/*
 scripts/ci_sudo/*.out
 .iml
+*.pyc
