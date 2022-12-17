@@ -29,6 +29,7 @@ base:
     - salt.minion
     - sysctl
     - ssh_keys
+    - catch_server_mail
 
   # All Ubuntu and Debian and CentOS
   'G@os:Ubuntu or G@os:Debian or G@os:CentOS':
