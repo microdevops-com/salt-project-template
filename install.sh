@@ -47,6 +47,9 @@ if [[ -z ${VENDOR} ]]; then echo Var VENDOR missing; exit 1; fi
 if [[ -z ${VENDOR_FULL} ]]; then echo Var VENDOR_FULL missing; exit 1; fi
 if [[ -z ${HB_RECEIVER_HN} ]]; then echo Var HB_RECEIVER_HN missing; exit 1; fi
 if [[ -z ${HB_TOKEN} ]]; then echo Var HB_TOKEN missing; exit 1; fi
+if [[ -z ${SENTRY_DOMAIN} ]]; then echo Var SENTRY_DOMAIN missing; exit 1; fi
+if [[ -z ${SENTRY_AUTH_TOKEN} ]]; then echo Var SENTRY_AUTH_TOKEN missing; exit 1; fi
+if [[ -z ${SENTRY_DSN_PUBLIC} ]]; then echo Var SENTRY_DSN_PUBLIC missing; exit 1; fi
 if [[ -z ${ROOT_EMAIL} ]]; then echo Var ROOT_EMAIL missing; exit 1; fi
 if [[ -z ${DEFAULT_TZ} ]]; then echo Var DEFAULT_TZ missing; exit 1; fi
 if [[ -z ${CLIENT_DOMAIN} ]]; then echo Var CLIENT_DOMAIN missing; exit 1; fi
