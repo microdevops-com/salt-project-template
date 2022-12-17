@@ -102,6 +102,9 @@ function sed_inplace_common () {
 		-e "s/__ALERTA_API_KEY__/${LOCAL_ALERTA_API_KEY}/g" \
 		-e "s/__HB_RECEIVER_HN__/${HB_RECEIVER_HN}/g" \
 		-e "s/__HB_TOKEN__/${HB_TOKEN}/g" \
+		-e "s/__SENTRY_DOMAIN__/${SENTRY_DOMAIN}/g" \
+		-e "s/__SENTRY_AUTH_TOKEN__/${SENTRY_AUTH_TOKEN}/g" \
+		-e "s/__SENTRY_DSN_PUBLIC__/${SENTRY_DSN_PUBLIC}/g" \
 		-e "s/__ROOT_EMAIL__/${ROOT_EMAIL}/g" \
 		-e "s/__DEFAULT_TZ__/${DEFAULT_TZ}/g" \
 		-e "s/__CLIENT_DOMAIN__/${CLIENT_DOMAIN}/g" \
