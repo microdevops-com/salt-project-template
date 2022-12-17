@@ -215,11 +215,11 @@ move_to_templated_dir $1/pillar/pkg/__VENDOR__ $1/pillar/pkg/${VENDOR}
 sed_inplace_common $1/pillar/pkg/${VENDOR}/forward_root_email.sls
 
 move_to_templated_dir $1/pillar/heartbeat_mesh/__VENDOR__ $1/pillar/heartbeat_mesh/${VENDOR}
-sed_inplace_common $1/pillar/heartbeat_mesh/${VENDOR}/sender.sls
-sed_inplace_common $1/pillar/heartbeat_mesh/${VENDOR}/sender.jinja.sls.example
+sed_inplace_common $1/pillar/heartbeat_mesh/${VENDOR}/sender.jinja.sls
 
-mv -f $1/pillar/notify_devilry/__VENDOR__.sls $1/pillar/notify_devilry/${VENDOR}.sls
-sed_inplace_common $1/pillar/notify_devilry/${VENDOR}.sls
+move_to_templated_dir $1/pillar/catch_server_mail/__VENDOR__ $1/pillar/catch_server_mail/${VENDOR}
+sed_inplace_common $1/pillar/catch_server_mail/${VENDOR}/sentry.jinja.sls
+
 mv -f $1/pillar/notify_devilry/__VENDOR__.jinja.sls $1/pillar/notify_devilry/${VENDOR}.jinja.sls
 sed_inplace_common $1/pillar/notify_devilry/${VENDOR}.jinja.sls
 
@@ -340,6 +340,10 @@ rm -rf pillar/rvm
 # remove pkg/ssh_keys
 rm -f pillar/pkg/ssh_keys/${CLIENT}/salt-ssh_runners.sls
 rm -f pillar/pkg/ssh_keys/${CLIENT}/salt_masters.sls
+# cleanup example mistakes
+rm -f pillar/heartbeat_mesh/${VENDOR}/sender.jinja.sls.example
+rm -f pillar/catch_server_mail/${VENDOR}/sentry.jinja.sls.example
+rm -f pillar/notify_devilry/${VENDOR}.jinja.sls.example
 
 # Return back
 popd
