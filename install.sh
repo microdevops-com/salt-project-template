@@ -348,6 +348,7 @@ rm -f pillar/pkg/forward_root_email.jinja
 rm -f pillar/pkg/gitlab-ce.jinja
 rm -f pillar/pkg/gitlab-ee.jinja
 rm -f pillar/pkg/gitlab-runner.jinja
+rm -f pillar/pkg/${VENDOR}/forward_root_email.sls
 # remove pkg/ssh_keys
 rm -f pillar/pkg/ssh_keys/${CLIENT}/salt-ssh_runners.sls
 rm -f pillar/pkg/ssh_keys/${CLIENT}/salt_masters.sls
