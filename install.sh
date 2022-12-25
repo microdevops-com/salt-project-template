@@ -218,7 +218,6 @@ mv -f $1/pillar/bootstrap/__CLIENT__.sls $1/pillar/bootstrap/${CLIENT}.sls
 sed_inplace_common $1/pillar/bootstrap/${CLIENT}.sls
 
 move_to_templated_dir $1/pillar/pkg/__VENDOR__ $1/pillar/pkg/${VENDOR}
-sed_inplace_common $1/pillar/pkg/${VENDOR}/forward_root_email.sls
 
 move_to_templated_dir $1/pillar/heartbeat_mesh/__VENDOR__ $1/pillar/heartbeat_mesh/${VENDOR}
 sed_inplace_common $1/pillar/heartbeat_mesh/${VENDOR}/sender.jinja.sls
@@ -344,6 +343,11 @@ rm -rf pillar/staging
 rm -f pillar/rsnapshot_backup/backup_server.sls
 rm -rf pillar/rvm
 rm -rf pillar/sysadmws-utils
+rm -f pillar/app/syspass.jinja
+rm -f pillar/pkg/forward_root_email.jinja
+rm -f pillar/pkg/gitlab-ce.jinja
+rm -f pillar/pkg/gitlab-ee.jinja
+rm -f pillar/pkg/gitlab-runner.jinja
 # remove pkg/ssh_keys
 rm -f pillar/pkg/ssh_keys/${CLIENT}/salt-ssh_runners.sls
 rm -f pillar/pkg/ssh_keys/${CLIENT}/salt_masters.sls
