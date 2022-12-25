@@ -257,7 +257,7 @@ elif [[ $2 = salt-ssh ]]; then
 	sed_inplace_salt-ssh $1/pillar/ufw_simple/ssh_from_salt-ssh_runners.sls
 fi
 
-rsync_with_delete pillar/sysadmws-utils $1/pillar/sysadmws-utils
+rsync_with_delete pillar/microdevops-utils $1/pillar/microdevops-utils
 
 move_to_templated_dir $1/pillar/rsnapshot_backup/__CLIENT__ $1/pillar/rsnapshot_backup/${CLIENT}
 if [[ $2 = salt ]]; then
@@ -343,6 +343,7 @@ rm -rf pillar/staging
 # remove old unneeded pillar
 rm -f pillar/rsnapshot_backup/backup_server.sls
 rm -rf pillar/rvm
+rm -rf pillar/sysadmws-utils
 # remove pkg/ssh_keys
 rm -f pillar/pkg/ssh_keys/${CLIENT}/salt-ssh_runners.sls
 rm -f pillar/pkg/ssh_keys/${CLIENT}/salt_masters.sls

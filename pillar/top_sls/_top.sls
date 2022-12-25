@@ -10,7 +10,7 @@ base:
     - match: compound
     - vim.vim
     - pkg.common
-    - sysadmws-utils.v1_latest
+    - microdevops-utils.latest
     - notify_devilry.__VENDOR__
     - bulk_log.enabled
     - disk_alert.enabled
