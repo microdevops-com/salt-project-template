@@ -325,10 +325,10 @@ git submodule foreach --recursive git pull
 rm -rf .pipeline-cache
 # salt/cloud is not used anymore
 rm -rf salt/cloud
-# salt/rvm is not used anymore
-rm -rf salt/rvm
-# salt/unit_status_alert is not used anymore
-rm -rf salt/unit_status_alert
+# cleanup old state links
+rm -f salt/rvm
+rm -f salt/sysadmws-utils
+rm -f salt/unit_status_alert
 # some cmd_check_alert files are not used anymore
 rm -rf files/cmd_check_alert
 rm -rf pillar/cmd_check_alert/2min.sls
