@@ -14,7 +14,7 @@ base:
     - netdata
     - pkg.pkg
     - vim.vim
-    - sysadmws-utils
+    - microdevops-utils
     - bulk_log
     - disk_alert
     - mysql_queries_log
