@@ -155,7 +155,7 @@ function add_submodule () {
 function remove_submodule () {
 	pushd $1
 		if [[ -d "$2/$3" ]]; then
-			git rm "$2/$3"
+			git rm -f "$2/$3"
 			rm -rf .git/modules/$3
 			git config --remove-section submodule.$3
 		fi
