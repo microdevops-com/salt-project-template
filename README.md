@@ -11,7 +11,7 @@ git init
 
 Add this repo as Git Submodule to a project:
 ```
-git submodule add --name .salt-project-template -b master -- https://github.com/sysadmws/salt-project-template .salt-project-template
+git submodule add --name .salt-project-template -b master -- https://github.com/microdevops-com/salt-project-template .salt-project-template
 ```
 
 Copy example `template_install.sh` from template to the repo:
@@ -33,14 +33,14 @@ Fill the repo with some additional data:
 - `pillar/users/example/admins.sls`
 - `pillar/ip/example/example.sls` (see pillar/ip/example/example.sls.example)
 - `pillar/ufw_simple/vars.jinja` (see pillar/ufw_simple/vars.jinja.example) or `pillar/ufw/vars.jinja` (see pillar/ufw/vars.jinja.example)
-- `pillar/hosts/example.sls` (see https://github.com/sysadmws/sysadmws-formula/blob/master/hosts/pillar.example - static hosts file, recommended to distribute heartbeat_receivers, alerta hosts here)
+- `pillar/hosts/example.sls` (see https://github.com/microdevops-com/microdevops-formula/blob/master/hosts/pillar.example - static hosts file, recommended to distribute heartbeat_receivers, alerta hosts here)
 
 For Salt-SSH:
 - `etc/salt/roster` (see roster.example in `.salt-project-template`)
 
 # Use the repository
 Either push to GitLab and pipeline should deploy depo code to Salt Masters or build the docker image
-Then use [Gitlab Pipelines](https://github.com/sysadmws/gitlab-server-job) to run salt/salt-ssh.
+Then use [Gitlab Pipelines](https://github.com/microdevops-com/gitlab-server-job) to run salt/salt-ssh.
 
 Or build and run locally for Salt-SSH with SSH Agent:
 ```
