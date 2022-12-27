@@ -1,1 +1,1 @@
-../../formulas/sysamicrodevopsdmws-formula/pillar/ufw/http_https_webhooks_telegram.sls
+../../formulas/microdevops-formula/pillar/ufw/http_https_webhooks_telegram.sls
