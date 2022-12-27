@@ -1,1 +1,1 @@
-../../formulas/sysadmws-formula/pillar/cmd_check_alert/hostname_override_to_id.sls
+../../formulas/microdevops-formula/pillar/cmd_check_alert/hostname_override_to_id.sls

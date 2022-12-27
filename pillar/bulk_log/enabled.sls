@@ -1,1 +1,1 @@
-../../formulas/sysadmws-formula/pillar/bulk_log/enabled.sls
+../../formulas/microdevops-formula/pillar/bulk_log/enabled.sls

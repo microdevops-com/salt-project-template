@@ -1,1 +1,1 @@
-../../formulas/sysadmws-formula/pillar/netdata/skip-install-required-packages.sls
+../../formulas/microdevops-formula/pillar/netdata/skip-install-required-packages.sls

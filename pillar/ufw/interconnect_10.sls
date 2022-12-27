@@ -1,1 +1,1 @@
-../../formulas/sysadmws-formula/pillar/ufw/interconnect_10.sls
+../../formulas/microdevops-formula/pillar/ufw/interconnect_10.sls

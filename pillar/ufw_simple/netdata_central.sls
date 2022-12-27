@@ -1,1 +1,1 @@
-../../formulas/sysadmws-formula/pillar/ufw_simple/netdata_central.sls
+../../formulas/microdevops-formula/pillar/ufw_simple/netdata_central.sls

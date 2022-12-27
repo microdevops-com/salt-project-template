@@ -1,1 +1,1 @@
-../../formulas/sysadmws-formula/pillar/ufw_simple/softether_vpnserver.sls
+../../formulas/microdevops-formula/pillar/ufw_simple/softether_vpnserver.sls

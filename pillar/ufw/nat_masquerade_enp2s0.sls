@@ -1,1 +1,1 @@
-../../formulas/sysadmws-formula/pillar/ufw/nat_masquerade_enp2s0.sls
+../../formulas/microdevops-formula/pillar/ufw/nat_masquerade_enp2s0.sls

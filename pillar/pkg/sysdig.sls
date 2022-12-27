@@ -1,1 +1,1 @@
-../../formulas/sysadmws-formula/pillar/pkg/sysdig.sls
+../../formulas/microdevops-formula/pillar/pkg/sysdig.sls

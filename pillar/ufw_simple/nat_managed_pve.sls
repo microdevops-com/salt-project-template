@@ -1,1 +1,1 @@
-../../formulas/sysadmws-formula/pillar/ufw_simple/nat_managed_pve.sls
+../../formulas/microdevops-formula/pillar/ufw_simple/nat_managed_pve.sls

@@ -1,1 +1,1 @@
-../../formulas/sysadmws-formula/pillar/ufw_simple/ssh_unsecure.sls
+../../formulas/microdevops-formula/pillar/ufw_simple/ssh_unsecure.sls

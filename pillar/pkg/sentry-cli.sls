@@ -1,1 +1,1 @@
-../../formulas/sysadmws-formula/pillar/pkg/sentry-cli.sls
+../../formulas/microdevops-formula/pillar/pkg/sentry-cli.sls

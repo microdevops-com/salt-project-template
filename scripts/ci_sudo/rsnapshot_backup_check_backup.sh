@@ -1,1 +1,1 @@
-../../formulas/sysadmws-formula/scripts/ci_sudo/rsnapshot_backup_check_backup.sh
+../../formulas/microdevops-formula/scripts/ci_sudo/rsnapshot_backup_check_backup.sh

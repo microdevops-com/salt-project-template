@@ -1,1 +1,1 @@
-../../formulas/sysadmws-formula/pillar/percona/client-5_7.sls
+../../formulas/microdevops-formula/pillar/percona/client-5_7.sls

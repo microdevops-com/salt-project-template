@@ -1,1 +1,1 @@
-../../formulas/sysadmws-formula/pillar/pkg/erlang.sls
+../../formulas/microdevops-formula/pillar/pkg/erlang.sls

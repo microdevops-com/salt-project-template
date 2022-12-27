@@ -1,1 +1,1 @@
-../../formulas/sysadmws-formula/pillar/ufw/ssh_from_salt_servers.sls
+../../formulas/microdevops-formula/pillar/ufw/ssh_from_salt_servers.sls

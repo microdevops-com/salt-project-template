@@ -1,1 +1,1 @@
-../../formulas/sysadmws-formula/pillar/cmd_check_alert/lsyncd.sls
+../../formulas/microdevops-formula/pillar/cmd_check_alert/lsyncd.sls

@@ -1,1 +1,1 @@
-../../formulas/sysadmws-formula/pillar/ufw/k8s_common.sls
+../../formulas/microdevops-formula/pillar/ufw/k8s_common.sls

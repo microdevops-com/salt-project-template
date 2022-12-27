@@ -1,1 +1,1 @@
-../../formulas/sysadmws-formula/pillar/disk_alert/w70_c85.sls
+../../formulas/microdevops-formula/pillar/disk_alert/w70_c85.sls

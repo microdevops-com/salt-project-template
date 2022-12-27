@@ -1,1 +1,1 @@
-../../formulas/sysadmws-formula/scripts/ci_sudo/salt_cmd.sh
+../../formulas/microdevops-formula/scripts/ci_sudo/salt_cmd.sh

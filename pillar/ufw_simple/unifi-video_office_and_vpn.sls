@@ -1,1 +1,1 @@
-../../formulas/sysadmws-formula/pillar/ufw_simple/unifi-video_office_and_vpn.sls
+../../formulas/microdevops-formula/pillar/ufw_simple/unifi-video_office_and_vpn.sls

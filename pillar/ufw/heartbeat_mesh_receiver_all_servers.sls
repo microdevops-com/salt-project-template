@@ -1,1 +1,1 @@
-../../formulas/sysadmws-formula/pillar/ufw/heartbeat_mesh_receiver_all_servers.sls
+../../formulas/microdevops-formula/pillar/ufw/heartbeat_mesh_receiver_all_servers.sls

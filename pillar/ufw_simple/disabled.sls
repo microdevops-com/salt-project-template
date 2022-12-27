@@ -1,1 +1,1 @@
-../../formulas/sysadmws-formula/pillar/ufw_simple/disabled.sls
+../../formulas/microdevops-formula/pillar/ufw_simple/disabled.sls

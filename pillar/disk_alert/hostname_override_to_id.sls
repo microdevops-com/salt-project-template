@@ -1,1 +1,1 @@
-../../formulas/sysadmws-formula/pillar/disk_alert/hostname_override_to_id.sls
+../../formulas/microdevops-formula/pillar/disk_alert/hostname_override_to_id.sls

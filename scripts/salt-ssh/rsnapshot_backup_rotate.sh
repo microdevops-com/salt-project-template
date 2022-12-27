@@ -1,1 +1,1 @@
-../../formulas/sysadmws-formula/scripts/salt-ssh/rsnapshot_backup_rotate.sh
+../../formulas/microdevops-formula/scripts/salt-ssh/rsnapshot_backup_rotate.sh

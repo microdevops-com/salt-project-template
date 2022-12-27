@@ -1,1 +1,1 @@
-../../formulas/sysadmws-formula/pillar/disk_alert/enabled.sls
+../../formulas/microdevops-formula/pillar/disk_alert/enabled.sls

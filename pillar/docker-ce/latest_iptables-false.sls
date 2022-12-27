@@ -1,1 +1,1 @@
-../../formulas/sysadmws-formula/pillar/docker-ce/latest_iptables-false.sls
+../../formulas/microdevops-formula/pillar/docker-ce/latest_iptables-false.sls

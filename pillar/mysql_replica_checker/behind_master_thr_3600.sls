@@ -1,1 +1,1 @@
-../../formulas/sysadmws-formula/pillar/mysql_replica_checker/behind_master_thr_3600.sls
+../../formulas/microdevops-formula/pillar/mysql_replica_checker/behind_master_thr_3600.sls

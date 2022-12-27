@@ -1,1 +1,1 @@
-../../formulas/sysadmws-formula/pillar/pkg/redis-server.sls
+../../formulas/microdevops-formula/pillar/pkg/redis-server.sls

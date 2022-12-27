@@ -1,1 +1,1 @@
-../../formulas/sysadmws-formula/pillar/pkg/rabbitmq-server.sls
+../../formulas/microdevops-formula/pillar/pkg/rabbitmq-server.sls

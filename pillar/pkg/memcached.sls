@@ -1,1 +1,1 @@
-../../formulas/sysadmws-formula/pillar/pkg/memcached.sls
+../../formulas/microdevops-formula/pillar/pkg/memcached.sls

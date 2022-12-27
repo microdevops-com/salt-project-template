@@ -1,1 +1,1 @@
-../../formulas/sysadmws-formula/pillar/ufw_simple/salt_master.sls
+../../formulas/microdevops-formula/pillar/ufw_simple/salt_master.sls

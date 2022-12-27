@@ -1,1 +1,1 @@
-../../formulas/sysadmws-formula/scripts/ci_sudo/salt_master_pull.sh
+../../formulas/microdevops-formula/scripts/ci_sudo/salt_master_pull.sh

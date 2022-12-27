@@ -1,1 +1,1 @@
-../../formulas/sysadmws-formula/pillar/cmd_check_alert/redis_rejected_connections.sls
+../../formulas/microdevops-formula/pillar/cmd_check_alert/redis_rejected_connections.sls

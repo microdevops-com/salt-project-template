@@ -1,1 +1,1 @@
-../../formulas/sysadmws-formula/pillar/ufw_simple/nat_managed_docker_br1.sls
+../../formulas/microdevops-formula/pillar/ufw_simple/nat_managed_docker_br1.sls

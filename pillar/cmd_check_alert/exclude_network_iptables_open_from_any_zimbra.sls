@@ -1,1 +1,1 @@
-../../formulas/sysadmws-formula/pillar/cmd_check_alert/exclude_network_iptables_open_from_any_zimbra.sls
+../../formulas/microdevops-formula/pillar/cmd_check_alert/exclude_network_iptables_open_from_any_zimbra.sls

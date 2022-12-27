@@ -1,1 +1,1 @@
-../../formulas/sysadmws-formula/pillar/netdata/mini.sls
+../../formulas/microdevops-formula/pillar/netdata/mini.sls

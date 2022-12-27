@@ -1,1 +1,1 @@
-../../formulas/sysadmws-formula/pillar/mysql_queries_log/enabled.sls
+../../formulas/microdevops-formula/pillar/mysql_queries_log/enabled.sls

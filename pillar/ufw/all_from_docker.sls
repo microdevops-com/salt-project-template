@@ -1,1 +1,1 @@
-../../formulas/sysadmws-formula/pillar/ufw/all_from_docker.sls
+../../formulas/microdevops-formula/pillar/ufw/all_from_docker.sls

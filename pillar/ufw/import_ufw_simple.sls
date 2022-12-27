@@ -1,1 +1,1 @@
-../../formulas/sysadmws-formula/pillar/ufw/import_ufw_simple.sls
+../../formulas/microdevops-formula/pillar/ufw/import_ufw_simple.sls

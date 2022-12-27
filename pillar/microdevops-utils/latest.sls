@@ -1,1 +1,1 @@
-../../formulas/sysadmws-formula/pillar/microdevops-utils/latest.sls
+../../formulas/microdevops-formula/pillar/microdevops-utils/latest.sls

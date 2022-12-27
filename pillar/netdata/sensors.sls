@@ -1,1 +1,1 @@
-../../formulas/sysadmws-formula/pillar/netdata/sensors.sls
+../../formulas/microdevops-formula/pillar/netdata/sensors.sls

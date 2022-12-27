@@ -1,1 +1,1 @@
-../../formulas/sysadmws-formula/pillar/cmd_check_alert/salt-master.sls
+../../formulas/microdevops-formula/pillar/cmd_check_alert/salt-master.sls

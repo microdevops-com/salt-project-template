@@ -1,1 +1,1 @@
-../../formulas/sysadmws-formula/scripts/salt-ssh/rsnapshot_backup_check_backup.sh
+../../formulas/microdevops-formula/scripts/salt-ssh/rsnapshot_backup_check_backup.sh

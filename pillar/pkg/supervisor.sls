@@ -1,1 +1,1 @@
-../../formulas/sysadmws-formula/pillar/pkg/supervisor.sls
+../../formulas/microdevops-formula/pillar/pkg/supervisor.sls
