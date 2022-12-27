@@ -147,7 +147,8 @@ function sed_inplace_salt-ssh () {
 
 function add_submodule () {
 	pushd $2
-	git submodule status | awk '{print $2}' | grep -q -e "$1" || git submodule add --force --name $1 -b master -- $3 $1
+	# Always add force to update remote url
+	git submodule add --force --name $1 -b master -- $3 $1
 	popd
 }
 
@@ -192,16 +193,19 @@ elif [[ -n ${TELEGRAM_TOKEN} && -n ${TELEGRAM_CHAT_ID} ]]; then
 	sed -i -e 's/#telegram#//' $1/files/notify_devilry/${VENDOR}/notify_devilry_disabled.yaml
 fi
 
-rsync_without_delete formulas $1/formulas
-add_submodule sysadmws-formula $1/formulas https://github.com/sysadmws/sysadmws-formula.git
-add_submodule users-formula $1/formulas https://github.com/sysadmws/users-formula.git
-add_submodule postgres-formula $1/formulas https://github.com/sysadmws/postgres-formula.git
-add_submodule vim-formula $1/formulas https://github.com/sysadmws/vim-formula.git
-add_submodule salt-cloudflare $1/formulas https://github.com/sysadmws/salt-cloudflare.git
-add_submodule .gitlab-server-job $1 https://github.com/sysadmws/gitlab-server-job
-
+# Remove unused submodules
 remove_submodule $1 formulas pip-formula
+remove_submodule $1 formulas sysadmws-formula
 remove_submodule $1 . .gitlab-ci-functions
+
+rsync_without_delete formulas $1/formulas
+
+add_submodule microdevops-formula $1/formulas https://github.com/microdevops-com/microdevops-formula.git
+add_submodule users-formula $1/formulas https://github.com/microdevops-com/users-formula.git
+add_submodule postgres-formula $1/formulas https://github.com/microdevops-com/postgres-formula.git
+add_submodule vim-formula $1/formulas https://github.com/microdevops-com/vim-formula.git
+add_submodule salt-cloudflare $1/formulas https://github.com/microdevops-com/salt-cloudflare.git
+add_submodule .gitlab-server-job $1 https://github.com/microdevops-com/gitlab-server-job.git
 
 rsync_without_delete pillar $1/pillar
 
