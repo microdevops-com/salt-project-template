@@ -45,9 +45,11 @@ RUN apt-key adv --keyserver keyserver.ubuntu.com --recv 2E7DCF8C && echo "deb [a
 # Copy notify_devilry.yaml from repo
 COPY files/notify_devilry/__VENDOR__/notify_devilry.yaml /opt/sysadmws/notify_devilry/notify_devilry.yaml
 
+# Substitute all {{ ... }} in notify_devilry.yaml with None to make it valid yaml
+RUN sed -i -e 's/{{ .* }}/None/g' /opt/sysadmws/notify_devilry/notify_devilry.yaml
+
 # Cleanup
 RUN rm -rf /var/lib/apt/lists/*
-
 
 # Entrypoint with roster and salt-ssh key preparations and bash as default cmd
 COPY entrypoint.sh /entrypoint.sh
