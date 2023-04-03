@@ -34,13 +34,10 @@ RUN if [[ "${SALT_VERSION}" == "3004" ]]; then \
       cp -f /etc/files/_compat.py /usr/lib/python3/dist-packages/salt/_compat.py; \
     fi
 
-# Add utils
-RUN apt-get install -y --no-install-recommends mc vim telnet iputils-ping curl ccze less jq dnsutils
-
 # Add sysadmws-utils for notify_devilry
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv 2E7DCF8C && echo "deb [arch=amd64] https://repo.sysadm.ws/sysadmws-apt/ any main" >> /etc/apt/sources.list.d/sysadmws.list \
     && apt-get update -y \
-    && apt-get install -y --no-install-recommends sysadmws-utils-v1
+    && apt-get install -y --no-install-recommends sysadmws-utils-v1 mc vim telnet iputils-ping curl ccze less jq dnsutils whois
 
 # Copy notify_devilry.yaml from repo
 COPY files/notify_devilry/__VENDOR__/notify_devilry.yaml /opt/sysadmws/notify_devilry/notify_devilry.yaml
