@@ -17,6 +17,7 @@ TELEGRAM_TOKEN=xxx \
 	SENTRY_DOMAIN=xxx \
 	SENTRY_AUTH_TOKEN=xxx \
 	SENTRY_DSN_PUBLIC=xxx \
+	UFW=ufw \
 	# for salt with masters type
 	SALT_MINION_VERSION=xxx \
 	SALT_MASTER_1_NAME=xxx \
