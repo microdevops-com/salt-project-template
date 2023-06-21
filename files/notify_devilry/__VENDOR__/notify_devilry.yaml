@@ -14,11 +14,11 @@ alerta:
     api_key: __ALERTA_API_KEY__
     exception:
       telegram:
-        - __VENDOR_FULL__ Exceptions
+        - __VENDOR_FULL__ Alert Exceptions
 
 telegram:
 
-  __VENDOR_FULL__ Exceptions:
+  __VENDOR_FULL__ Alert Exceptions:
     token: __TELEGRAM_TOKEN__
     chat_id: __TELEGRAM_CHAT_ID__
     sound:
