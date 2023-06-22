@@ -33,6 +33,7 @@ TELEGRAM_TOKEN=xxx \
 	# for salt-ssh type
 	PROD_RUNNER=xxx \
 	SALTSSH_ROOT_ED25519_PUB=xxx \
-	SALTSSH_RUNNER_SOURCE_IP=xxx \
+	SALTSSH_RUNNER_SOURCE_IP_1=xxx \
+	SALTSSH_RUNNER_SOURCE_IP_2=xxx \
 	SALT_VERSION=xxx \
 	./install.sh .. salt|salt-ssh

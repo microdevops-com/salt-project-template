@@ -38,7 +38,8 @@ if [[ $2 = salt-ssh ]]; then
 	if [[ -z ${DEV_RUNNER} ]]; then echo Var DEV_RUNNER missing; exit 1; fi
 	if [[ -z ${PROD_RUNNER} ]]; then echo Var PROD_RUNNER missing; exit 1; fi
 	if [[ -z "${SALTSSH_ROOT_ED25519_PUB}" ]]; then echo Var SALTSSH_ROOT_ED25519_PUB missing; exit 1; fi
-	if [[ -z ${SALTSSH_RUNNER_SOURCE_IP} ]]; then echo Var SALTSSH_RUNNER_SOURCE_IP missing; exit 1; fi
+	if [[ -z ${SALTSSH_RUNNER_SOURCE_IP_1} ]]; then echo Var SALTSSH_RUNNER_SOURCE_IP_1 missing; exit 1; fi
+	if [[ -z ${SALTSSH_RUNNER_SOURCE_IP_2} ]]; then echo Var SALTSSH_RUNNER_SOURCE_IP_2 missing; exit 1; fi
 	if [[ -z ${SALT_VERSION} ]]; then echo Var SALT_VERSION missing; exit 1; fi
 fi
 if [[ -z ${CLIENT} ]]; then echo Var CLIENT missing; exit 1; fi
@@ -139,7 +140,8 @@ function sed_inplace_salt-ssh () {
 	sed -i \
 		-e "s/__PROD_RUNNER__/${PROD_RUNNER}/g" \
 		-e "s#__SALTSSH_ROOT_ED25519_PUB__#${SALTSSH_ROOT_ED25519_PUB}#g" \
-		-e "s/__SALTSSH_RUNNER_SOURCE_IP__/${SALTSSH_RUNNER_SOURCE_IP}/g" \
+		-e "s/__SALTSSH_RUNNER_SOURCE_IP_1__/${SALTSSH_RUNNER_SOURCE_IP_1}/g" \
+		-e "s/__SALTSSH_RUNNER_SOURCE_IP_2__/${SALTSSH_RUNNER_SOURCE_IP_2}/g" \
 		-e "s/#salt-ssh#//" \
 		-e "/#salt#/d" \
 		$1
