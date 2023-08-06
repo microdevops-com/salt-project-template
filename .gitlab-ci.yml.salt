@@ -68,6 +68,8 @@ salt_master_pull_2:
 .count_alive_minions:
   stage: count
   rules:
+    - if: $SALT_SSH_IN_SALT == "true"
+      when: never
     - if: $SALT_MINION && $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
   artifacts:
     paths:
@@ -90,6 +92,8 @@ count_alive_minions_2:
 .refresh_pillar:
   stage: refresh
   rules:
+    - if: $SALT_SSH_IN_SALT == "true"
+      when: never
     - if: $SALT_MINION && $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
   script:
     - /srv/.gitlab-server-job/check_alive_minions.sh
@@ -111,6 +115,8 @@ refresh_pillar_2:
 .salt_cmd:
   stage: run_1
   rules:
+    - if: $SALT_SSH_IN_SALT == "true"
+      when: never
     - if: $SALT_CMD && $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
   script:
     - /srv/.gitlab-server-job/check_alive_minions.sh
@@ -129,9 +135,23 @@ salt_cmd_2:
   tags:
     - __SALT_MASTER_2_NAME__
 
+salt_cmd:
+  tags:
+    - salt-ssh
+  stage: run_1
+  image: $CI_REGISTRY/$CI_PROJECT_PATH:master
+  rules:
+    - if: $SALT_CMD && $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH && $SALT_SSH_IN_SALT == "true"
+  script:
+    - /srv/scripts/salt-ssh/salt_cmd.sh "${SALT_MINION}" "${SALT_CMD}"
+  after_script:
+    - /srv/scripts/salt-ssh/send_notify_devilry.sh
+
 .rsnapshot_backup_update_config:
   stage: run_1
   rules:
+    - if: $SALT_SSH_IN_SALT == "true"
+      when: never
     - if: $RSNAPSHOT_BACKUP_TYPE && $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
   script:
     - /srv/.gitlab-server-job/check_alive_minions.sh
@@ -150,9 +170,23 @@ rsnapshot_backup_update_config_2:
   tags:
     - __SALT_MASTER_2_NAME__
 
+rsnapshot_backup_update_config:
+  tags:
+    - salt-ssh
+  stage: run_1
+  image: $CI_REGISTRY/$CI_PROJECT_PATH:master
+  rules:
+    - if: $RSNAPSHOT_BACKUP_TYPE && $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH && $SALT_SSH_IN_SALT == "true"
+  script:
+    - /srv/scripts/salt-ssh/rsnapshot_backup_update_config.sh "${SALT_MINION}"
+  after_script:
+    - /srv/scripts/salt-ssh/send_notify_devilry.sh
+
 .rsnapshot_backup_sync:
   stage: run_2
   rules:
+    - if: $SALT_SSH_IN_SALT == "true"
+      when: never
     - if: $RSNAPSHOT_BACKUP_TYPE && $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
   artifacts:
     paths:
@@ -176,9 +210,34 @@ rsnapshot_backup_sync_2:
   tags:
     - __SALT_MASTER_2_NAME__
 
+rsnapshot_backup_sync:
+  tags:
+    - salt-ssh
+  stage: run_2
+  image: $CI_REGISTRY/$CI_PROJECT_PATH:master
+  rules:
+    - if: $RSNAPSHOT_BACKUP_TYPE && $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH && $SALT_SSH_IN_SALT == "true"
+  artifacts:
+    paths:
+      - rsnapshot_backup_sync_status
+    when: always
+  allow_failure: True # Even if sync fails, go to rotation, status for alerting is sent as artifact
+  script:
+    - |
+      if /srv/scripts/salt-ssh/rsnapshot_backup_sync.sh "${SALT_MINION}" "${RSNAPSHOT_BACKUP_TYPE}" "${SSH_HOST}" "${SSH_PORT}" "${SSH_JUMP}"; then
+        echo "export RSNAPSHOT_BACKUP_SYNC=success" > rsnapshot_backup_sync_status
+      else
+        echo "export RSNAPSHOT_BACKUP_SYNC=failed" > rsnapshot_backup_sync_status
+        false
+      fi
+  after_script:
+    - /srv/scripts/salt-ssh/send_notify_devilry.sh
+
 .rsnapshot_backup_rotate:
   stage: run_3
   rules:
+    - if: $SALT_SSH_IN_SALT == "true"
+      when: never
     - if: $RSNAPSHOT_BACKUP_TYPE && $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
   script:
     - /srv/.gitlab-server-job/check_alive_minions.sh
@@ -199,9 +258,25 @@ rsnapshot_backup_rotate_2:
   tags:
     - __SALT_MASTER_2_NAME__
 
+rsnapshot_backup_rotate:
+  tags:
+    - salt-ssh
+  stage: run_3
+  image: $CI_REGISTRY/$CI_PROJECT_PATH:master
+  rules:
+    - if: $RSNAPSHOT_BACKUP_TYPE && $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH && $SALT_SSH_IN_SALT == "true"
+  script:
+    - /srv/scripts/salt-ssh/rsnapshot_backup_rotate.sh "${SALT_MINION}" "${RSNAPSHOT_BACKUP_TYPE}" "${SSH_HOST}" "${SSH_PORT}" "${SSH_JUMP}"
+  after_script:
+    - . rsnapshot_backup_sync_status
+    - /srv/scripts/salt-ssh/send_notify_devilry.sh
+    - rm -f rsnapshot_backup_sync_status
+
 .rsnapshot_backup_check_backup:
   stage: run_4
   rules:
+    - if: $SALT_SSH_IN_SALT == "true"
+      when: never
     - if: $RSNAPSHOT_BACKUP_TYPE && $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
   script:
     - /srv/.gitlab-server-job/check_alive_minions.sh
@@ -222,9 +297,25 @@ rsnapshot_backup_check_backup_2:
   tags:
     - __SALT_MASTER_2_NAME__
 
+rsnapshot_backup_check_backup:
+  tags:
+    - salt-ssh
+  stage: run_4
+  image: $CI_REGISTRY/$CI_PROJECT_PATH:master
+  rules:
+    - if: $RSNAPSHOT_BACKUP_TYPE && $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH && $SALT_SSH_IN_SALT == "true"
+  script:
+    - /srv/scripts/salt-ssh/rsnapshot_backup_check_backup.sh "${SALT_MINION}" "${RSNAPSHOT_BACKUP_TYPE}" "${SSH_HOST}" "${SSH_PORT}" "${SSH_JUMP}"
+  after_script:
+    - . rsnapshot_backup_sync_status
+    - /srv/scripts/salt-ssh/send_notify_devilry.sh
+    - rm -f rsnapshot_backup_sync_status
+
 .rsnapshot_backup_check_coverage:
   stage: run_5
   rules:
+    - if: $SALT_SSH_IN_SALT == "true"
+      when: never
     - if: $RSNAPSHOT_BACKUP_TYPE && $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
   script:
     - /srv/.gitlab-server-job/check_alive_minions.sh
@@ -244,3 +335,17 @@ rsnapshot_backup_check_coverage_2:
   extends: .rsnapshot_backup_check_coverage
   tags:
     - __SALT_MASTER_2_NAME__
+
+rsnapshot_backup_check_coverage:
+  tags:
+    - salt-ssh
+  stage: run_5
+  image: $CI_REGISTRY/$CI_PROJECT_PATH:master
+  rules:
+    - if: $RSNAPSHOT_BACKUP_TYPE && $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH && $SALT_SSH_IN_SALT == "true"
+  script:
+    - /srv/scripts/salt-ssh/rsnapshot_backup_check_coverage.sh "${SALT_MINION}"
+  after_script:
+    - . rsnapshot_backup_sync_status
+    - /srv/scripts/salt-ssh/send_notify_devilry.sh
+    - rm -f rsnapshot_backup_sync_status
