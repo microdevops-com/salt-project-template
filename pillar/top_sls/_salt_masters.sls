@@ -6,6 +6,7 @@
     - rsnapshot_backup.__CLIENT__.salt_masters_local
     - cmd_check_alert.salt-master
     - cmd_check_alert.salt-minion
+    - cmd_check_alert.cpu_load_c_1000_800_600_f_1500_1200_1000
     - salt.master
   
   '__SALT_MASTER_2_NAME__':
@@ -16,4 +17,5 @@
     - rsnapshot_backup.__CLIENT__.salt_masters_local
     - cmd_check_alert.salt-master
     - cmd_check_alert.salt-minion
+    - cmd_check_alert.cpu_load_c_1000_800_600_f_1500_1200_1000
     - salt.master
