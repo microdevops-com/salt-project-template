@@ -1,0 +1,1 @@
+../../formulas/microdevops-formula/pillar/cmd_check_alert/cpu_load_c_500_400_300_f_750_600_500.sls
