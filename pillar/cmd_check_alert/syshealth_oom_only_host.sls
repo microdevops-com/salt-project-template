@@ -1,1 +1,0 @@
-../../formulas/microdevops-formula/pillar/cmd_check_alert/syshealth_oom_only_host.sls
