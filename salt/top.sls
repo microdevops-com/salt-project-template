@@ -12,7 +12,6 @@ base:
     - users.unix
     - ntp
     - netdata
-    - pkg.pkg
     - vim.vim
     - microdevops-utils
     - bulk_log

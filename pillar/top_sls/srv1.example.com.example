@@ -1,7 +1,7 @@
   'srv1.example.com':
+    - bootstrap.tz.Etc_UTC
+    - bootstrap.locale.en_US_UTF-8
     - bootstrap.__CLIENT__.srv1_example_com
-    - pkg.tz.Etc_UTC
-    - pkg.locale.en_US_UTF-8
     - users.__VENDOR__.admins
     - rsnapshot_backup.__CLIENT__.backup
     - app.__CLIENT__.dev

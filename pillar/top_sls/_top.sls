@@ -9,7 +9,6 @@ base:
   'G@os:Ubuntu or G@os:Debian or G@os:CentOS':
     - match: compound
     - vim.vim
-    - pkg.common
     - microdevops-utils.latest
     - notify_devilry.__VENDOR__
     - bulk_log.enabled
