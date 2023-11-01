@@ -1,0 +1,1 @@
+../../formulas/microdevops-formula/pillar/cmd_check_alert/syshealth_mce_ignore_machine_check_events.sls
