@@ -39,6 +39,10 @@ RUN apt-key adv --keyserver keyserver.ubuntu.com --recv 2E7DCF8C && echo "deb [a
     && apt-get update -y \
     && apt-get install -y --no-install-recommends sysadmws-utils-v1 mc vim telnet iputils-ping curl ccze less jq dnsutils whois
 
+# Add yq
+RUN wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 \
+    && chmod +x /usr/local/bin/yq
+
 # Copy notify_devilry.yaml from repo
 COPY files/notify_devilry/__VENDOR__/notify_devilry.yaml /opt/sysadmws/notify_devilry/notify_devilry.yaml
 
