@@ -34,7 +34,7 @@ RUN   if [[ $(uname -m) =~ x86_64|i386|i686 ]]; then ARCH=amd64; else ARCH=arm64
       apt-get update -y \
       && apt-get -qy install curl wget gnupg \
       && curl -fsSL -o /etc/apt/keyrings/salt-archive-keyring-2023.gpg https://repo.saltproject.io/salt/py3/${ID}/${VERSION_ID}/${ARCH}/SALT-PROJECT-GPG-PUBKEY-2023.gpg \
-      && echo "deb [signed-by=/etc/apt/keyrings/salt-archive-keyring-2023.gpg arch=${ARCH}] https://repo.saltproject.io/salt/py3/${ID}/${VERSION_ID}/${ARCH}/latest ${VERSION_CODENAME} main" > /etc/apt/sources.list.d/salt.list \
+      && echo "deb [signed-by=/etc/apt/keyrings/salt-archive-keyring-2023.gpg arch=${ARCH}] https://repo.saltproject.io/salt/py3/${ID}/${VERSION_ID}/${ARCH}/${SALT_VERSION} ${VERSION_CODENAME} main" > /etc/apt/sources.list.d/salt.list \
       && apt-get update -y \
       && apt-get install -y --no-install-recommends salt-minion salt-ssh openssh-client; \
     fi
