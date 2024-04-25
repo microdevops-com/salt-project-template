@@ -1,4 +1,4 @@
-FROM ubuntu:focal
+FROM __DOCKER_IMAGE__
 
 SHELL ["/bin/bash", "-c"]
 
@@ -7,31 +7,36 @@ ENV TZ="__ADMIN_TZ__"
 
 # Add salt repo and install salt-ssh
 # salt-minion added for --local pillar tests
-# Add python3-contextvars, https://github.com/saltstack/salt/pull/61895/files patch for 3004 to fix salt-ssh
+# 3004 salt fixes:
+# - https://github.com/saltstack/salt/pull/61895/files
+# - https://github.com/saltstack/salt/pull/61064
+COPY etc/files/3004/_compat.py /etc/files/3004/_compat.py
 ARG SALT_VERSION=__SALT_VERSION__
 RUN   if [[ $(uname -m) =~ x86_64|i386|i686 ]]; then ARCH=amd64; else ARCH=arm64; fi; \
+      source /etc/os-release; \
       if [[ "${SALT_VERSION}" == "3001" ]]; then \
       apt-get update -y \
-      && apt-get -qy install wget gnupg lsb-release \
-      && echo "deb https://archive.repo.saltproject.io/py3/ubuntu/$(lsb_release -sr)/${ARCH}/${SALT_VERSION} $(lsb_release -sc) main" >> /etc/apt/sources.list.d/saltstack.list \
-      && wget -qO - https://archive.repo.saltproject.io/py3/ubuntu/$(lsb_release -sr)/${ARCH}/${SALT_VERSION}/SALTSTACK-GPG-KEY.pub | apt-key add - \
+      && apt-get -qy install wget gnupg \
+      && echo "deb https://archive.repo.saltproject.io/py3/${ID}/${VERSION_ID}/${ARCH}/${SALT_VERSION} ${VERSION_CODENAME} main" >> /etc/apt/sources.list.d/saltstack.list \
+      && wget -qO - https://archive.repo.saltproject.io/py3/${ID}/${VERSION_ID}/${ARCH}/${SALT_VERSION}/SALTSTACK-GPG-KEY.pub | apt-key add - \
       && apt-get update -y \
       && apt-get install -y --no-install-recommends salt-minion salt-ssh openssh-client; \
-    else \
+    elif [[ "${SALT_VERSION}" == "3004" ]]; then \
       apt-get update -y \
-      && apt-get -qy install wget gnupg lsb-release \
-      && echo "deb http://repo.saltstack.com/py3/ubuntu/$(lsb_release -sr)/${ARCH}/${SALT_VERSION} $(lsb_release -sc) main" >> /etc/apt/sources.list.d/saltstack.list \
-      && wget -qO - https://repo.saltstack.com/py3/ubuntu/$(lsb_release -sr)/${ARCH}/${SALT_VERSION}/SALTSTACK-GPG-KEY.pub | apt-key add - \
+      && apt-get -qy install wget gnupg \
+      && echo "deb http://repo.saltstack.com/py3/${ID}/${VERSION_ID}/${ARCH}/${SALT_VERSION} ${VERSION_CODENAME} main" >> /etc/apt/sources.list.d/saltstack.list \
+      && wget -qO - https://repo.saltstack.com/py3/${ID}/${VERSION_ID}/${ARCH}/${SALT_VERSION}/SALTSTACK-GPG-KEY.pub | apt-key add - \
       && apt-get update -y \
       && apt-get install -y --no-install-recommends salt-minion salt-ssh openssh-client python3-contextvars \
-      && sed -i -e 's/state = compile_template(/# Make sure SaltCacheLoader use correct fileclient\n                if context is None:\n                  context = {"fileclient": self.client}\n                state = compile_template(/' /usr/lib/python3/dist-packages/salt/state.py; \
-    fi
-
-# Temp fix https://github.com/saltstack/salt/pull/61064
-# TODO remove when finally merged
-COPY etc/files/_compat.py /etc/files/_compat.py
-RUN if [[ "${SALT_VERSION}" == "3004" ]]; then \
-      cp -f /etc/files/_compat.py /usr/lib/python3/dist-packages/salt/_compat.py; \
+      && sed -i -e 's/state = compile_template(/# Make sure SaltCacheLoader use correct fileclient\n                if context is None:\n                  context = {"fileclient": self.client}\n                state = compile_template(/' /usr/lib/python3/dist-packages/salt/state.py \
+      && cp -f /etc/files/3004/_compat.py /usr/lib/python3/dist-packages/salt/_compat.py; \
+    else \
+      apt-get update -y \
+      && apt-get -qy install curl wget gnupg \
+      && curl -fsSL -o /etc/apt/keyrings/salt-archive-keyring-2023.gpg https://repo.saltproject.io/salt/py3/${ID}/${VERSION_ID}/${ARCH}/SALT-PROJECT-GPG-PUBKEY-2023.gpg \
+      && echo "deb [signed-by=/etc/apt/keyrings/salt-archive-keyring-2023.gpg arch=${ARCH}] https://repo.saltproject.io/salt/py3/${ID}/${VERSION_ID}/${ARCH}/latest ${VERSION_CODENAME} main" > /etc/apt/sources.list.d/salt.list \
+      && apt-get update -y \
+      && apt-get install -y --no-install-recommends salt-minion salt-ssh openssh-client; \
     fi
 
 # Add sysadmws-utils for notify_devilry

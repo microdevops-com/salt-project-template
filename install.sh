@@ -113,6 +113,7 @@ function sed_inplace_common () {
 		-e "s/__UFW__/${UFW}/g" \
 		-e "s#__ADMIN_TZ__#$(cat /etc/timezone)#g" \
 		-e "s/__DEV_RUNNER__/${DEV_RUNNER}/g" \
+		-e "s/__DOCKER_IMAGE__/${DOCKER_IMAGE}/g" \
 		$1
 }
 
@@ -303,6 +304,14 @@ elif [[ $2 = salt-ssh ]]; then
 	sed_inplace_salt-ssh $1/.gitlab-ci.yml
 fi
 
+# If salt version is 3006 or higher, set DOCKER_IMAGE to debian:bookworm-slim
+# Else set DOCKER_IMAGE to ubuntu:focal
+if [[ $(echo $SALT_VERSION | cut -d. -f1) -ge 3006 ]]; then
+	DOCKER_IMAGE=debian:bookworm-slim
+else
+	DOCKER_IMAGE=ubuntu:focal
+fi
+
 # Docker is for both salt and salt-ssh
 cp -f Dockerfile $1/Dockerfile
 sed_inplace_common $1/Dockerfile
@@ -361,6 +370,7 @@ rm -f pillar/pkg/ssh_keys/${CLIENT}/salt_masters.sls
 rm -f pillar/heartbeat_mesh/${VENDOR}/sender.jinja.sls.example
 rm -f pillar/catch_server_mail/${VENDOR}/sentry.jinja.sls.example
 rm -f pillar/notify_devilry/${VENDOR}.jinja.sls.example
+rm -f etc/files/_compat.py
 
 # Return back
 popd
