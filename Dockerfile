@@ -34,6 +34,16 @@ RUN   if [[ $(uname -m) =~ x86_64|i386|i686 ]]; then ARCH=amd64; else ARCH=arm64
       && sed -i -e 's/state = compile_template(/# Make sure SaltCacheLoader use correct fileclient\n                if context is None:\n                  context = {"fileclient": self.client}\n                state = compile_template(/' /usr/lib/python3/dist-packages/salt/state.py \
       && cp -f /etc/files/3004/_compat.py /usr/lib/python3/dist-packages/salt/_compat.py \
       && true; \
+    elif [[ "${SALT_VERSION}" == "3006" ]]; then \
+      apt-get update -y \
+      && apt-get -qy install curl wget gnupg \
+      && curl -fsSL -o /etc/apt/keyrings/salt-archive-keyring-2023.gpg https://repo.saltproject.io/salt/py3/${ID}/${VERSION_ID}/${ARCH}/SALT-PROJECT-GPG-PUBKEY-2023.gpg \
+      && echo "deb [signed-by=/etc/apt/keyrings/salt-archive-keyring-2023.gpg arch=${ARCH}] https://repo.saltproject.io/salt/py3/${ID}/${VERSION_ID}/${ARCH}/${SALT_VERSION} ${VERSION_CODENAME} main" > /etc/apt/sources.list.d/salt.list \
+      && apt-get update -y \
+      && apt-get install -y --no-install-recommends salt-minion salt-ssh openssh-client python-is-python3 \
+      && sed -i -e 's/if salt.utils.verify.clean_path(root, fpath, subdir=True):/if True: #salt.utils.verify.clean_path(root, fpath, subdir=True):/' /opt/saltstack/salt/lib/python3.10/site-packages/salt/fileserver/roots.py \
+      && sed -i -e 's/if not salt.utils.verify.clean_path(root, full, subdir=True):/if False: #not salt.utils.verify.clean_path(root, full, subdir=True):/' /opt/saltstack/salt/lib/python3.10/site-packages/salt/fileserver/roots.py \
+      && true; \
     else \
       apt-get update -y \
       && apt-get -qy install curl wget gnupg \
