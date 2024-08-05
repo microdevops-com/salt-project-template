@@ -40,7 +40,7 @@ RUN   if [[ $(uname -m) =~ x86_64|i386|i686 ]]; then ARCH=amd64; else ARCH=arm64
       && curl -fsSL -o /etc/apt/keyrings/salt-archive-keyring-2023.gpg https://repo.saltproject.io/salt/py3/${ID}/${VERSION_ID}/${ARCH}/SALT-PROJECT-GPG-PUBKEY-2023.gpg \
       && echo "deb [signed-by=/etc/apt/keyrings/salt-archive-keyring-2023.gpg arch=${ARCH}] https://repo.saltproject.io/salt/py3/${ID}/${VERSION_ID}/${ARCH}/${SALT_VERSION} ${VERSION_CODENAME} main" > /etc/apt/sources.list.d/salt.list \
       && apt-get update -y \
-      && apt-get install -y --no-install-recommends salt-minion salt-ssh openssh-client python-is-python3 \
+      && apt-get install -y --no-install-recommends salt-minion salt-ssh openssh-client \
       && sed -i -e 's/if salt.utils.verify.clean_path(root, fpath, subdir=True):/if True: #salt.utils.verify.clean_path(root, fpath, subdir=True):/' /opt/saltstack/salt/lib/python3.10/site-packages/salt/fileserver/roots.py \
       && sed -i -e 's/if not salt.utils.verify.clean_path(root, full, subdir=True):/if False: #not salt.utils.verify.clean_path(root, full, subdir=True):/' /opt/saltstack/salt/lib/python3.10/site-packages/salt/fileserver/roots.py \
       && true; \
@@ -49,7 +49,8 @@ RUN   if [[ $(uname -m) =~ x86_64|i386|i686 ]]; then ARCH=amd64; else ARCH=arm64
 # Add sysadmws-utils for notify_devilry
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv 2E7DCF8C && echo "deb [arch=amd64] https://repo.sysadm.ws/sysadmws-apt/ any main" >> /etc/apt/sources.list.d/sysadmws.list \
     && apt-get update -y \
-    && apt-get install -y --no-install-recommends sysadmws-utils-v1 mc vim telnet iputils-ping curl ccze less jq dnsutils whois
+    && apt-get install -y --no-install-recommends sysadmws-utils-v1 mc vim telnet iputils-ping curl ccze less jq dnsutils whois \
+    && /opt/microdevops/misc/install_requirements.sh
 
 # Add yq
 RUN wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 \
