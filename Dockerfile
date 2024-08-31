@@ -14,9 +14,9 @@ ENV TZ="__ADMIN_TZ__"
 # - https://github.com/saltstack/salt/issues/66133, https://github.com/saltstack/salt/issues/65977 (symlink following disabled)
 COPY etc/files/3004/_compat.py /etc/files/3004/_compat.py
 ARG SALT_VERSION=__SALT_VERSION__
-RUN   if [[ $(uname -m) =~ x86_64|i386|i686 ]]; then ARCH=amd64; else ARCH=arm64; fi; \
-      source /etc/os-release; \
-      if [[ "${SALT_VERSION}" == "3001" ]]; then \
+RUN if [[ $(uname -m) =~ x86_64|i386|i686 ]]; then ARCH=amd64; else ARCH=arm64; fi; \
+    source /etc/os-release; \
+    if [[ "${SALT_VERSION}" == "3001" ]]; then \
       apt-get update -y \
       && apt-get -qy install wget gnupg \
       && echo "deb https://archive.repo.saltproject.io/py3/${ID}/${VERSION_ID}/${ARCH}/${SALT_VERSION} ${VERSION_CODENAME} main" >> /etc/apt/sources.list.d/saltstack.list \
