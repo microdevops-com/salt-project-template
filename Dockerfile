@@ -20,10 +20,12 @@ RUN if [[ $(uname -m) =~ x86_64|i386|i686 ]]; then ARCH=amd64; else ARCH=arm64; 
     && curl -fsSL https://packages.broadcom.com/artifactory/api/security/keypair/SaltProjectKey/public | tee /etc/apt/keyrings/salt-archive-keyring-2023.pgp \
     && echo "deb [signed-by=/etc/apt/keyrings/salt-archive-keyring-2023.pgp arch=amd64] https://packages.broadcom.com/artifactory/saltproject-deb/ stable main" | tee /etc/apt/sources.list.d/salt.list \
     && apt-get update -y \
-    && apt-get install -y --no-install-recommends openssh-client salt-common salt-minion salt-ssh \
-    && sed -i -e 's/if salt.utils.verify.clean_path(root, fpath, subdir=True):/if True: #salt.utils.verify.clean_path(root, fpath, subdir=True):/' /opt/saltstack/salt/lib/python3.10/site-packages/salt/fileserver/roots.py \
-    && sed -i -e 's/if not salt.utils.verify.clean_path(root, full, subdir=True):/if False: #not salt.utils.verify.clean_path(root, full, subdir=True):/' /opt/saltstack/salt/lib/python3.10/site-packages/salt/fileserver/roots.py \
-    && true;
+    && apt-get install -y --no-install-recommends openssh-client salt-common salt-minion salt-ssh
+
+    # Seem this part is not needed any more, match already changed, does work without it
+    #&& sed -i -e 's/if salt.utils.verify.clean_path(root, fpath, subdir=True):/if True: #salt.utils.verify.clean_path(root, fpath, subdir=True):/' /opt/saltstack/salt/lib/python3.10/site-packages/salt/fileserver/roots.py \
+    #&& sed -i -e 's/if not salt.utils.verify.clean_path(root, full, subdir=True):/if False: #not salt.utils.verify.clean_path(root, full, subdir=True):/' /opt/saltstack/salt/lib/python3.10/site-packages/salt/fileserver/roots.py \
+    #&& true;
 
 # Add sysadmws-utils for notify_devilry
 COPY etc/apt/keyrings/sysadmws-apt-key.gpg /etc/apt/keyrings/sysadmws-apt-key.gpg
