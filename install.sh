@@ -327,12 +327,14 @@ rsync_without_delete include $1/include
 # Get inside templated repo
 pushd $1
 
-# Init submodules
-git submodule init
-git submodule update --recursive -f --checkout
-# Pull fresh masters of submodules
-git submodule foreach "git checkout master && git pull"
-git submodule foreach --recursive git pull
+if [[ -z $SUBMODULES_DONE ]]; then
+    # Init submodules
+    git submodule init
+    git submodule update --recursive -f --checkout
+    # Pull fresh masters of submodules
+    git submodule foreach "git checkout master && git pull"
+    git submodule foreach --recursive git pull
+fi
 
 # .pipeline-cache is not used anymore
 rm -rf .pipeline-cache
