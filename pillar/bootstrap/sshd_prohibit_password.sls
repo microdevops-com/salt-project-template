@@ -1,0 +1,1 @@
+../../formulas/microdevops-formula/pillar/bootstrap/sshd_prohibit_password.sls
