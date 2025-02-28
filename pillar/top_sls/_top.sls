@@ -29,6 +29,7 @@ base:
     - cmd_check_alert.syshealth
     - ssh_keys.__VENDOR__.root
     - catch_server_mail.__VENDOR__.sentry
+    - bootstrap.sshd_prohibit_password
   
   'G@os:Windows':
     - match: compound
