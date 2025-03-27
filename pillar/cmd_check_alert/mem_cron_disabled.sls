@@ -1,0 +1,1 @@
+../../formulas/microdevops-formula/pillar/cmd_check_alert/mem_cron_disabled.sls

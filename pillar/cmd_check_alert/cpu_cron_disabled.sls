@@ -1,0 +1,1 @@
+../../formulas/microdevops-formula/pillar/cmd_check_alert/cpu_cron_disabled.sls

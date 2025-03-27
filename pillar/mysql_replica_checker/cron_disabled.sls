@@ -1,0 +1,1 @@
+../../formulas/microdevops-formula/pillar/mysql_replica_checker/cron_disabled.sls
