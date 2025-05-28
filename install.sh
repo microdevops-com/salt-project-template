@@ -329,6 +329,7 @@ pushd $1
 
 if [[ -z $SUBMODULES_DONE ]]; then
     # Init submodules
+    git submodule sync # update submodule URLs
     git submodule init
     git submodule update --recursive -f --checkout
     # Pull fresh masters of submodules
