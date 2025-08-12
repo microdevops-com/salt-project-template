@@ -1,7 +1,11 @@
 #!/bin/bash
+unset dbuild drun direxpand gtpl
+dir=${BASH_SOURCE[0]}
+dir=${dir%/*}
+. ${dir}/.docker-misc.bash
+
 set -e
-git pull
-git submodule sync # update submodule URLs
-git submodule update --init --recursive --force
-git submodule foreach "git fetch origin master && git checkout --force -B master origin/master"
+pushd $dir > /dev/null 2>&1 || exit 1
 ln -sf ../../.githooks/pre-push .git/hooks/pre-push
+gtpl
+popd > /dev/null 2>&1 || exit 1
