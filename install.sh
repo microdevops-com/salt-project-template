@@ -292,6 +292,7 @@ cp -f .git_pull.sh $1/.git_pull.sh
 cp -f .check_pillar_for_roster.sh $1/.check_pillar_for_roster.sh
 cp -f .docker_build.sh $1/.docker_build.sh
 cp -f .docker_run.sh $1/.docker_run.sh
+cp -f .docker-misc.bash $1/.docker-misc.bash
 cp -f check_pillar.sh $1/check_pillar.sh
 
 if [[ $2 = salt ]]; then
