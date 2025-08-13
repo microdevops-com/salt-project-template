@@ -76,8 +76,11 @@ drun() {
 
     if [[ "$1" == check ]]; then
         docker exec "${name}-$USER" "/.check_pillar_for_roster.sh" ;
+    elif [[ ${@} =~ grains= ]]; then
+        docker cp -q "${path}/etc/salt" "${name}-$USER:/etc/"
+        docker exec -it "${name}-$USER" /entrypoint.sh "$@"
     else
-        docker exec -it "${name}-$USER" "$@" ;
+        docker exec -it "${name}-$USER" "$@"
     fi
 }
 
