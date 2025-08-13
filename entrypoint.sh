@@ -2,6 +2,9 @@
 set -e
 
 # If we have named argument grains=, process it with yq and put it into the roster file instead of __GRAINS__ lines for all minions
+# FYI: salt-ssh --wipe ... grains.item xxx grains={...} - salt has a bug and will not wipe thin dir in /var/tmp for grains.item -> grains will be cached.
+# FYI: Remove /var/tmp/..._salt to wipe grains cache for salt-ssh.
+# FYI: But --wipe works fine for state.apply.
 for ARGUMENT in "$@"
 do
 	KEY=$(echo ${ARGUMENT} | cut -f1 -d=)
