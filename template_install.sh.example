@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 cd .salt-project-template
 TELEGRAM_TOKEN=xxx \
 	TELEGRAM_CHAT_ID=xxx \
