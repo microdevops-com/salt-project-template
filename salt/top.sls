@@ -11,7 +11,6 @@ base:
     - match: compound
     - users.unix
     - ntp
-    - netdata
     - vim.vim
     - microdevops-utils
     - bulk_log
