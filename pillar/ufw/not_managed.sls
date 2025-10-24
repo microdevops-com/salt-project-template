@@ -1,0 +1,1 @@
+../../formulas/microdevops-formula/pillar/ufw/not_managed.sls
