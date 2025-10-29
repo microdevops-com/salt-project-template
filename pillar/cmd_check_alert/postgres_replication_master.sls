@@ -1,1 +1,0 @@
-../../formulas/microdevops-formula/pillar/cmd_check_alert/postgres_replication_master.sls
