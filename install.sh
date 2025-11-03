@@ -204,6 +204,7 @@ remove_submodule $1 . .gitlab-ci-functions
 rsync_without_delete formulas $1/formulas
 
 add_submodule microdevops-formula $1/formulas https://github.com/microdevops-com/microdevops-formula.git
+add_submodule openvpn-formula $1/formulas https://github.com/microdevops-com/openvpn-formula.git
 add_submodule users-formula $1/formulas https://github.com/microdevops-com/users-formula.git
 add_submodule postgres-formula $1/formulas https://github.com/microdevops-com/postgres-formula.git
 add_submodule vim-formula $1/formulas https://github.com/microdevops-com/vim-formula.git
