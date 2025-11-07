@@ -1,0 +1,1 @@
+../../formulas/microdevops-formula/pillar/ufw/ssh_all_servers.sls
