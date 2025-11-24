@@ -1,0 +1,1 @@
+../../formulas/microdevops-formula/pillar/docker-ce/compose-plugin.sls
