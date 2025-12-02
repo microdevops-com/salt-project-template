@@ -19,9 +19,9 @@ direxpand() {
 
 gtpl() {
     start=${EPOCHREALTIME/./}
-    git pull
-    git submodule sync
-    git submodule update --init --recursive --force
+    git pull || return $?
+    git submodule sync || return $?
+    git submodule update --init --recursive --force || return $?
     local submodules
     declare -a pids=()
     declare -A subnames
@@ -74,13 +74,17 @@ drun() {
             bash -c "sleep 2h && kill -s 15 1; rm /srv/pillar/top.sls" ;
     fi
 
+    if test -t 0; then opt+="i"; fi
+    if test -t 1; then opt+="t"; fi
+    if [[ -n ${opt} ]]; then opt="-${opt}"; fi
+
     if [[ "$1" == check ]]; then
         docker exec "${name}-$USER" "/.check_pillar_for_roster.sh" ;
     elif [[ ${@} =~ grains= ]]; then
         docker cp "${path}/etc/salt" "${name}-$USER:/etc/" >/dev/null 2>&1
-        docker exec -it "${name}-$USER" /entrypoint.sh "$@"
+        docker exec ${opt} "${name}-$USER" /entrypoint.sh "$@" 
     else
-        docker exec -it "${name}-$USER" "$@"
+        docker exec ${opt} "${name}-$USER" "$@" 
     fi
 }
 
