@@ -19,9 +19,9 @@ direxpand() {
 
 gtpl() {
     start=${EPOCHREALTIME/./}
-    git pull
-    git submodule sync
-    git submodule update --init --recursive --force
+    git pull || return $?
+    git submodule sync || return $?
+    git submodule update --init --recursive --force || return $?
     local submodules
     declare -a pids=()
     declare -A subnames
