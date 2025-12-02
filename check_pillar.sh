@@ -1,10 +1,6 @@
 #!/usr/bin/env bash
 set -e
-unset dbuild drun direxpand gtpl
-dir=${BASH_SOURCE[0]}
-dir=${dir%/*}
-. ${dir}/.docker-misc.bash
-if ! (dbuild && drun check); then
+if ! (./.docker_build.sh && ./.docker_run.sh /.check_pillar_for_roster.sh); then
 	echo ERROR: Check failed: pillar error found
     exit 1
 fi
