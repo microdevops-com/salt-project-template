@@ -1,0 +1,1 @@
+../../formulas/microdevops-formula/pillar/bootstrap/hostname_from_grains.sls
