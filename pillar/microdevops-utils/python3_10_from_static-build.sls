@@ -1,0 +1,1 @@
+../../formulas/microdevops-formula/pillar/microdevops-utils/python3_10_from_static-build.sls
