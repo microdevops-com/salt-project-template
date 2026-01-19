@@ -42,7 +42,7 @@ if grains["id"] in [
   sentry:
     all_users: True
     domain: __SENTRY_DOMAIN__
-    org-slug: {{ "{" }}% if "__CLIENT__".isdigit() %{{ "}" }}org-{{ "{" }}% endif %{{ "}" }}__CLIENT__
+    org-slug: {{ "{" }}% if "__CLIENT__".isdigit() or "__CLIENT__" | length < 3 %{{ "}" }}org-{{ "{" }}% endif %{{ "}" }}__CLIENT__
     project-slug: server_mail
     auth_token: __SENTRY_AUTH_TOKEN__
     dsn_public: __SENTRY_DSN_PUBLIC__
