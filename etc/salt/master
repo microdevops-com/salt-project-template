@@ -4,3 +4,8 @@ file_roots:
   - /srv/files
   - /srv/salt_local
   - /srv/formulas/_salt
+
+# Servers from roster file will override this to 22 or other port and will work.
+# So when you try to work with server missing in roster, you get error: Bad port 'you-are-in-wrong-repo'.
+# That is made on purpose, to avoid states from one repository applied by mistake to the server from other repo.
+ssh_port: you-are-in-wrong-repo
