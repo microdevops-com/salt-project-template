@@ -1,6 +1,6 @@
 # ACHTUNG!!!
 # Do not edit pillar/top.sls directly.
-# It is being compiled by concatenating all files within /srv/pillar/top_sls directory.
+# It is being compiled by concatenating all files within pillar/top_sls directory.
 # Compilation is triggered by post-merge git hook.
 
 base:
