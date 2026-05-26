@@ -39,8 +39,8 @@ prepare_salt_call_environment() {
 
     mkdir -p "${environment}/var/cache" "${environment}/var/run"
     printf '%s: %s\n' "cachedir" "${environment}/var/cache" \
-                      "pidfile" "${environment}/var/run/salt-minion.pid" > "${environment}/minion"
-
+                      "pidfile"  "${environment}/var/run/salt-minion.pid" \
+                      "pki_dir"  "${environment}/pki/minion" > "${environment}/minion"
 }
 
 check_pillars() {
