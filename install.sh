@@ -210,6 +210,7 @@ add_submodule postgres-formula $1/formulas https://github.com/microdevops-com/po
 add_submodule vim-formula $1/formulas https://github.com/microdevops-com/vim-formula.git
 add_submodule salt-cloudflare $1/formulas https://github.com/microdevops-com/salt-cloudflare.git
 add_submodule .gitlab-server-job $1 https://github.com/microdevops-com/gitlab-server-job.git
+add_submodule salt-k0s-formula $1/formulas https://github.com/SomeBlackMagic/salt-k0s-formula.git
 
 rsync_without_delete pillar $1/pillar
 
