@@ -213,8 +213,8 @@ add_submodule .gitlab-server-job $1 https://github.com/microdevops-com/gitlab-se
 add_submodule salt-k0s-formula $1/formulas https://github.com/SomeBlackMagic/salt-k0s-formula.git
 
 # Copy state py files instead of symlinks as symlinks stopped working for this
-cp -f $1/formulas/salt-cloudflare/cloudflare.py $1/salt/_states
-cp -f $1/formulas/salt-k0s-formula/k0s/_states/*.py $1/salt/_states
+cp --remove-destination $1/formulas/salt-cloudflare/cloudflare.py $1/salt/_states
+cp --remove-destination $1/formulas/salt-k0s-formula/k0s/_states/*.py $1/salt/_states
 
 rsync_without_delete pillar $1/pillar
 
