@@ -91,6 +91,16 @@ function sed_inplace_common () {
 	else
 		local LOCAL_ALERTA_API_KEY=${ALERTA_API_KEY}
 	fi
+	if [[ -z ${VAULT_SDB_URL} ]]; then
+		local LOCAL_VAULT_SDB_URL=__not_set_in_template_install__
+	else
+		local LOCAL_VAULT_SDB_URL=${VAULT_SDB_URL}
+	fi
+	if [[ -z ${VAULT_SDB_PREFIX} ]]; then
+		local LOCAL_VAULT_SDB_PREFIX=__not_set_in_template_install__
+	else
+		local LOCAL_VAULT_SDB_PREFIX=${VAULT_SDB_PREFIX}
+	fi
 	sed -i \
 		-e "s/__CLIENT__/${CLIENT}/g" \
 		-e "s/__CLIENT_FULL__/${CLIENT_FULL}/g" \
@@ -101,6 +111,8 @@ function sed_inplace_common () {
 		-e "s/__MONITORING_ENABLED__/${MONITORING_ENABLED}/g" \
 		-e "s#__ALERTA_URL__#${LOCAL_ALERTA_URL}#g" \
 		-e "s/__ALERTA_API_KEY__/${LOCAL_ALERTA_API_KEY}/g" \
+		-e "s#__VAULT_SDB_URL__#${LOCAL_VAULT_SDB_URL}#g" \
+		-e "s#__VAULT_SDB_PREFIX__#${LOCAL_VAULT_SDB_PREFIX}#g" \
 		-e "s/__HB_RECEIVER_HN__/${HB_RECEIVER_HN}/g" \
 		-e "s/__HB_TOKEN__/${HB_TOKEN}/g" \
 		-e "s/__SENTRY_DOMAIN__/${SENTRY_DOMAIN}/g" \
@@ -330,7 +342,22 @@ cp -Rf etc/apt $1/etc
 cp -f etc/salt/master $1/etc/salt/master
 cp -f etc/ssh/ssh_config $1/etc/ssh/ssh_config
 rsync_without_delete etc/salt/master.d $1/etc/salt/master.d
+rsync_without_delete etc/salt/minion.d $1/etc/salt/minion.d
 rsync_without_delete include $1/include
+
+# vault_salt_sdb - the driver (salt/extmods/sdb), extmods.conf and the minion.d wiring
+# stay installed unconditionally (harmless when idle, ready for a manual setup later;
+# minion.d/extmods.conf is also what lets salt-call --local find the driver). The toggle
+# only governs the operator-facing profile that bakes in URL/prefix and the macro using it.
+if [[ -n ${VAULT_SDB_URL} ]]; then
+	if [[ -z ${VAULT_SDB_PREFIX} ]]; then echo Var VAULT_SDB_PREFIX required when VAULT_SDB_URL is set; exit 1; fi
+	sed_inplace_common $1/etc/salt/master.d/vault_salt_sdb.conf
+	sed_inplace_common $1/pillar/vault_salt_sdb.jinja
+else
+	rm -f $1/etc/salt/master.d/vault_salt_sdb.conf
+	rm -f $1/etc/salt/minion.d/vault_salt_sdb.conf
+	rm -f $1/pillar/vault_salt_sdb.jinja
+fi
 
 # Get inside templated repo
 pushd $1

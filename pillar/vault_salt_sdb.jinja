@@ -1,0 +1,3 @@
+{%- macro secret(path) -%}
+{{ salt['sdb.get']('sdb://vault_salt_sdb/__VAULT_SDB_PREFIX__/' ~ path) }}
+{%- endmacro -%}

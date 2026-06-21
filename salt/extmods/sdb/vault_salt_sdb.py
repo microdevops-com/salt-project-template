@@ -7,6 +7,8 @@ Built for salt-ssh on Salt 3006.
 
 Version history:
 * 2026-06-16: initial version
+* 2026-06-21: cache file written 0600 (was 0644); dropped dead `cached` arg from
+  _extract; documented lease_duration-0 fallback and cache_fresh_for staleness window.
 
 Profile (e.g. /etc/salt/master.d/vault.conf):
 
@@ -27,6 +29,7 @@ Profile (e.g. /etc/salt/master.d/vault.conf):
       kv_version: 2                 # optional; autodetected if omitted
       cache_secrets: false          # keep secret VALUES on disk (default: false = fail-closed)
       cache_fresh_for: 60           # reuse a cached value without calling Vault if younger, seconds
+                                    # (note: a rotated secret is not observed until this window lapses)
       cache_offline_max_age: 3600   # if Vault is unreachable, reuse a cached value if younger, seconds
       cache_name: <name>            # optional; cache filename component (default: git repo + hash)
       cache_path: <path>            # optional; full cache file path override
@@ -235,7 +238,7 @@ def _save_cache(profile):
         try:
             with os.fdopen(fd, "wb") as fh:
                 fh.write(raw)
-            os.chmod(tmp, 0o644)  # readable; pair with cache_encryption_key to keep contents safe
+            os.chmod(tmp, 0o600)  # owner-only: file holds a live Vault token + (optionally) plaintext secrets
             os.replace(tmp, path)          # atomic
             tmp = None
         finally:
@@ -349,6 +352,8 @@ def _token(profile, force=False):
             "vault_salt_sdb: unexpected AppRole login response: {}".format(exc)
         )
 
+    # lease_duration 0 (e.g. root/non-expiring tokens) -> fall back to a short 60s
+    # cache rather than treating the token as valid forever.
     ttl = body_auth.get("lease_duration", 0) or 60
     cache["tokens"][ckey] = {"token": token, "expires_at": time.time() + ttl}
     _save_cache(profile)
@@ -443,7 +448,7 @@ def _read_secret(profile, url, mount, path):
     return data
 
 
-def _extract(data, field, path, cached=False):
+def _extract(data, field, path):
     if field in data:
         return data[field]
     available = ", ".join(sorted(data.keys())) or "(none)"
@@ -474,7 +479,7 @@ def get(key, profile=None, **kwargs):
 
     # 0) in-memory per-render dedup: this path already resolved this process
     if skey in _RENDER_SECRETS:
-        return _extract(_RENDER_SECRETS[skey], field, path, cached=True)
+        return _extract(_RENDER_SECRETS[skey], field, path)
 
     cache_on = bool(profile.get("cache_secrets"))
     cache_fresh_for = int(profile.get("cache_fresh_for", 60))
@@ -489,7 +494,7 @@ def get(key, profile=None, **kwargs):
                 mount, path, int(now - ent.get("cached_at", 0)),
             )
             _RENDER_SECRETS[skey] = ent["data"]
-            return _extract(ent["data"], field, path, cached=True)
+            return _extract(ent["data"], field, path)
 
     # 2) read from Vault
     try:
@@ -505,7 +510,7 @@ def get(key, profile=None, **kwargs):
                     exc, mount, path, int(now - ent.get("cached_at", 0)),
                 )
                 _RENDER_SECRETS[skey] = ent["data"]
-                return _extract(ent["data"], field, path, cached=True)
+                return _extract(ent["data"], field, path)
         raise salt.exceptions.CommandExecutionError(
             "vault_salt_sdb: Vault unreachable and no usable cache for {}/{}: {}".format(mount, path, exc)
         )
@@ -526,4 +531,4 @@ def get(key, profile=None, **kwargs):
         cache["secrets"][skey] = {"data": data, "cached_at": now}
         _save_cache(profile)
 
-    return _extract(data, field, path, cached=False)
+    return _extract(data, field, path)
