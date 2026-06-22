@@ -64,10 +64,16 @@ drun() {
     find "${path}/pillar/top_sls" -not -type d -print0 | grep -vzP '\.swp$|_?top\.sls$' | sort -z | xargs -0 -I{} bash -c "cat {} <(echo) >> \"$top_file\""
 
     if [[ ! $(docker ps --format "{{.Names}}" --filter "name=${name}-$USER") =~ ${name}-$USER ]] ; then
+        # vault_salt_sdb: mount the operator's AppRole creds read-only when present.
+        # Self-gating: absent file (vault not used for this repo) -> empty array -> no mount.
+        local auth_conf="$HOME/.config/vault_salt_sdb/auth.conf"
+        local auth_mount=()
+        [[ -f $auth_conf ]] && auth_mount=(-v "$auth_conf:/root/.config/vault_salt_sdb/auth.conf:ro")
         docker run --hostname salt --detach --rm --name "${name}-$USER" \
             --volume "$top_file:/srv/pillar/top.sls" \
             --volume "${path}/:/srv/" \
             --volume "$SSH_AUTH_SOCK:/root/.ssh-agent" \
+            "${auth_mount[@]}" \
             --env SSH_AUTH_SOCK=/root/.ssh-agent \
             "${name}:$USER" \
             -- \
