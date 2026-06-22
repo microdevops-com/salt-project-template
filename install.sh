@@ -91,15 +91,15 @@ function sed_inplace_common () {
 	else
 		local LOCAL_ALERTA_API_KEY=${ALERTA_API_KEY}
 	fi
-	if [[ -z ${VAULT_SDB_URL} ]]; then
-		local LOCAL_VAULT_SDB_URL=__not_set_in_template_install__
+	if [[ -z ${VAULT_SALT_SDB_URL} ]]; then
+		local LOCAL_VAULT_SALT_SDB_URL=__not_set_in_template_install__
 	else
-		local LOCAL_VAULT_SDB_URL=${VAULT_SDB_URL}
+		local LOCAL_VAULT_SALT_SDB_URL=${VAULT_SALT_SDB_URL}
 	fi
-	if [[ -z ${VAULT_SDB_PREFIX} ]]; then
-		local LOCAL_VAULT_SDB_PREFIX=__not_set_in_template_install__
+	if [[ -z ${VAULT_SALT_SDB_PREFIX} ]]; then
+		local LOCAL_VAULT_SALT_SDB_PREFIX=__not_set_in_template_install__
 	else
-		local LOCAL_VAULT_SDB_PREFIX=${VAULT_SDB_PREFIX}
+		local LOCAL_VAULT_SALT_SDB_PREFIX=${VAULT_SALT_SDB_PREFIX}
 	fi
 	sed -i \
 		-e "s/__CLIENT__/${CLIENT}/g" \
@@ -111,8 +111,8 @@ function sed_inplace_common () {
 		-e "s/__MONITORING_ENABLED__/${MONITORING_ENABLED}/g" \
 		-e "s#__ALERTA_URL__#${LOCAL_ALERTA_URL}#g" \
 		-e "s/__ALERTA_API_KEY__/${LOCAL_ALERTA_API_KEY}/g" \
-		-e "s#__VAULT_SDB_URL__#${LOCAL_VAULT_SDB_URL}#g" \
-		-e "s#__VAULT_SDB_PREFIX__#${LOCAL_VAULT_SDB_PREFIX}#g" \
+		-e "s#__VAULT_SALT_SDB_URL__#${LOCAL_VAULT_SALT_SDB_URL}#g" \
+		-e "s#__VAULT_SALT_SDB_PREFIX__#${LOCAL_VAULT_SALT_SDB_PREFIX}#g" \
 		-e "s/__HB_RECEIVER_HN__/${HB_RECEIVER_HN}/g" \
 		-e "s/__HB_TOKEN__/${HB_TOKEN}/g" \
 		-e "s/__SENTRY_DOMAIN__/${SENTRY_DOMAIN}/g" \
@@ -349,8 +349,8 @@ rsync_without_delete include $1/include
 # stay installed unconditionally (harmless when idle, ready for a manual setup later;
 # minion.d/extmods.conf is also what lets salt-call --local find the driver). The toggle
 # only governs the operator-facing profile that bakes in URL/prefix and the macro using it.
-if [[ -n ${VAULT_SDB_URL} ]]; then
-	if [[ -z ${VAULT_SDB_PREFIX} ]]; then echo Var VAULT_SDB_PREFIX required when VAULT_SDB_URL is set; exit 1; fi
+if [[ -n ${VAULT_SALT_SDB_URL} ]]; then
+	if [[ -z ${VAULT_SALT_SDB_PREFIX} ]]; then echo Var VAULT_SALT_SDB_PREFIX required when VAULT_SALT_SDB_URL is set; exit 1; fi
 	sed_inplace_common $1/etc/salt/master.d/vault_salt_sdb.conf
 	sed_inplace_common $1/pillar/vault_salt_sdb.jinja
 else

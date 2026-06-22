@@ -45,14 +45,14 @@ its `extmods.conf` and the `minion.d` wiring are always installed but stay dorma
 profile is configured, so repos that do not use Vault are unaffected.
 
 ## Enable at install time
-Set both vars in `template_install.sh` (presence of `VAULT_SDB_URL` turns the feature on):
+Set both vars in `template_install.sh` (presence of `VAULT_SALT_SDB_URL` turns the feature on):
 ```
-VAULT_SDB_URL=https://vault.example.com \
-VAULT_SDB_PREFIX=iac/example \
+VAULT_SALT_SDB_URL=https://vault.example.com \
+VAULT_SALT_SDB_PREFIX=iac/example \
 ```
-- `VAULT_SDB_URL` - Vault address. If unset, `install.sh` strips out the profile and the macro
+- `VAULT_SALT_SDB_URL` - Vault address. If unset, `install.sh` strips out the profile and the macro
   (the driver itself stays installed, dormant).
-- `VAULT_SDB_PREFIX` - per-repo KV path prefix, e.g. `iac/<project>`. Required when the URL is set.
+- `VAULT_SALT_SDB_PREFIX` - per-repo KV path prefix, e.g. `iac/<project>`. Required when the URL is set.
 
 This generates `etc/salt/master.d/vault_salt_sdb.conf` (mirrored into `minion.d` via symlink).
 
@@ -80,7 +80,7 @@ Import the macro and reference a secret by its path under the prefix:
 myapp:
   db_password: "{{ secret('app/db/password') }}"
 ```
-`secret('app/db/password')` expands to `sdb://vault_salt_sdb/<VAULT_SDB_PREFIX>/app/db/password`.
+`secret('app/db/password')` expands to `sdb://vault_salt_sdb/<VAULT_SALT_SDB_PREFIX>/app/db/password`.
 The URI is `<mount>/<path>/<key>`: the first segment is the KV mount, the last is the field
 inside the secret, the middle is the secret path. The macro keeps the per-repo prefix in one
 place so secret references stay copy-paste identical across repos. You can also call the driver

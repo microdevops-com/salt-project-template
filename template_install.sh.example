@@ -37,6 +37,6 @@ TELEGRAM_TOKEN=xxx \
 	SALTSSH_RUNNER_SOURCE_IP_2=xxx \
 	SALT_VERSION=xxx \
 	# optional - vault_salt_sdb secrets backend, uncomment both to enable (see README):
-	# VAULT_SDB_URL=https://vault.example.com \
-	# VAULT_SDB_PREFIX=iac/example \
+	# VAULT_SALT_SDB_URL=https://vault.example.com \
+	# VAULT_SALT_SDB_PREFIX=iac/example \
 	./install.sh .. salt|salt-ssh
