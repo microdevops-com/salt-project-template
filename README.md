@@ -45,21 +45,50 @@ its `extmods.conf` and the `minion.d` wiring are always installed but stay dorma
 profile is configured, so repos that do not use Vault are unaffected.
 
 ## Enable at install time
-Set both vars in `template_install.sh` (presence of `VAULT_SALT_SDB_URL` turns the feature on):
+Set the three vars in `template_install.sh` (presence of `VAULT_SALT_SDB_URL` turns the feature on):
 ```
 VAULT_SALT_SDB_URL=https://vault.example.com \
 VAULT_SALT_SDB_PREFIX=iac/example \
+VAULT_SALT_SDB_JWT_ROLE=salt-ci-example \
 ```
-- `VAULT_SALT_SDB_URL` - Vault address. If unset, `install.sh` strips out the profile and the macro
-  (the driver itself stays installed, dormant).
+- `VAULT_SALT_SDB_URL` - Vault address. If unset, `install.sh` strips out the profile, the macro
+  and the CI OIDC lines (the driver itself stays installed, dormant).
 - `VAULT_SALT_SDB_PREFIX` - per-repo KV path prefix, e.g. `iac/<project>`. Required when the URL is set.
+- `VAULT_SALT_SDB_JWT_ROLE` - Vault jwt auth role name for CI (see *CI auth* below). Required when
+  the URL is set. Baked into the profile's inline `auth:` block.
 
-This generates `etc/salt/master.d/vault_salt_sdb.conf` (mirrored into `minion.d` via symlink).
+This generates `etc/salt/master.d/vault_salt_sdb.conf` (mirrored into `minion.d` via symlink) and
+un-comments the `#vault#` OIDC lines in `.gitlab-ci.yml`.
 
 ## Runtime auth
-The profile loads credentials from `/root/.config/vault_salt_sdb/auth.conf`, kept OUT of the
-repo. Provide it on each Salt Master and on the salt-ssh runner (for local docker runs it is
-bind-mounted automatically, see `.docker-misc.bash`):
+The driver authenticates two ways from one profile, chosen by whether an `auth_file` is present:
+
+**CI (keyless, GitLab OIDC).** The generated `.gitlab-ci.yml` gives every pillar-rendering job an
+`id_tokens:` block that mints a short-lived JWT as `$VAULT_ID_TOKEN`; the profile's inline
+`auth: {method: jwt, role: <VAULT_SALT_SDB_JWT_ROLE>}` exchanges it for a short-lived Vault token.
+No long-lived secret is stored on the runner. Configure Vault once:
+```
+vault auth enable jwt
+vault write auth/jwt/config oidc_discovery_url="https://gitlab.example.com" \
+                            bound_issuer="https://gitlab.example.com"
+vault policy write salt-ci-example - <<'EOF'
+path "iac/data/example/*" { capabilities = ["read"] }
+EOF
+vault write auth/jwt/role/salt-ci-example - <<'EOF'
+{ "role_type": "jwt", "user_claim": "project_path",
+  "bound_audiences": ["https://vault.example.com"],
+  "bound_claims": {"project_path": "group/subgroup/example"},
+  "token_policies": ["salt-ci-example"], "token_ttl": "5m", "token_max_ttl": "10m",
+  "token_no_default_policy": true }
+EOF
+```
+The role name must match `VAULT_SALT_SDB_JWT_ROLE`; the KV read path is `<mount>/data/<project>/*`;
+`bound_audiences` must equal the `aud` in `.gitlab-ci.yml` (the Vault URL). Vault must be able to
+reach the GitLab OIDC discovery URL. Missing/mis-set Vault config fails the pillar check closed.
+
+**Salt Masters & local dev (AppRole).** Drop an `auth.conf` at `/root/.config/vault_salt_sdb/auth.conf`
+(kept OUT of the repo); when present it OVERRIDES the inline JWT auth, so persistent masters and
+local `drun` (which bind-mounts it automatically, see `.docker-misc.bash`) use AppRole instead:
 ```
 mkdir -p ~/.config/vault_salt_sdb
 cat > ~/.config/vault_salt_sdb/auth.conf <<'EOF'

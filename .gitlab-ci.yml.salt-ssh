@@ -11,7 +11,16 @@ variables:
   GIT_STRATEGY: none
   GIT_SUBMODULE_STRATEGY: none
 
+#vault## GitLab OIDC: mint a short-lived JWT that the salt vault_salt_sdb driver exchanges for
+#vault## a Vault token (jwt auth). Every job that renders vault-backed pillar must extend this.
+#vault## aud must match the Vault jwt role's bound_audiences.
+#vault#.vault_oidc:
+#vault#  id_tokens:
+#vault#    VAULT_ID_TOKEN:
+#vault#      aud: __VAULT_SALT_SDB_URL__
+
 build:
+#vault#  extends: .vault_oidc
   tags:
     - __DEV_RUNNER__
   stage: build
@@ -27,7 +36,9 @@ build:
   script:
     - echo IMAGE $CI_PROJECT_PATH:$CI_PIPELINE_ID
     - docker build --pull --tag $CI_PROJECT_PATH:$CI_PIPELINE_ID --build-arg SALT_VERSION=__SALT_VERSION__ .
-    - docker run --rm $CI_PROJECT_PATH:$CI_PIPELINE_ID -- /.check_pillar_for_roster.sh
+    # -e VAULT_ID_TOKEN forwards the OIDC JWT into the check container without exposing it in
+    # docker's argv. Inert when vault is disabled (the var is unset -> nothing forwarded).
+    - docker run --rm -e VAULT_ID_TOKEN $CI_PROJECT_PATH:$CI_PIPELINE_ID -- /.check_pillar_for_roster.sh
 
 push:
   tags:
@@ -44,6 +55,7 @@ push:
     - docker push $CI_REGISTRY/$CI_PROJECT_PATH:$CI_COMMIT_REF_SLUG
 
 salt_cmd:
+#vault#  extends: .vault_oidc
   tags:
     - __PROD_RUNNER__
   stage: run_1
@@ -56,6 +68,7 @@ salt_cmd:
     - /srv/scripts/salt-ssh/send_notify_devilry.sh
 
 rsnapshot_backup_update_config:
+#vault#  extends: .vault_oidc
   tags:
     - __PROD_RUNNER__
   stage: run_1
@@ -68,6 +81,7 @@ rsnapshot_backup_update_config:
     - /srv/scripts/salt-ssh/send_notify_devilry.sh
 
 rsnapshot_backup_sync:
+#vault#  extends: .vault_oidc
   tags:
     - __PROD_RUNNER__
   stage: run_2
@@ -91,6 +105,7 @@ rsnapshot_backup_sync:
     - /srv/scripts/salt-ssh/send_notify_devilry.sh
 
 rsnapshot_backup_rotate:
+#vault#  extends: .vault_oidc
   tags:
     - __PROD_RUNNER__
   stage: run_3
@@ -105,6 +120,7 @@ rsnapshot_backup_rotate:
     - rm -f rsnapshot_backup_sync_status
 
 rsnapshot_backup_check_backup:
+#vault#  extends: .vault_oidc
   tags:
     - __PROD_RUNNER__
   stage: run_4
@@ -119,6 +135,7 @@ rsnapshot_backup_check_backup:
     - rm -f rsnapshot_backup_sync_status
 
 rsnapshot_backup_check_coverage:
+#vault#  extends: .vault_oidc
   tags:
     - __PROD_RUNNER__
   stage: run_5
