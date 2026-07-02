@@ -101,6 +101,11 @@ function sed_inplace_common () {
 	else
 		local LOCAL_VAULT_SALT_SDB_PREFIX=${VAULT_SALT_SDB_PREFIX}
 	fi
+	if [[ -z ${VAULT_SALT_SDB_JWT_ROLE} ]]; then
+		local LOCAL_VAULT_SALT_SDB_JWT_ROLE=__not_set_in_template_install__
+	else
+		local LOCAL_VAULT_SALT_SDB_JWT_ROLE=${VAULT_SALT_SDB_JWT_ROLE}
+	fi
 	sed -i \
 		-e "s/__CLIENT__/${CLIENT}/g" \
 		-e "s/__CLIENT_FULL__/${CLIENT_FULL}/g" \
@@ -113,6 +118,7 @@ function sed_inplace_common () {
 		-e "s/__ALERTA_API_KEY__/${LOCAL_ALERTA_API_KEY}/g" \
 		-e "s#__VAULT_SALT_SDB_URL__#${LOCAL_VAULT_SALT_SDB_URL}#g" \
 		-e "s#__VAULT_SALT_SDB_PREFIX__#${LOCAL_VAULT_SALT_SDB_PREFIX}#g" \
+		-e "s#__VAULT_SALT_SDB_JWT_ROLE__#${LOCAL_VAULT_SALT_SDB_JWT_ROLE}#g" \
 		-e "s/__HB_RECEIVER_HN__/${HB_RECEIVER_HN}/g" \
 		-e "s/__HB_TOKEN__/${HB_TOKEN}/g" \
 		-e "s/__SENTRY_DOMAIN__/${SENTRY_DOMAIN}/g" \
@@ -348,15 +354,19 @@ rsync_without_delete include $1/include
 # vault_salt_sdb - the driver (salt/extmods/sdb), extmods.conf and the minion.d wiring
 # stay installed unconditionally (harmless when idle, ready for a manual setup later;
 # minion.d/extmods.conf is also what lets salt-call --local find the driver). The toggle
-# only governs the operator-facing profile that bakes in URL/prefix and the macro using it.
+# only governs the operator-facing profile that bakes in URL/prefix/jwt-role, the macro
+# using it, and the CI OIDC (#vault#) lines that mint the JWT for the pillar check.
 if [[ -n ${VAULT_SALT_SDB_URL} ]]; then
 	if [[ -z ${VAULT_SALT_SDB_PREFIX} ]]; then echo Var VAULT_SALT_SDB_PREFIX required when VAULT_SALT_SDB_URL is set; exit 1; fi
+	if [[ -z ${VAULT_SALT_SDB_JWT_ROLE} ]]; then echo Var VAULT_SALT_SDB_JWT_ROLE required when VAULT_SALT_SDB_URL is set; exit 1; fi
 	sed_inplace_common $1/etc/salt/master.d/vault_salt_sdb.conf
 	sed_inplace_common $1/pillar/vault_salt_sdb.jinja
+	sed -i -e "s/#vault#//" $1/.gitlab-ci.yml          # enable the CI OIDC (id_tokens) lines
 else
 	rm -f $1/etc/salt/master.d/vault_salt_sdb.conf
 	rm -f $1/etc/salt/minion.d/vault_salt_sdb.conf
 	rm -f $1/pillar/vault_salt_sdb.jinja
+	sed -i -e "/#vault#/d" $1/.gitlab-ci.yml           # strip the CI OIDC lines entirely
 fi
 
 # Get inside templated repo

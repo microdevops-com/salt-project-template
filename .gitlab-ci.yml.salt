@@ -14,7 +14,17 @@ variables:
   GIT_STRATEGY: none
   GIT_SUBMODULE_STRATEGY: none
 
+#vault## GitLab OIDC: mint a short-lived JWT that the salt vault_salt_sdb driver exchanges for
+#vault## a Vault token (jwt auth). Only jobs that render vault pillar in the CI container extend
+#vault## this; the salt-master (_1/_2) jobs render on the master and use its AppRole auth.conf.
+#vault## aud must match the Vault jwt role's bound_audiences.
+#vault#.vault_oidc:
+#vault#  id_tokens:
+#vault#    VAULT_ID_TOKEN:
+#vault#      aud: __VAULT_SALT_SDB_URL__
+
 build:
+#vault#  extends: .vault_oidc
   tags:
     - __DEV_RUNNER__
   stage: build
@@ -30,7 +40,9 @@ build:
   script:
     - echo IMAGE $CI_PROJECT_PATH:$CI_PIPELINE_ID
     - docker build --pull --tag $CI_PROJECT_PATH:$CI_PIPELINE_ID --build-arg SALT_VERSION=__SALT_VERSION__ .
-    - docker run --rm $CI_PROJECT_PATH:$CI_PIPELINE_ID -- /.check_pillar_for_roster.sh
+    # -e VAULT_ID_TOKEN forwards the OIDC JWT into the check container without exposing it in
+    # docker's argv. Inert when vault is disabled (the var is unset -> nothing forwarded).
+    - docker run --rm -e VAULT_ID_TOKEN $CI_PROJECT_PATH:$CI_PIPELINE_ID -- /.check_pillar_for_roster.sh
 
 push:
   tags:
@@ -136,6 +148,7 @@ salt_cmd_2:
     - __SALT_MASTER_2_NAME__
 
 salt_cmd:
+#vault#  extends: .vault_oidc
   tags:
     - salt-ssh
   stage: run_1
@@ -171,6 +184,7 @@ rsnapshot_backup_update_config_2:
     - __SALT_MASTER_2_NAME__
 
 rsnapshot_backup_update_config:
+#vault#  extends: .vault_oidc
   tags:
     - salt-ssh
   stage: run_1
@@ -211,6 +225,7 @@ rsnapshot_backup_sync_2:
     - __SALT_MASTER_2_NAME__
 
 rsnapshot_backup_sync:
+#vault#  extends: .vault_oidc
   tags:
     - salt-ssh
   stage: run_2
@@ -259,6 +274,7 @@ rsnapshot_backup_rotate_2:
     - __SALT_MASTER_2_NAME__
 
 rsnapshot_backup_rotate:
+#vault#  extends: .vault_oidc
   tags:
     - salt-ssh
   stage: run_3
@@ -298,6 +314,7 @@ rsnapshot_backup_check_backup_2:
     - __SALT_MASTER_2_NAME__
 
 rsnapshot_backup_check_backup:
+#vault#  extends: .vault_oidc
   tags:
     - salt-ssh
   stage: run_4
@@ -337,6 +354,7 @@ rsnapshot_backup_check_coverage_2:
     - __SALT_MASTER_2_NAME__
 
 rsnapshot_backup_check_coverage:
+#vault#  extends: .vault_oidc
   tags:
     - salt-ssh
   stage: run_5
