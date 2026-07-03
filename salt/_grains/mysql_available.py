@@ -1,24 +1,23 @@
 #!/usr/bin/env python
 """Custom grain: MySQL/MariaDB autodiscovery.
 
-The single question this grain answers is: "can the local *root* user reach a
-MySQL-compatible server using the default client config (/root/.my.cnf or the
-default socket)?" If yes, anything that relies on that same config path will
-work too, with no manual user/grant setup -- poor man's autodiscovery.
+Two indicators, mirroring the actual situation on the box (we never supply
+credentials just for the grain -- we only reflect what the default path gives):
 
-That connectivity probe is authoritative on its own, so we lean on it as the
-primary signal and harvest version + flavor from the very same query.
+  * available: we connected and ran a command using the default client config
+    (/root/.my.cnf or the default socket). If those creds work, True; if the
+    server refuses us, False. This is "can I run arbitrary commands right now".
+  * local: available AND the *connected* server process runs on this machine.
+    It is the strict indicator; available is just its first half.
 
-Locality: we do NOT try to prove the server shares our namespace (that needs
-finding the server PID behind the socket and comparing /proc/<pid>/ns/* --
-not worth it). Instead we read how WE connected, which the server reports in
-its own processlist row:
-  * Unix socket  -> host "localhost": a socket is a path in our mount ns, so
-    same host / effectively same namespace. Strong "local" signal.
-  * loopback TCP -> host "127.0.0.1:port": local, EXCEPT a container can
-    publish its port on loopback, so this is the one ambiguous case (~0.1%).
-  * routable TCP -> host "1.2.3.4:port": treat as remote (covers ".my.cnf
-    points at our own public IP" and "points at another box").
+Locality is a proof, not a heuristic: SELECT @@pid_file gives the connected
+server's own pidfile path; we read it and check /proc/<pid>/comm. A match means
+the server shares our PID namespace => same host. Containerised servers report
+a pidfile path / PID from their own namespace that will not resolve here, so
+they correctly come out local=False.
+
+transport/peer_host are kept as pure informational fields (how we reached the
+server), not as the locality signal.
 
 Grains run as root on EVERY salt invocation, very early (before pillar and
 execution modules -- so no __salt__ here, we use subprocess directly). A grain
@@ -29,14 +28,15 @@ as a hard kill.
 Returns a single nested grain:
 
     mysql:
-      available: True | False      # root can run a query via the default config
+      available: True | False      # connected + ran a command via default config
+      local:     True | False      # available AND server runs on this machine
       version:   "8.0.36-28" | ""  # SERVER version (not the client binary)
       flavor:    mysql | mariadb | percona | ""
-      transport: socket | tcp | "" # how we reached the server
+      server_pid:"974" | ""        # connected server PID (from @@pid_file)
+      transport: socket | tcp | "" # how we reached the server (info only)
       peer_host: "localhost" | "127.0.0.1:3306" | ""  # raw, for inspection
-      local:     True | False | None   # derived; None = transport unknown
       client:    "/usr/bin/mysql" | ""  # client binary used for the probe
-      process:   True | False      # local mysqld/mariadbd seen in /proc (info)
+      process:   True | False      # any mysqld/mariadbd seen in /proc (info only)
 """
 
 import os
@@ -55,11 +55,15 @@ _CLIENT_CANDIDATES = (
     "/usr/local/bin/mariadb",
 )
 
-# Rich probe: version + flavor + how *we* are connected (own processlist row,
-# readable without the PROCESS privilege). Plain probe is the robust fallback
-# so a quirky information_schema can never flip a live server to unavailable.
+# /proc/<pid>/comm values that count as a local mysql/mariadb server.
+_SERVER_COMMS = (b"mysqld", b"mariadbd")
+
+# Rich probe: version + flavor + the connected server's pidfile path (for the
+# locality proof) + how *we* connected (own processlist row, readable without
+# the PROCESS privilege). Plain probe is the robust fallback so a quirky
+# information_schema can never flip a live server to unavailable.
 _SQL_RICH = (
-    "SELECT VERSION(), @@version_comment, "
+    "SELECT VERSION(), @@version_comment, @@pid_file, "
     "(SELECT host FROM information_schema.processlist WHERE id = CONNECTION_ID())"
 )
 _SQL_PLAIN = "SELECT VERSION(), @@version_comment"
@@ -110,29 +114,44 @@ def _flavor(version, comment):
     return "mysql"
 
 
-def _classify_peer(host):
-    """Map the server-reported connection host to (transport, local).
+def _transport(host):
+    """Classify the server-reported connection host (info only).
 
-    transport: "socket" | "tcp" | ""(unknown)
-    local:     True | False | None(unknown)
+    "localhost" -> unix socket; "ip:port" -> tcp; "" -> unknown.
     """
     if not host:
-        return "", None
-    h = host.strip().lower()
-    if h == "localhost":
-        return "socket", True          # Unix socket
-    # TCP: "ip:port" (ipv6 may carry extra colons; loopback check is best-effort).
-    addr = h.rsplit(":", 1)[0]
-    if addr.startswith("127.") or "::1" in h:
-        return "tcp", True             # loopback (container-on-loopback caveat)
-    return "tcp", False                # routable address => remote
+        return ""
+    return "socket" if host.strip().lower() == "localhost" else "tcp"
+
+
+def _pid_is_server(pid):
+    """True if /proc/<pid> is a mysql/mariadb server in *this* namespace."""
+    if not pid or not pid.isdigit():
+        return False
+    try:
+        with open("/proc/%s/comm" % pid, "rb") as fh:
+            return fh.read().strip() in _SERVER_COMMS
+    except (IOError, OSError):
+        return False
+
+
+def _pid_from_file(path):
+    """Read a pidfile and return the PID string, or "" if unreadable/invalid."""
+    if not path:
+        return ""
+    try:
+        with open(path, "r") as fh:
+            pid = fh.read().strip()
+    except (IOError, OSError):
+        return ""
+    return pid if pid.isdigit() else ""
 
 
 def _probe(client):
     """Probe the server. Returns a dict of discovered fields, or None if the
     server is not reachable at all."""
     out = _run(client, _SQL_RICH)
-    have_host = out is not None
+    have_rich = out is not None
     if out is None:
         out = _run(client, _SQL_PLAIN)   # robust fallback: keep availability
     if not out:
@@ -143,36 +162,33 @@ def _probe(client):
     if not version:
         return None
     comment = parts[1].strip() if len(parts) > 1 else ""
-    peer_host = parts[2].strip() if (have_host and len(parts) > 2) else ""
-    transport, local = _classify_peer(peer_host)
+    pid_file = parts[2].strip() if (have_rich and len(parts) > 2) else ""
+    peer_host = parts[3].strip() if (have_rich and len(parts) > 3) else ""
 
+    server_pid = _pid_from_file(pid_file)
     return {
         "version": version,
         "flavor": _flavor(version, comment),
+        "server_pid": server_pid,
+        "local": _pid_is_server(server_pid),
+        "transport": _transport(peer_host),
         "peer_host": peer_host,
-        "transport": transport,
-        "local": local,
     }
 
 
 def _local_server_process():
-    """Best-effort: is a mysqld/mariadbd process visible in this /proc?
+    """Best-effort: is any mysqld/mariadbd visible in this /proc?
 
     Informational only -- it is wrong for containerised servers (other PID
     namespace) and remote .my.cnf targets, so it must NOT drive any decision.
     """
-    names = (b"mysqld", b"mariadbd")
     try:
         pids = [p for p in os.listdir("/proc") if p.isdigit()]
     except OSError:
         return False
     for pid in pids:
-        try:
-            with open("/proc/%s/comm" % pid, "rb") as fh:
-                if fh.read().strip() in names:
-                    return True
-        except (IOError, OSError):
-            continue
+        if _pid_is_server(pid):
+            return True
     return False
 
 
@@ -180,11 +196,12 @@ def mysql_grains():
     """Public entrypoint -- Salt merges the returned dict into grains."""
     grain = {
         "available": False,
+        "local": False,
         "version": "",
         "flavor": "",
+        "server_pid": "",
         "transport": "",
         "peer_host": "",
-        "local": None,
         "client": "",
         "process": _local_server_process(),
     }
