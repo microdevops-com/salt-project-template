@@ -84,6 +84,13 @@ main() {
         prepare_salt_call_environment "${fqdn}" "${envs[$fqdn]}"
     done
 
+    # Sync custom sdb modules (vault_salt_sdb) from file_roots _sdb into extension_modules
+    # once, before the parallel checks. extension_modules lives outside the working tree
+    # (see etc/salt/*/extmods.conf) so salt no longer writes root-owned files into /srv.
+    # No-op for repos that ship no _sdb driver.
+    printf "${_C}Sync sdb extension modules${_RS}\n"
+    salt-call --local saltutil.sync_sdb
+
     printf "${_C}Started spawning jobs${_RS}\n"
     printf "${_C}Keep at least $BATCH simultaneous pillar checks${_RS}\n"
     for fqdn in ${!envs[@]}; do

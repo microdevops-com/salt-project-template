@@ -39,7 +39,7 @@ For Salt-SSH:
 - `etc/salt/roster` (see roster.example in `.salt-project-template`)
 
 # Secrets with Vault (vault_salt_sdb)
-This template ships a custom SDB driver (`salt/extmods/sdb/vault_salt_sdb.py`) that reads
+This template ships a custom SDB driver (`salt/_sdb/vault_salt_sdb.py`) that reads
 secrets from HashiCorp Vault (KV v2) instead of keeping them in plaintext pillar. The driver,
 its `extmods.conf` and the `minion.d` wiring are always installed but stay dormant until a
 profile is configured, so repos that do not use Vault are unaffected.

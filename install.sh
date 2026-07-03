@@ -351,9 +351,9 @@ rsync_without_delete etc/salt/master.d $1/etc/salt/master.d
 rsync_without_delete etc/salt/minion.d $1/etc/salt/minion.d
 rsync_without_delete include $1/include
 
-# vault_salt_sdb - the driver (salt/extmods/sdb), extmods.conf and the minion.d wiring
+# vault_salt_sdb - the driver (salt/_sdb), extmods.conf and the minion.d wiring
 # stay installed unconditionally (harmless when idle, ready for a manual setup later;
-# minion.d/extmods.conf is also what lets salt-call --local find the driver). The toggle
+# extension_modules points outside the tree and the pillar check syncs _sdb into it). The toggle
 # only governs the operator-facing profile that bakes in URL/prefix/jwt-role, the macro
 # using it, and the CI OIDC (#vault#) lines that mint the JWT for the pillar check.
 if [[ -n ${VAULT_SALT_SDB_URL} ]]; then
