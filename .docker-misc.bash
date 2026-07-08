@@ -78,6 +78,14 @@ drun() {
             "${name}:$USER" \
             -- \
             bash -c "sleep 2h && kill -s 15 1; rm /srv/pillar/top.sls" ;
+        # docker run --detach returns as soon as the container starts, not once
+        # entrypoint.sh finishes (ssh keys, roster grains, sdb sync into
+        # extension_modules) - entrypoint.sh keeps running server-side in the
+        # background. Without this, a docker exec issued right after container
+        # creation (e.g. check_pillar.sh's back-to-back build+run) can race ahead
+        # of entrypoint.sh's `saltutil.sync_sdb` and find extension_modules empty.
+        # This blocks until it is safe.
+        docker exec "${name}-$USER" salt-call --local saltutil.sync_sdb > /dev/null ;
     fi
 
     if test -t 0; then opt+="i"; fi

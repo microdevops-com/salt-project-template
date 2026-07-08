@@ -37,4 +37,12 @@ else
 	sed -i -e 's#__ROSTER_PRIV__#agent-forwarding#g' /etc/salt/roster
 fi
 
+# Sync custom sdb modules (vault_salt_sdb) from file_roots _sdb into extension_modules.
+# extension_modules lives outside /srv (see etc/salt/*/extmods.conf), so it is not part
+# of the bind-mounted repo and starts empty in every fresh container. Doing it here,
+# once per container startup, covers every entry point (drun's persistent container,
+# plain `docker run --rm` in CI, salt-ssh, check_pillar.sh, ...) since ENTRYPOINT runs
+# once at container creation, unlike `docker exec` which skips it entirely.
+salt-call --local saltutil.sync_sdb
+
 exec "$@"
