@@ -47,7 +47,15 @@ fi
 # firing its own concurrent salt-call --local: two overlapping local salt-call runs
 # race each other over /var/cache/salt and were observed to fail intermittently
 # (mkdir "File exists", and even a bogus pillar render error) when run at once.
-salt-call --local saltutil.sync_sdb
+# sync_sdb only needs file_roots (to find the _sdb driver); it does not need real
+# pillar data. salt-call still eagerly compiles local pillar at startup regardless of
+# which function is called, matching this container's own hostname against whatever
+# top.sls this repo ships - which errors loudly if a repo's top.sls assumes every
+# minion ID is a real managed host (seen as e.g. "SLS 'salt.minion_<container-id>' ...
+# is not available"). Point --pillar-root at an empty dir so that compile is a
+# guaranteed no-op instead.
+mkdir -p /tmp/empty_pillar_root
+salt-call --local --pillar-root=/tmp/empty_pillar_root saltutil.sync_sdb
 touch /tmp/.entrypoint-sdb-synced
 
 exec "$@"
