@@ -43,6 +43,11 @@ fi
 # once per container startup, covers every entry point (drun's persistent container,
 # plain `docker run --rm` in CI, salt-ssh, check_pillar.sh, ...) since ENTRYPOINT runs
 # once at container creation, unlike `docker exec` which skips it entirely.
+# Touch a marker afterwards so drun() (.docker-misc.bash) can wait for this instead of
+# firing its own concurrent salt-call --local: two overlapping local salt-call runs
+# race each other over /var/cache/salt and were observed to fail intermittently
+# (mkdir "File exists", and even a bogus pillar render error) when run at once.
 salt-call --local saltutil.sync_sdb
+touch /tmp/.entrypoint-sdb-synced
 
 exec "$@"

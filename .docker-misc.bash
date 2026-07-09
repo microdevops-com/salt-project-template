@@ -84,8 +84,12 @@ drun() {
         # background. Without this, a docker exec issued right after container
         # creation (e.g. check_pillar.sh's back-to-back build+run) can race ahead
         # of entrypoint.sh's `saltutil.sync_sdb` and find extension_modules empty.
-        # This blocks until it is safe.
-        docker exec "${name}-$USER" salt-call --local saltutil.sync_sdb > /dev/null ;
+        # Wait for entrypoint.sh's marker rather than running our own salt-call
+        # here: two concurrent `salt-call --local` processes race each other over
+        # /var/cache/salt and were observed to fail intermittently.
+        until docker exec "${name}-$USER" test -f /tmp/.entrypoint-sdb-synced 2>/dev/null; do
+            sleep 0.2
+        done
     fi
 
     if test -t 0; then opt+="i"; fi
