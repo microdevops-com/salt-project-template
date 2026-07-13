@@ -86,18 +86,59 @@ The role name must match `VAULT_SALT_SDB_JWT_ROLE`; the KV read path is `<mount>
 `bound_audiences` must equal the `aud` in `.gitlab-ci.yml` (the Vault URL). Vault must be able to
 reach the GitLab OIDC discovery URL. Missing/mis-set Vault config fails the pillar check closed.
 
-**Salt Masters & local dev (AppRole).** Drop an `auth.conf` at `/root/.config/vault_salt_sdb/auth.conf`
-(kept OUT of the repo); when present it OVERRIDES the inline JWT auth, so persistent masters and
-local `drun` (which bind-mounts it automatically, see `.docker-misc.bash`) use AppRole instead:
+**Salt masters & local dev (AppRole).** On a persistent master the pillar is compiled by the
+long-running master process, so there is no per-job OIDC token to lean on — the master authenticates
+with an AppRole instead. Drop an `auth.conf` at `/root/.config/vault_salt_sdb/auth.conf` (kept OUT of
+the repo); when present it OVERRIDES the inline JWT auth, so masters and local `drun` (which
+bind-mounts `~/.config/vault_salt_sdb/auth.conf` automatically, see `.docker-misc.bash`) use AppRole.
+The driver logs in itself, caches the token in memory, and re-authenticates when it expires — no Vault
+Agent needed.
+
+Set up the role in Vault once. Masters read the same secrets as CI, so reuse the CI read policy
+(`salt-ci-example`) rather than duplicating it (create a dedicated `salt-master-example` policy only
+if you want separate audit/scoping):
 ```
-mkdir -p ~/.config/vault_salt_sdb
-cat > ~/.config/vault_salt_sdb/auth.conf <<'EOF'
+vault auth enable approle   # once per Vault
+
+vault write auth/approle/role/salt-master-example \
+    token_policies="salt-ci-example" \
+    secret_id_bound_cidrs="10.0.0.11/32,10.0.0.12/32" \
+    token_bound_cidrs="10.0.0.11/32,10.0.0.12/32" \
+    secret_id_ttl=90d secret_id_num_uses=0 \
+    token_ttl=20m token_max_ttl=1h \
+    token_no_default_policy=true
+```
+- `token_policies` — least-privilege read policy over the KV `<mount>/data/<project>/*` paths.
+- `*_bound_cidrs` — lock the role to the master IPs; a leaked `secret_id` is useless off-host.
+- `secret_id_ttl=90d` — rotate quarterly; `secret_id_num_uses=0` = unlimited logins within that TTL
+  (the master re-authenticates repeatedly over its lifetime).
+- short `token_ttl`/`token_max_ttl` — the minted token is disposable.
+
+Read the (non-secret) `role_id`, then hand the `secret_id` over **response-wrapped** so the raw value
+never lands in provisioning logs — the master unwraps it once at setup:
+```
+vault read auth/approle/role/salt-master-example/role-id          # -> role_id (safe to bake in)
+
+vault write -wrap-ttl=90s -f auth/approle/role/salt-master-example/secret-id
+# prints a single-use wrapping token; then, on the master:
+vault unwrap <wrapping-token>                                     # -> the real secret_id
+```
+Write the file on the master (root, mode 0600; for local `drun` put it at
+`~/.config/vault_salt_sdb/auth.conf` instead):
+```
+mkdir -p /root/.config/vault_salt_sdb
+cat > /root/.config/vault_salt_sdb/auth.conf <<'EOF'
 method: approle
 role_id: <role-id>
-secret_id: <secret-id>
+secret_id: <unwrapped-secret-id>
 EOF
-chmod 600 ~/.config/vault_salt_sdb/auth.conf
+chmod 600 /root/.config/vault_salt_sdb/auth.conf
 ```
+To rotate before `secret_id_ttl` runs out, issue a fresh wrapped `secret-id`, unwrap it on the master,
+and replace the `secret_id` line. For at-rest protection you can seal `auth.conf` (or just the
+`secret_id`) to the host's TPM — e.g. `systemd-creds encrypt --with-key=tpm2` — so a copied disk is
+useless without that machine.
+
 Secret values are cached at `/root/.cache/vault_salt_sdb/cache.json` (mode 0600) for a short
 freshness window and as an outage fallback; tune via `cache_*` keys in the profile.
 
