@@ -362,11 +362,17 @@ if [[ -n ${VAULT_SALT_SDB_URL} ]]; then
 	sed_inplace_common $1/etc/salt/master.d/vault_salt_sdb.conf
 	sed_inplace_common $1/pillar/vault_salt_sdb.jinja
 	sed -i -e "s/#vault#//" $1/.gitlab-ci.yml          # enable the CI OIDC (id_tokens) lines
+	if [[ $2 = salt ]]; then
+		sed -i -e "s/#vault#//" $1/pillar/salt/master.sls  # enable master-side sdb profile (real persistent masters)
+	fi
 else
 	rm -f $1/etc/salt/master.d/vault_salt_sdb.conf
 	rm -f $1/etc/salt/minion.d/vault_salt_sdb.conf
 	rm -f $1/pillar/vault_salt_sdb.jinja
 	sed -i -e "/#vault#/d" $1/.gitlab-ci.yml           # strip the CI OIDC lines entirely
+	if [[ $2 = salt ]]; then
+		sed -i -e "/#vault#/d" $1/pillar/salt/master.sls   # strip master-side sdb profile lines entirely
+	fi
 fi
 
 # Get inside templated repo
