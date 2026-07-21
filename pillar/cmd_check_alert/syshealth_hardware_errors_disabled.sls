@@ -1,0 +1,1 @@
+../../formulas/microdevops-formula/pillar/cmd_check_alert/syshealth_hardware_errors_disabled.sls
