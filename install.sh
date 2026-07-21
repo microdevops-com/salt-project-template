@@ -351,6 +351,29 @@ rsync_without_delete etc/salt/master.d $1/etc/salt/master.d
 rsync_without_delete etc/salt/minion.d $1/etc/salt/minion.d
 rsync_without_delete include $1/include
 
+# README.md - per-project onboarding doc (repo layout, drun/check_pillar workflow and, when
+# vault_salt_sdb is enabled, how a new team member activates their own Vault token).
+# REGENERATED on every template apply, like .gitlab-ci.yml or the Dockerfile, so the onboarding
+# docs never drift from the template they describe. Anything hand-written in README.md is
+# therefore lost on the next apply - per-project notes go into README.project.md, which is
+# appended verbatim below and never touched by the template.
+cp -f README.md.example $1/README.md
+sed_inplace_common $1/README.md
+if [[ $2 = salt ]]; then
+	sed_inplace_salt $1/README.md
+elif [[ $2 = salt-ssh ]]; then
+	sed_inplace_salt-ssh $1/README.md
+fi
+if [[ -n ${VAULT_SALT_SDB_URL} ]]; then
+	sed -i -e "s/#vault#//" $1/README.md   # keep the Vault section
+else
+	sed -i -e "/#vault#/d" $1/README.md    # strip it entirely
+fi
+if [[ -f $1/README.project.md ]]; then
+	echo >> $1/README.md
+	cat $1/README.project.md >> $1/README.md
+fi
+
 # vault_salt_sdb - the driver (salt/_sdb), extmods.conf and the minion.d wiring
 # stay installed unconditionally (harmless when idle, ready for a manual setup later;
 # extension_modules points outside the tree and the pillar check syncs _sdb into it). The toggle

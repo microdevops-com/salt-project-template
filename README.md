@@ -27,7 +27,11 @@ Run template install:
 ```
 
 Fill the repo with some additional data:
-- `README.md`
+- `README.project.md` (optional) - project-specific notes. `README.md` itself is template-owned:
+  `install.sh` regenerates it from `README.md.example` on **every** apply (templated per project,
+  salt / salt-ssh variant, Vault section included only when `VAULT_SALT_SDB_URL` is set), so
+  edits made there are lost - `README.project.md` is appended to the generated `README.md`
+  instead and never touched. Fixes to the common text belong in `README.md.example` here.
 - `pillar/top_sls` files (see pillar/top_sls/srv1.example.com.example)
 - `pillar/bootstrap` files (see pillar/bootstrap/.../srv1_example_com.example)
 - `pillar/users/example/admins.sls`
@@ -169,6 +173,25 @@ pillar change lands (however state applies are normally triggered in this projec
 
 Secret values are cached at `/root/.cache/vault_salt_sdb/cache.json` (mode 0600) for a short
 freshness window and as an outage fallback; tune via `cache_*` keys in the profile.
+
+## Team members (personal Vault token)
+Everything above is infrastructure-side auth (CI, masters). A human rendering pillar locally
+(`./check_pillar.sh`, `drun ...`) needs their **own** token — the driver's `auth.conf` also
+accepts `method: token`, which overrides the inline JWT auth exactly like the AppRole file does:
+```
+mkdir -p ~/.config/vault_salt_sdb
+( umask 077; printf 'method: token\ntoken: %s\n' "$(cat ~/.vault-token)" \
+    > ~/.config/vault_salt_sdb/auth.conf )
+```
+The token comes from `vault login -method=oidc` (writes `~/.vault-token`), or, without the CLI,
+from the Vault UI's user menu -> *Copy token*. Vault needs an OIDC/SSO auth method mapping the
+person to a policy that reads the repo's `<mount>/data/<project>/*` paths, i.e. the same read
+policy as CI. Gotcha: `drun` only mounts `auth.conf` when it **starts** a container, so an
+already-running one must be stopped (`docker stop -t 0 "${PWD##*/}-$USER"`) after the file is
+created or the token refreshed.
+
+The per-project onboarding docs for this (step-by-step, with the project's real Vault URL and
+prefix substituted in) ship as `README.md.example` -> the target repo's `README.md`.
 
 ## Using secrets in pillar
 Import the macro and reference a secret by its path under the prefix:

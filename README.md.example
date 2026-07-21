@@ -1,0 +1,214 @@
+# __CLIENT_FULL__ — Salt infrastructure
+
+Source of truth for the servers of __CLIENT_FULL__: states, pillar (configuration data), the
+host inventory and the pipelines that apply them.
+
+The repo is generated from
+[salt-project-template](https://github.com/microdevops-com/salt-project-template) and refreshed
+by re-running `template_install.sh`, so template-owned files (`Dockerfile`, `.gitlab-ci.yml`,
+`entrypoint.sh`, `scripts/`, `salt/_sdb/`, ...) are overwritten on the next apply — change them
+upstream, not here.
+#salt#States are applied by the persistent Salt Masters `__SALT_MASTER_1_NAME__` and `__SALT_MASTER_2_NAME__`,
+#salt#which pull this repo on every push to the default branch.
+#salt-ssh#States are applied agentlessly with `salt-ssh`, from a Docker image built out of this repo —
+#salt-ssh#there is no master and no minion running on the managed hosts.
+
+> **This README is one of those files.** It is regenerated from the template's
+> `README.md.example` on every apply, so edits made here are lost. Put project-specific notes in
+> `README.project.md` — it is appended to the bottom of this file and never touched by the
+> template. Fixes to the text above belong upstream.
+
+## Layout
+
+| Path | What |
+| --- | --- |
+| `pillar/` | Configuration data per host/role. Most of the day-to-day work happens here. |
+| `pillar/top_sls/` | Per-host pillar top fragments; concatenated into `pillar/top.sls` (generated, gitignored). |
+| `salt/` | Custom states, execution modules, grains and sdb drivers. |
+| `salt_local/` | States specific to this repo (not shared through a formula). |
+| `formulas/` | Shared formulas, as git submodules. Don't edit in place — change them upstream. |
+| `files/` | File templates and assets served to the hosts. |
+| `etc/salt/` | Salt config baked into the Docker image (`master`, `master.d/`, `minion.d/`, `roster`). |
+| `scripts/` | Helpers invoked by the pipelines. |
+| `.gitlab-ci.yml` | Pipelines: pillar check on every push, deploys/runs triggered by variables. |
+
+## Prerequisites
+
+- Docker, git, an SSH agent holding the key you use for the managed hosts (`ssh-add -l` must
+  list it — the container reuses your agent, no private key is copied into it).
+- Access to this GitLab project.
+#salt-ssh#- Your key present in `pillar/ssh_keys/` and already deployed to the hosts you intend to touch.
+
+Clone with submodules and activate the shell helpers:
+
+```
+git clone --recurse-submodules <this repo> && cd <this repo>
+. .docker-misc.bash        # put this in your ~/.bashrc to get the helpers in every salt repo
+```
+
+That gives you three commands, each of which figures out the repo from your current directory:
+
+| Command | What it does |
+| --- | --- |
+| `gtpl` | `git pull` + bring all submodules to a fresh `master`. Run it before you start working. |
+| `dbuild` | Build the image as `<repo-dir>:$USER`. Re-run after changing `Dockerfile`/`formulas`/`salt`. |
+| `drun <cmd>` | Run a command in a persistent container (auto-started, lives 2h) with the repo bind-mounted at `/srv`. |
+
+Optionally enable the git hooks (pre-push runs the pillar check, post-merge regenerates
+`pillar/top.sls`):
+
+```
+ln -s ../../.githooks/pre-push   .git/hooks/pre-push
+ln -s ../../.githooks/post-merge .git/hooks/post-merge
+```
+
+## Everyday workflow
+
+1. `gtpl` — get current.
+2. Edit pillar/states in a branch.
+3. `./check_pillar.sh` — rebuilds the image and renders **every** host's pillar locally. This is
+   the same check CI runs on every push; it fails on any render error, so run it before pushing.
+4. Try it out:
+#salt-ssh#   ```
+#salt-ssh#   drun salt-ssh srv1.__CLIENT_DOMAIN__ test.ping
+#salt-ssh#   drun salt-ssh srv1.__CLIENT_DOMAIN__ state.apply some.state test=True
+#salt-ssh#   drun salt-ssh srv1.__CLIENT_DOMAIN__ pillar.items
+#salt-ssh#   ```
+#salt-ssh#   Hosts must exist in `etc/salt/roster` — an unknown host fails with
+#salt-ssh#   `Bad port 'you-are-in-wrong-repo'`, which means you are in the wrong repo for that server.
+#salt#   ```
+#salt#   drun salt-call --local --id=srv1.__CLIENT_DOMAIN__ pillar.items   # render as that host would see it
+#salt#   ```
+5. Merge to the default branch, then trigger the real run from CI:
+#salt#   the masters pull the repo automatically on merge, and jobs are started by running a pipeline
+#salt#   with variables:
+#salt-ssh#   the image is rebuilt and pushed on merge, and jobs are started by running a pipeline
+#salt-ssh#   with variables:
+   - `SALT_MINION` + `SALT_CMD` — e.g. `SALT_MINION=srv1.__CLIENT_DOMAIN__`, `SALT_CMD=state.apply some.state`.
+   - `RSNAPSHOT_BACKUP_TYPE` — backup jobs.
+
+Never commit a plaintext secret into pillar.
+#vault#Anything sensitive goes into Vault — see below.
+#vault#
+#vault### Secrets: Vault (`vault_salt_sdb`)
+#vault#
+#vault#Secrets live in HashiCorp Vault at __VAULT_SALT_SDB_URL__ under the prefix
+#vault#`__VAULT_SALT_SDB_PREFIX__/`, and pillar refers to them through the `vault_salt_sdb` SDB driver
+#vault#(`salt/_sdb/vault_salt_sdb.py`), which fetches them at render time:
+#vault#
+#vault#```
+#vault#{% from 'vault_salt_sdb.jinja' import secret %}
+#vault#
+#vault#myapp:
+#vault#  db_password: "{{ secret('app/db/password') }}"
+#vault#```
+#vault#
+#vault#`secret('app/db/password')` resolves to
+#vault#`sdb://vault_salt_sdb/__VAULT_SALT_SDB_PREFIX__/app/db/password`, read as: first segment = KV
+#vault#mount, last segment = the field inside the secret, everything between = the secret's path.
+#vault#
+#vault##salt#CI authenticates to Vault keylessly (GitLab OIDC) and the salt masters use an AppRole; both are
+#vault##salt#already set up. **You need your own Vault token** — without it every local pillar render that
+#vault##salt#touches a secret fails, including `./check_pillar.sh`.
+#vault##salt-ssh#CI authenticates to Vault keylessly (GitLab OIDC), which is already set up. **You need your own
+#vault##salt-ssh#Vault token** — without it every local pillar render that touches a secret fails, including
+#vault##salt-ssh#`./check_pillar.sh`.
+#vault#
+#vault#### One-time: activate your Vault access
+#vault#
+#vault#**1. Get read access.** Ask an infra admin to map your SSO/OIDC identity to a Vault policy that
+#vault#can read this repo's secrets. For the prefix `__VAULT_SALT_SDB_PREFIX__` that is (KV v2 — note
+#vault#the `data/` element, which is not part of the sdb URI):
+#vault#
+#vault#```
+#vault## prefix "iac/example" -> mount "iac", path "example" -> policy path "iac/data/example/*"
+#vault#vault policy write salt-example-ro - <<'EOF'
+#vault#path "iac/data/example/*" { capabilities = ["read"] }
+#vault#EOF
+#vault#```
+#vault#
+#vault#**2. Log in and copy your token.** With the Vault CLI:
+#vault#
+#vault#```
+#vault#export VAULT_ADDR=__VAULT_SALT_SDB_URL__
+#vault#vault login -method=oidc     # opens a browser; on success the token lands in ~/.vault-token
+#vault#```
+#vault#
+#vault#No CLI installed, or on a machine without a browser? Take the token out of the web UI instead:
+#vault#
+#vault#- open __VAULT_SALT_SDB_URL__/ui/ and sign in with the OIDC/SSO method
+#vault#- click the user icon (top right) → **Copy token**
+#vault#
+#vault#That is the same kind of token; it just isn't written to `~/.vault-token` for you.
+#vault#
+#vault#**3. Write it into the driver's auth file.** The driver reads
+#vault#`~/.config/vault_salt_sdb/auth.conf` — outside the repo on purpose, so it can never be
+#vault#committed:
+#vault#
+#vault#```
+#vault#mkdir -p ~/.config/vault_salt_sdb
+#vault#( umask 077; printf 'method: token\ntoken: %s\n' "$(cat ~/.vault-token)" \
+#vault#    > ~/.config/vault_salt_sdb/auth.conf )
+#vault#```
+#vault#
+#vault#With a token copied from the UI, create the same file by hand (mode `0600`) — the whole
+#vault#content is two lines:
+#vault#
+#vault#```
+#vault#method: token
+#vault#token: hvs.CAESIExample...
+#vault#```
+#vault#
+#vault#**4. Restart the container and verify.** `drun` mounts `auth.conf` into the container read-only,
+#vault#but only checks for it when it *starts* a container — one started before you created the file
+#vault#will not see it:
+#vault#
+#vault#```
+#vault#docker stop -t 0 "${PWD##*/}-$USER"    # ok if it says "no such container"; drun starts a fresh one
+#vault#drun salt-call --local --pillar-root=/tmp/empty_pillar_root \
+#vault#    sdb.get 'sdb://vault_salt_sdb/__VAULT_SALT_SDB_PREFIX__/<path>/<key>'
+#vault#./check_pillar.sh
+#vault#```
+#vault#
+#vault#(`--pillar-root` pointed at an empty dir keeps `salt-call` from eagerly compiling this repo's
+#vault#pillar for the container's own hostname, which is unrelated noise here.)
+#vault#
+#vault#### When your token expires
+#vault#
+#vault#OIDC tokens are short-lived by design. The symptom is a pillar render failing with
+#vault#`vault_salt_sdb: Vault denied access to <mount>/<path> (403)`. Repeat steps 2–4 — log in again,
+#vault#rewrite `auth.conf`, restart the container. Nothing else to clean up.
+#vault#
+#vault#### Adding or rotating a secret
+#vault#
+#vault#```
+#vault#vault kv put iac/example/app/db password=s3cr3t     # mount iac, path example/app/db, field password
+#vault#vault kv get iac/example/app/db
+#vault#```
+#vault#
+#vault#The web UI does the same thing. Then reference it from pillar with `secret('app/db/password')`
+#vault#and run `./check_pillar.sh`. Values are cached in the container for `cache_fresh_for` seconds
+#vault#(see `etc/salt/master.d/vault_salt_sdb.conf`), so a just-rotated secret may take a minute to be
+#vault#picked up locally.
+#vault#
+#vault#### Troubleshooting
+#vault#
+#vault#| Symptom | Cause |
+#vault#| --- | --- |
+#vault#| Pillar value comes out as the literal `sdb://...` string | The sdb profile isn't loaded (wrong profile name, or `extension_modules` not synced yet). |
+#vault#| `Vault denied access ... (403)` | Token expired, or your policy doesn't cover that path. |
+#vault#| `secret not found: <mount>/<path> (404)` | Wrong path, or the secret exists but not under this repo's prefix. |
+#vault#| `key '<field>' not found in secret` | Right secret, wrong field — the error lists the available fields. |
+#vault#| `Vault unreachable and no usable cache` | Network/VPN, or Vault is sealed. |
+#vault#| Works in CI, fails locally | Your `auth.conf` is missing/stale, or the container was started before you wrote it. |
+#vault#| `KeyError: 'vault_salt_sdb.get'` | The driver isn't synced into `extension_modules` yet (fresh container, or a just-restarted master); retry in a minute. |
+#vault#
+#vault#Driver internals, the Vault-side CI (OIDC) and master (AppRole) setup are documented in the
+#vault#[template README](https://github.com/microdevops-com/salt-project-template#secrets-with-vault-vault_salt_sdb).
+
+## Conventions
+
+- One host = one file under `pillar/top_sls/` and (usually) one under `pillar/bootstrap/__CLIENT__/`.
+- `pillar/top.sls` is generated — never edit or commit it.
+- Formulas are submodules: fix things upstream and bump the submodule, don't patch inside `formulas/`.
+- Test with `test=True` first; on the default branch a pipeline run applies for real.
