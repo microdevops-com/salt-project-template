@@ -92,6 +92,28 @@ Never commit a plaintext secret into pillar.
 #vault#
 #vault### Secrets: Vault (`vault_salt_sdb`)
 #vault#
+#vault#### TL;DR — give yourself Vault access
+#vault#
+#vault#Pillar here holds no plaintext secrets, so rendering it locally (`./check_pillar.sh`, `drun ...`)
+#vault#needs your own Vault token. Two minutes, once:
+#vault#
+#vault#1. Open __VAULT_SALT_SDB_URL__/ui/ and sign in the way you normally do (SSO).
+#vault#2. Click the person icon (top right) → **Copy token**.
+#vault#3. Put it in `~/.config/vault_salt_sdb/auth.conf` — the whole file is these two lines:
+#vault#
+#vault#   ```
+#vault#   method: token
+#vault#   token: <paste the token here>
+#vault#   ```
+#vault#
+#vault#4. Already have a dev container running? Restart it, it only picks the file up at start:
+#vault#   `docker stop -t 0 "${PWD##*/}-$USER"` — `drun` and `./check_pillar.sh` start a fresh one.
+#vault#
+#vault#Repeat 1–3 when the token expires (symptom: `Vault denied access ... (403)`). The rest of this
+#vault#section is background, the CLI equivalent, and what to do when something breaks.
+#vault#
+#vault#### How it works
+#vault#
 #vault#Secrets live in HashiCorp Vault at __VAULT_SALT_SDB_URL__ under the prefix
 #vault#`__VAULT_SALT_SDB_PREFIX__/`, and pillar refers to them through the `vault_salt_sdb` SDB driver
 #vault#(`salt/_sdb/vault_salt_sdb.py`), which fetches them at render time:
@@ -108,15 +130,15 @@ Never commit a plaintext secret into pillar.
 #vault#mount, last segment = the field inside the secret, everything between = the secret's path.
 #vault#
 #vault##salt#CI authenticates to Vault keylessly (GitLab OIDC) and the salt masters use an AppRole; both are
-#vault##salt#already set up. **You need your own Vault token** — without it every local pillar render that
-#vault##salt#touches a secret fails, including `./check_pillar.sh`.
-#vault##salt-ssh#CI authenticates to Vault keylessly (GitLab OIDC), which is already set up. **You need your own
-#vault##salt-ssh#Vault token** — without it every local pillar render that touches a secret fails, including
-#vault##salt-ssh#`./check_pillar.sh`.
+#vault##salt#already set up and need nothing from you. Only local renders use your personal token.
+#vault##salt-ssh#CI authenticates to Vault keylessly (GitLab OIDC), already set up and needing nothing from
+#vault##salt-ssh#you. Only local renders use your personal token.
 #vault#
-#vault#### One-time: activate your Vault access
+#vault#### Getting a token, the long way
 #vault#
-#vault#**1. Get read access.** Ask an infra admin to map your SSO/OIDC identity to a Vault policy that
+#vault#**1. Get read access.** If step 2 gives you a token but reads still fail with `403`, your
+#vault#account has no policy for this repo's secrets. Ask an infra admin to map your SSO/OIDC identity
+#vault#to a Vault policy that
 #vault#can read this repo's secrets. For the prefix `__VAULT_SALT_SDB_PREFIX__` that is (KV v2 — note
 #vault#the `data/` element, which is not part of the sdb URI):
 #vault#
