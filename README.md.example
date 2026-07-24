@@ -88,6 +88,42 @@ ln -s ../../.githooks/post-merge .git/hooks/post-merge
    - `RSNAPSHOT_BACKUP_TYPE` — backup jobs.
 
 Never commit a plaintext secret into pillar.
+
+#salt-ssh### Pre-flight Python runtime
+#salt-ssh#
+#salt-ssh#Hosts whose system Python cannot run this project's Salt version can opt into the
+#salt-ssh#Microdevops static runtime through their Accounting asset:
+#salt-ssh#
+#salt-ssh#```yaml
+#salt-ssh#roster_opts:
+#salt-ssh#  ssh_pre_flight: /srv/formulas/microdevops-formula/scripts/salt-ssh/static_build_pre_flight.sh
+#salt-ssh#  set_path: /opt/microdevops/static-build/root/bin:\$PATH
+#salt-ssh#```
+#salt-ssh#
+#salt-ssh#Accounting generates `etc/salt/roster`; do not edit the generated roster directly. The
+#salt-ssh#backslash protects `$PATH` while the generator constructs the file. The final roster must
+#salt-ssh#contain:
+#salt-ssh#
+#salt-ssh#```yaml
+#salt-ssh#set_path: /opt/microdevops/static-build/root/bin:$PATH
+#salt-ssh#```
+#salt-ssh#
+#salt-ssh#For an enabled host, one `salt-ssh` invocation performs:
+#salt-ssh#
+#salt-ssh#```text
+#salt-ssh#SSH
+#salt-ssh# → ssh_pre_flight
+#salt-ssh# → verify or install /opt/microdevops/static-build
+#salt-ssh# → apply roster set_path
+#salt-ssh# → select static Python and run Salt
+#salt-ssh#```
+#salt-ssh#
+#salt-ssh#The helper is transferred from the formula checkout and executed remotely with `/bin/sh`.
+#salt-ssh#It only prepares the runtime. A valid installation is left unchanged; an unusable installation
+#salt-ssh#is backed up and restored if downloading, extraction, replacement, or verification fails.
+#salt-ssh#A pre-flight error stops Salt execution. See
+#salt-ssh#`formulas/microdevops-formula/scripts/salt-ssh/README.md` for the exact checks and current
+#salt-ssh#upgrade limitation.
 #vault#Anything sensitive goes into Vault — see below.
 #vault#
 #vault### Secrets: Vault (`vault_salt_sdb`)

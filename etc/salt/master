@@ -9,3 +9,8 @@ file_roots:
 # So when you try to work with server missing in roster, you get error: Bad port 'you-are-in-wrong-repo'.
 # That is made on purpose, to avoid states from one repository applied by mistake to the server from other repo.
 ssh_port: you-are-in-wrong-repo
+
+# A roster target can define an idempotent ssh_pre_flight helper that prepares
+# the Python runtime before Salt builds its shim. Always run configured helpers;
+# Salt otherwise skips them when its thin directory already exists.
+ssh_run_pre_flight: true
