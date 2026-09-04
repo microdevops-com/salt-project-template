@@ -1,0 +1,1 @@
+../../formulas/microdevops-formula/pillar/bulk_log/disabled.sls
