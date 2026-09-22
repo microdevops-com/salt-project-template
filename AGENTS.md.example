@@ -1,0 +1,129 @@
+# Agent instructions — __CLIENT_FULL__ Salt infrastructure
+
+Working rules for AI agents in this repo (and a short read for humans). `README.md` has the repo
+layout, the `drun` / `check_pillar.sh` workflow and onboarding — this file has the rules that are
+easy to get wrong.
+
+## This file and `README.md` are template-owned — do not edit them here
+
+Both are regenerated from
+[salt-project-template](https://github.com/microdevops-com/salt-project-template)
+(`AGENTS.md.example`, `README.md.example`) on **every** template apply. Editing them in this repo
+is wasted work twice over: the change is silently overwritten on the next apply, and it never
+reaches the other repos that share the template. Do not spend a turn "improving" them here.
+
+| Want to change | Edit |
+| --- | --- |
+| Project-specific agent rules | `AGENTS.project.md` — appended verbatim to this file, never touched by the template |
+| Project-specific human notes | `README.project.md` — appended to `README.md`, never touched by the template |
+| The common text in either file | Upstream, in the template repo |
+
+`CLAUDE.md` is a **symlink to this file**, created by the template. Claude Code reads `CLAUDE.md`
+natively on every version; `AGENTS.md` is the name Codex and other agents use. One file, one
+source of truth. Do not replace the symlink with a real file and do not maintain two copies.
+
+The same "change it upstream" rule applies to every other template-owned path: `Dockerfile`,
+`entrypoint.sh`, `.gitlab-ci.yml`, `scripts/`, `salt/_sdb/`, `etc/salt/master`,
+`etc/salt/master.d/`, `etc/salt/minion.d/`, `.check_pillar_for_roster.sh`, `check_pillar.sh`,
+`.docker-misc.bash`.
+#vault#
+#vault### Secrets: the Vault naming schema (mandatory)
+#vault#
+#vault#Secrets do not go into pillar as plaintext. They live in Vault/OpenBao at
+#vault#__VAULT_SALT_SDB_URL__ under `__VAULT_SALT_SDB_PREFIX__/` and are read at render time through
+#vault#the `vault_salt_sdb` sdb driver.
+#vault#
+#vault#### Referencing a secret from pillar
+#vault#
+#vault#```
+#vault#{% from 'vault_salt_sdb.jinja' import secret %}
+#vault#
+#vault#postgres:
+#vault#  users:
+#vault#    webshop:
+#vault#      password: "{{ secret('webshop/prod/postgresql/webshop/password') }}"
+#vault#```
+#vault#
+#vault#### The grammar
+#vault#
+#vault#```
+#vault#secret('<area>/<env>/<system>/<instance>/<key>')      exactly five segments, always
+#vault#```
+#vault#
+#vault#which resolves to the Vault path
+#vault#`__VAULT_SALT_SDB_PREFIX__/<area>/<env>/<system>/<instance>`, reading the field `<key>` out of
+#vault#that secret.
+#vault#
+#vault#| Segment | Meaning | Examples |
+#vault#| --- | --- | --- |
+#vault#| `area` | The product or platform domain that **owns** the credential | `webshop`, `salt`, `gitlab`, `monitoring`, `backup`, `dns`, `mail`, `vpn` |
+#vault#| `env` | Closed set: `prod`, `stage`, `dev`, `shared` (`shared` = genuinely environment-independent) | |
+#vault#| `system` | The technology or provider that **issued** the credential | `postgresql`, `mysql`, `redis`, `s3`, `smtp`, `stripe`, `cloudflare`, `registry` |
+#vault#| `instance` | Which one — the role name, account or logical cluster | `webshop`, `hetzner-hel1`, `webhook`, `salt` |
+#vault#| `key` | The field inside the secret, `snake_case` | `password`, `token`, `access_key`, `secret_key`, `api_key` |
+#vault#
+#vault#The depth is fixed on purpose: it is what makes policy globs precise
+#vault#(`<mount>/data/<area>/prod/*` scopes one product, `<mount>/data/+/prod/*` scopes all of
+#vault#production). Never add or drop a level to make something fit — compound the `instance` with
+#vault#`-` instead (`webshop-tmp-prod1`, never `webshop/tmp/prod1`).
+#vault#
+#vault#### Vocabulary
+#vault#
+#vault#The path describes what the secret **is**, never who consumes it. The registry credential that
+#vault#every app pulls images with belongs to `gitlab`, not to each app. A database password used by
+#vault#both a salt state and the application itself is one secret, stored once.
+#vault#
+#vault#`area` is an open list, but only deliberately: before inventing one, look at what exists
+#vault#(`bao kv list __VAULT_SALT_SDB_PREFIX__/`) and reuse it. Never coin a synonym for an area that
+#vault#is already there (`webshop-app` when `webshop` exists). Platform areas common to every repo are
+#vault#`salt`, `gitlab`, `monitoring`, `backup`, `dns`, `mail`, `vpn`; product areas for this repo, if
+#vault#listed, are in `AGENTS.project.md`.
+#vault#
+#vault#### Rules
+#vault#
+#vault#- Never in a path: hostnames, pillar file names, `.sls`, the consuming state, or any part of a
+#vault#  secret value.
+#vault#- Lowercase throughout; `-` inside a path segment, `_` inside key names.
+#vault#- Group the fields that **rotate together** into one secret: `{access_key, secret_key}` is one
+#vault#  path, one version bump, one API call. The driver caches per path, so this is also faster.
+#vault#- Record who consumes a secret in `custom_metadata`, not in the path. That is what answers
+#vault#  "what breaks if I rotate this".
+#vault#- Do not add a new `env` value. The set is closed; widening it is an upstream template change.
+#vault#
+#vault#### Creating or rotating a secret
+#vault#
+#vault#Commands below are the OpenBao CLI (`bao`); with a HashiCorp Vault server the same commands are
+#vault#`vault ...`.
+#vault#
+#vault#1. Find the right home before writing anything:
+#vault#   ```
+#vault#   bao kv list __VAULT_SALT_SDB_PREFIX__/
+#vault#   bao kv list __VAULT_SALT_SDB_PREFIX__/<area>/<env>/
+#vault#   ```
+#vault#2. Write the secret, all fields that rotate together in one call:
+#vault#   ```
+#vault#   bao kv put __VAULT_SALT_SDB_PREFIX__/<area>/<env>/<system>/<instance> \
+#vault#       access_key=... secret_key=...
+#vault#   ```
+#vault#   **`kv put` replaces the whole secret** — a field you leave out is dropped. To add or change
+#vault#   one field of an existing secret, use `bao kv patch` instead.
+#vault#3. Record the metadata:
+#vault#   ```
+#vault#   bao kv metadata put \
+#vault#       -custom-metadata=owner=<team-or-person> \
+#vault#       -custom-metadata=consumers=<salt-repo,app,...> \
+#vault#       -custom-metadata=rotated=<YYYY-MM-DD> \
+#vault#       __VAULT_SALT_SDB_PREFIX__/<area>/<env>/<system>/<instance>
+#vault#   ```
+#vault#4. Reference it from pillar with `secret(...)` and verify the render: `./check_pillar.sh`.
+#vault#
+#vault#### Gotchas
+#vault#
+#vault#- A value cached from an earlier render is reused for `cache_fresh_for` seconds (see
+#vault#  `etc/salt/master.d/vault_salt_sdb.conf`), so a just-rotated secret can take a minute to show up
+#vault#  locally.
+#vault#- KV v2 policy paths carry a `data/` element that the `secret()` path does not:
+#vault#  `__VAULT_SALT_SDB_PREFIX__/<area>/...` is read through the policy path
+#vault#  `<mount>/data/<rest>/...`. Browsing in the UI additionally needs `list` on `<mount>/metadata/*`.
+#vault#- Moving a secret out of pillar does not remove it from git history. Treat a migrated secret as
+#vault#  exposed and rotate it unless it was created in Vault in the first place.

@@ -374,6 +374,36 @@ if [[ -f $1/README.project.md ]]; then
 	cat $1/README.project.md >> $1/README.md
 fi
 
+# AGENTS.md - agent-facing project instructions (the template-owned-files rule and, when
+# vault_salt_sdb is enabled, the mandatory secret naming schema). Same lifecycle as README.md:
+# REGENERATED on every apply, so hand edits here are lost - per-project agent rules go into
+# AGENTS.project.md, which is appended verbatim and never touched by the template.
+# CLAUDE.md is a symlink to AGENTS.md, not a second file: Claude Code reads CLAUDE.md natively on
+# every version (its AGENTS.md support is a plugin that is off by default), while AGENTS.md is the
+# name Codex and other agents use - one file, one source of truth, no feature flag to depend on.
+cp -f AGENTS.md.example $1/AGENTS.md
+sed_inplace_common $1/AGENTS.md
+if [[ $2 = salt ]]; then
+	sed_inplace_salt $1/AGENTS.md
+elif [[ $2 = salt-ssh ]]; then
+	sed_inplace_salt-ssh $1/AGENTS.md
+fi
+if [[ -n ${VAULT_SALT_SDB_URL} ]]; then
+	sed -i -e "s/#vault#//" $1/AGENTS.md   # keep the secret naming schema
+else
+	sed -i -e "/#vault#/d" $1/AGENTS.md    # strip it entirely
+fi
+if [[ -f $1/AGENTS.project.md ]]; then
+	echo >> $1/AGENTS.md
+	cat $1/AGENTS.project.md >> $1/AGENTS.md
+fi
+# Replacing a hand-written CLAUDE.md would lose it silently, so keep a copy and say so.
+if [[ -e $1/CLAUDE.md && ! -L $1/CLAUDE.md ]]; then
+	echo "WARNING: $1/CLAUDE.md is not a symlink - saved as CLAUDE.md.pre-template and replaced with a symlink to AGENTS.md; move any rules worth keeping into AGENTS.project.md"
+	mv -f $1/CLAUDE.md $1/CLAUDE.md.pre-template
+fi
+ln -sfn AGENTS.md $1/CLAUDE.md
+
 # vault_salt_sdb - the driver (salt/_sdb), extmods.conf and the minion.d wiring
 # stay installed unconditionally (harmless when idle, ready for a manual setup later;
 # extension_modules points outside the tree and the pillar check syncs _sdb into it). The toggle

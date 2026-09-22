@@ -32,6 +32,9 @@ Fill the repo with some additional data:
   salt / salt-ssh variant, Vault section included only when `VAULT_SALT_SDB_URL` is set), so
   edits made there are lost - `README.project.md` is appended to the generated `README.md`
   instead and never touched. Fixes to the common text belong in `README.md.example` here.
+- `AGENTS.project.md` (optional) - project-specific *agent* rules, e.g. the list of `area` names
+  this repo's secrets use. Same deal as above: `AGENTS.md` is template-owned and regenerated from
+  `AGENTS.md.example` on every apply, `AGENTS.project.md` is appended to it and never touched.
 - `pillar/top_sls` files (see pillar/top_sls/srv1.example.com.example)
 - `pillar/bootstrap` files (see pillar/bootstrap/.../srv1_example_com.example)
 - `pillar/users/example/admins.sls`
@@ -41,6 +44,27 @@ Fill the repo with some additional data:
 
 For Salt-SSH:
 - `etc/salt/roster` (see roster.example in `.salt-project-template`)
+
+# Agent instructions (`AGENTS.md`, `CLAUDE.md`)
+`install.sh` generates `AGENTS.md` from `AGENTS.md.example` and creates `CLAUDE.md` as a
+**symlink** to it. One file, read by every agent:
+
+- Codex and most other agents read `AGENTS.md` natively.
+- Claude Code reads `CLAUDE.md` natively on every version. Its own `AGENTS.md` support exists
+  (built-in plugin `agents-md`, option `instructionFiles`) but is **off by default** and
+  feature-flagged, and its default mode loads `AGENTS.md` only in projects that have no
+  `CLAUDE.md` of their own - so the symlink is the shape that works either way. In the
+  `claude-md-and-agents-md` mode the symlink does not double-load: the dedup compares content as
+  well as path, and a symlink is byte-identical to its target.
+
+Both files are template-owned and regenerated on every apply, so editing them inside a target
+repo is wasted work - the change is overwritten and never reaches the other repos. `AGENTS.md`
+says so in its first section, to keep agents from trying. Per-project rules go into
+`AGENTS.project.md` (appended verbatim), fixes to the common text go into `AGENTS.md.example`
+here.
+
+If a target repo already has a hand-written `CLAUDE.md`, `install.sh` moves it aside to
+`CLAUDE.md.pre-template` and prints a warning rather than clobbering it.
 
 # Secrets with Vault (vault_salt_sdb)
 This template ships a custom SDB driver (`salt/_sdb/vault_salt_sdb.py`) that reads
@@ -199,13 +223,47 @@ Import the macro and reference a secret by its path under the prefix:
 {% from 'vault_salt_sdb.jinja' import secret %}
 
 myapp:
-  db_password: "{{ secret('app/db/password') }}"
+  db_password: "{{ secret('webshop/prod/postgresql/webshop/password') }}"
 ```
-`secret('app/db/password')` expands to `sdb://vault_salt_sdb/<VAULT_SALT_SDB_PREFIX>/app/db/password`.
+`secret('webshop/prod/postgresql/webshop/password')` expands to
+`sdb://vault_salt_sdb/<VAULT_SALT_SDB_PREFIX>/webshop/prod/postgresql/webshop/password`.
 The URI is `<mount>/<path>/<key>`: the first segment is the KV mount, the last is the field
 inside the secret, the middle is the secret path. The macro keeps the per-repo prefix in one
 place so secret references stay copy-paste identical across repos. You can also call the driver
-directly: `{{ salt['sdb.get']('sdb://vault_salt_sdb/iac/example/app/db/password') }}`.
+directly: `{{ salt['sdb.get']('sdb://vault_salt_sdb/iac/example/webshop/prod/postgresql/webshop/password') }}`.
+
+## Secret naming schema
+The path under the prefix is fixed at five segments and describes what the secret **is**, never
+who consumes it:
+```
+secret('<area>/<env>/<system>/<instance>/<key>')
+```
+- `area` - the product or platform domain that **owns** the credential (`webshop`, `salt`,
+  `gitlab`, `monitoring`, `backup`, `dns`, `mail`, `vpn`). Open list, extended deliberately;
+  per-repo product areas belong in that repo's `AGENTS.project.md`.
+- `env` - closed set: `prod`, `stage`, `dev`, `shared`.
+- `system` - the technology or provider that **issued** it (`postgresql`, `redis`, `s3`, `smtp`,
+  `stripe`, `cloudflare`, `registry`).
+- `instance` - which one: the role name, account or logical cluster. Compound with `-`, never
+  with an extra path level.
+- `key` - the field inside the secret, `snake_case`.
+
+The depth is fixed because it is what makes policies precise: `<mount>/data/<area>/prod/*` scopes
+one product, `<mount>/data/+/prod/*` scopes all of production. Fields that rotate together go
+into one secret (one path, one version, one API call - the driver caches per path). Consumers are
+recorded in KV `custom_metadata`, not in the path, so "what breaks if I rotate this" has an
+answer.
+
+Consequences worth spelling out, since the driver constrains the layout:
+- The **KV mount must be a single path segment** - `vault_salt_sdb.py` parses the URI as
+  `mount = parts[0]`, so a nested mount (`-path=clients/acme`) is not addressable.
+- `vault_salt_sdb.jinja` bakes exactly **one** prefix, so `secret()` reaches exactly one subtree.
+  One salt repo therefore maps to one mount; reaching a second mount needs a bare
+  `salt['sdb.get']()` call (and loses the macro's `strict=True`).
+
+The full rules, including the `bao kv put` / `kv patch` / `kv metadata put` forms an agent should
+follow when creating or rotating a secret, live in the generated `AGENTS.md` (from
+`AGENTS.md.example`) so that agents get them loaded without having to look for them.
 
 ## Debugging
 - `salt '<target>' sdb.get(...)` runs on **the target minion's own local config**, not the
