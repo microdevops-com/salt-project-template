@@ -13,6 +13,9 @@ Version history:
   short-lived Vault token); refactored AppRole/JWT onto a shared `_login`; an explicit
   but absent auth_file is no longer fatal when inline auth is present (CI uses inline
   JWT, persistent masters / local dev override with an AppRole auth_file).
+* 2026-09-23: per-Vault auth file: <auth_file dir>/<vault-host>.conf is read in
+  preference to auth_file when it exists, so one person can hold credentials for several
+  Vaults at once; without it, behaviour is unchanged.
 
 Profile (e.g. /etc/salt/master.d/vault.conf):
 
@@ -62,6 +65,10 @@ keys as the inline `auth:` block, for example:
     role_id: <role-id>
     secret_id: <secret-id>
     # or:  method: token  /  token: <vault-token>
+
+Per-Vault auth file: if <auth_file dir>/<vault-host>.conf exists (e.g.
+~/.config/vault_salt_sdb/vault.example.com.conf for url https://vault.example.com), it is
+read INSTEAD of auth_file. Same format. Needed when one person works with several Vaults.
 """
 import base64
 import hashlib
@@ -71,6 +78,7 @@ import os
 import re
 import tempfile
 import time
+from urllib.parse import urlparse
 
 import requests
 import yaml
@@ -263,6 +271,16 @@ def _save_cache(profile):
 # --------------------------------------------------------------------------- #
 # auth
 # --------------------------------------------------------------------------- #
+def _host_auth_file(profile, configured):
+    """Per-Vault auth file next to the configured one: <dir>/<vault-host>.conf, e.g.
+    ~/.config/vault_salt_sdb/vault.example.com.conf. Lets one person hold credentials for
+    several Vaults at once. Absent -> the configured auth_file is used, as before."""
+    host = urlparse(profile["url"]).hostname
+    if not host:
+        return None
+    return os.path.join(os.path.dirname(configured), "{}.conf".format(host))
+
+
 def _auth(profile):
     """Resolve the auth mapping. Inline `auth:` is the base; an external
     `auth_file` (default DEFAULT_AUTH_FILE) is overlaid on top (file wins), so
@@ -270,7 +288,12 @@ def _auth(profile):
     as the inline block, optionally wrapped in a top-level `auth:`."""
     inline = dict(profile.get("auth") or {})
     explicit = "auth_file" in profile
-    path = os.path.expanduser(profile.get("auth_file", DEFAULT_AUTH_FILE))
+    configured = os.path.expanduser(profile.get("auth_file", DEFAULT_AUTH_FILE))
+    host_file = _host_auth_file(profile, configured)
+    if host_file and (host_file in _AUTH_FILES or os.path.exists(host_file)):
+        path = host_file
+    else:
+        path = configured
 
     if path in _AUTH_FILES:
         file_auth = _AUTH_FILES[path]

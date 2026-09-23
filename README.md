@@ -210,9 +210,18 @@ mkdir -p ~/.config/vault_salt_sdb
 The token comes from `vault login -method=oidc` (writes `~/.vault-token`), or, without the CLI,
 from the Vault UI's user menu -> *Copy token*. Vault needs an OIDC/SSO auth method mapping the
 person to a policy that reads the repo's `<mount>/data/<project>/*` paths, i.e. the same read
-policy as CI. Gotcha: `drun` only mounts `auth.conf` when it **starts** a container, so an
-already-running one must be stopped (`docker stop -t 0 "${PWD##*/}-$USER"`) after the file is
-created or the token refreshed.
+policy as CI. Gotcha: `drun` only mounts `~/.config/vault_salt_sdb/` when it **starts** a
+container, so an already-running one must be stopped (`docker stop -t 0 "${PWD##*/}-$USER"`)
+after the folder is first created (a new or refreshed file inside an already-mounted folder is
+seen immediately).
+
+**Several Vaults.** `auth.conf` is one file per person, so someone working with repos on two
+different Vaults can't keep both sets of credentials in it. Name the file after the Vault's host
+instead: `~/.config/vault_salt_sdb/<vault-host>.conf`, e.g. `vault.example.com.conf` for
+`https://vault.example.com`. When that file exists, the driver reads it instead of `auth.conf`
+for that Vault; when it doesn't, `auth.conf` is used exactly as before. Same format, same
+`0600`. `drun` mounts the whole folder, so the container sees every file in it. The generated
+per-project README tells people to use the per-host name.
 
 The per-project onboarding docs for this (step-by-step, with the project's real Vault URL and
 prefix substituted in) ship as `README.md.example` -> the target repo's `README.md`.

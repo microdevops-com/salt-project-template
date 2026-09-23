@@ -96,6 +96,14 @@ function sed_inplace_common () {
 	else
 		local LOCAL_VAULT_SALT_SDB_URL=${VAULT_SALT_SDB_URL}
 	fi
+	if [[ -z ${VAULT_SALT_SDB_URL} ]]; then
+		local LOCAL_VAULT_HOST=__not_set_in_template_install__
+	else
+		# host part of the URL (no scheme, port or path) - names the per-Vault auth file
+		local LOCAL_VAULT_HOST=${VAULT_SALT_SDB_URL#*://}
+		LOCAL_VAULT_HOST=${LOCAL_VAULT_HOST%%/*}
+		LOCAL_VAULT_HOST=${LOCAL_VAULT_HOST%%:*}
+	fi
 	if [[ -z ${VAULT_SALT_SDB_PREFIX} ]]; then
 		local LOCAL_VAULT_SALT_SDB_PREFIX=__not_set_in_template_install__
 	else
@@ -117,6 +125,7 @@ function sed_inplace_common () {
 		-e "s#__ALERTA_URL__#${LOCAL_ALERTA_URL}#g" \
 		-e "s/__ALERTA_API_KEY__/${LOCAL_ALERTA_API_KEY}/g" \
 		-e "s#__VAULT_SALT_SDB_URL__#${LOCAL_VAULT_SALT_SDB_URL}#g" \
+		-e "s#__VAULT_HOST__#${LOCAL_VAULT_HOST}#g" \
 		-e "s#__VAULT_SALT_SDB_PREFIX__#${LOCAL_VAULT_SALT_SDB_PREFIX}#g" \
 		-e "s#__VAULT_SALT_SDB_JWT_ROLE__#${LOCAL_VAULT_SALT_SDB_JWT_ROLE}#g" \
 		-e "s/__HB_RECEIVER_HN__/${HB_RECEIVER_HN}/g" \

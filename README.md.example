@@ -99,12 +99,14 @@ Never commit a plaintext secret into pillar.
 #vault#
 #vault#1. Open __VAULT_SALT_SDB_URL__/ui/ and sign in the way you normally do (SSO).
 #vault#2. Click the person icon (top right) → **Copy token**.
-#vault#3. Put it in `~/.config/vault_salt_sdb/auth.conf` — the whole file is these two lines:
+#vault#3. Put it in `~/.config/vault_salt_sdb/__VAULT_HOST__.conf` — the whole file is these two lines:
 #vault#
 #vault#   ```
 #vault#   method: token
 #vault#   token: <paste the token here>
 #vault#   ```
+#vault#
+#vault#   (`auth.conf` in the same folder also works, if this is the only Vault you use.)
 #vault#
 #vault#4. Already have a dev container running? Restart it, it only picks the file up at start:
 #vault#   `docker stop -t 0 "${PWD##*/}-$USER"` — `drun` and `./check_pillar.sh` start a fresh one.
@@ -164,13 +166,14 @@ Never commit a plaintext secret into pillar.
 #vault#That is the same kind of token; it just isn't written to `~/.vault-token` for you.
 #vault#
 #vault#**3. Write it into the driver's auth file.** The driver reads
-#vault#`~/.config/vault_salt_sdb/auth.conf` — outside the repo on purpose, so it can never be
-#vault#committed:
+#vault#`~/.config/vault_salt_sdb/__VAULT_HOST__.conf` — outside the repo on purpose, so it can never
+#vault#be committed. If that file doesn't exist it falls back to `auth.conf` in the same folder; the
+#vault#per-host name is what lets you keep credentials for several Vaults side by side:
 #vault#
 #vault#```
 #vault#mkdir -p ~/.config/vault_salt_sdb
 #vault#( umask 077; printf 'method: token\ntoken: %s\n' "$(cat ~/.vault-token)" \
-#vault#    > ~/.config/vault_salt_sdb/auth.conf )
+#vault#    > ~/.config/vault_salt_sdb/__VAULT_HOST__.conf )
 #vault#```
 #vault#
 #vault#With a token copied from the UI, create the same file by hand (mode `0600`) — the whole
@@ -181,9 +184,9 @@ Never commit a plaintext secret into pillar.
 #vault#token: hvs.CAESIExample...
 #vault#```
 #vault#
-#vault#**4. Restart the container and verify.** `drun` mounts `auth.conf` into the container read-only,
-#vault#but only checks for it when it *starts* a container — one started before you created the file
-#vault#will not see it:
+#vault#**4. Restart the container and verify.** `drun` mounts `~/.config/vault_salt_sdb/` into the
+#vault#container read-only, but only checks for it when it *starts* a container — one started before
+#vault#you created the folder will not see it:
 #vault#
 #vault#```
 #vault#docker stop -t 0 "${PWD##*/}-$USER"    # ok if it says "no such container"; drun starts a fresh one

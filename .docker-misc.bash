@@ -64,11 +64,12 @@ drun() {
     find "${path}/pillar/top_sls" -not -type d -print0 | grep -vzP '\.swp$|_?top\.sls$' | sort -z | xargs -0 -I{} bash -c "cat {} <(echo) >> \"$top_file\""
 
     if [[ ! $(docker ps --format "{{.Names}}" --filter "name=${name}-$USER") =~ ${name}-$USER ]] ; then
-        # vault_salt_sdb: mount the operator's AppRole creds read-only when present.
-        # Self-gating: absent file (vault not used for this repo) -> empty array -> no mount.
-        local auth_conf="$HOME/.config/vault_salt_sdb/auth.conf"
+        # vault_salt_sdb: mount the operator's auth folder read-only when present - the whole
+        # folder, so per-Vault files (<vault-host>.conf) are visible next to auth.conf.
+        # Self-gating: absent folder (vault not used) -> empty array -> no mount.
+        local auth_dir="$HOME/.config/vault_salt_sdb"
         local auth_mount=()
-        [[ -f $auth_conf ]] && auth_mount=(-v "$auth_conf:/root/.config/vault_salt_sdb/auth.conf:ro")
+        [[ -d $auth_dir ]] && auth_mount=(-v "$auth_dir:/root/.config/vault_salt_sdb:ro")
         docker run --hostname salt --detach --rm --name "${name}-$USER" \
             --volume "$top_file:/srv/pillar/top.sls" \
             --volume "${path}/:/srv/" \
