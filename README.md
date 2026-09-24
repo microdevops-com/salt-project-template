@@ -252,7 +252,8 @@ secret('<area>/<env>/<system>/<instance>/<key>')
   per-repo product areas belong in that repo's `AGENTS.project.md`.
 - `env` - closed set: `prod`, `stage`, `dev`, `shared`.
 - `system` - the technology or provider that **issued** it (`postgresql`, `redis`, `s3`, `smtp`,
-  `stripe`, `cloudflare`, `registry`).
+  `stripe`, `cloudflare`, `registry`), or `app` when the application itself defines it (signing
+  keys, internal API tokens).
 - `instance` - which one: the role name, account or logical cluster. Compound with `-`, never
   with an extra path level.
 - `key` - the field inside the secret, `snake_case`.
@@ -262,6 +263,31 @@ one product, `<mount>/data/+/prod/*` scopes all of production. Fields that rotat
 into one secret (one path, one version, one API call - the driver caches per path). Consumers are
 recorded in KV `custom_metadata`, not in the path, so "what breaks if I rotate this" has an
 answer.
+
+### Examples
+
+| What it is | Vault path (under the prefix) | Keys | In pillar |
+| --- | --- | --- | --- |
+| App's database password, production | `webshop/prod/postgresql/webshop` | `password` | `secret('webshop/prod/postgresql/webshop/password')` |
+| Same, staging: only `env` changes | `webshop/stage/postgresql/webshop` | `password` | `secret('webshop/stage/postgresql/webshop/password')` |
+| S3 keys: rotate together, so one secret | `webshop/prod/s3/hetzner-hel1` | `access_key`, `secret_key` | `secret('webshop/prod/s3/hetzner-hel1/secret_key')` |
+| Stripe, one merchant account | `webshop/prod/stripe/acme-doo` | `secret_key`, `webhook_secret` | `secret('webshop/prod/stripe/acme-doo/webhook_secret')` |
+| A secret the app itself defines (session signing) | `webshop/prod/app/session` | `secret` | `secret('webshop/prod/app/session/secret')` |
+| Registry login shared by every app | `gitlab/shared/registry/salt` | `username`, `password` | `secret('gitlab/shared/registry/salt/password')` |
+| DNS API token | `dns/shared/cloudflare/example-com` | `api_token` | `secret('dns/shared/cloudflare/example-com/api_token')` |
+| SMTP relay account | `mail/shared/smtp/sendgrid` | `username`, `password` | `secret('mail/shared/smtp/sendgrid/password')` |
+| Salt master signing key (multi-line PEM) | `salt/prod/master/sign` | `private_key`, `public_key` | `secret('salt/prod/master/sign/private_key')` |
+
+### Common mistakes
+
+| Wrong | Why | Right |
+| --- | --- | --- |
+| `webshop/db_password` | two segments, not five | `webshop/prod/postgresql/webshop/password` |
+| `web1.example.com/postgresql/webshop/password` | hostname; hosts change, the secret doesn't | `webshop/prod/postgresql/webshop/password` |
+| `webshop/production/postgresql/webshop/password` | `env` must be `prod`, `stage`, `dev` or `shared` | `webshop/prod/...` |
+| `webshop/prod/gitlab/registry/password` | the registry login belongs to `gitlab`, not to one of its consumers | `gitlab/shared/registry/salt/password` |
+| `app/webshop/prod/db/password` | mirrors the pillar file path, not the meaning | `webshop/prod/postgresql/webshop/password` |
+| `webshop/prod/s3/access_key` + `webshop/prod/s3/secret_key` as two secrets | fields that rotate together belong in one secret | one secret `webshop/prod/s3/hetzner-hel1`, two keys |
 
 Consequences worth spelling out, since the driver constrains the layout:
 - The **KV mount must be a single path segment** - `vault_salt_sdb.py` parses the URI as

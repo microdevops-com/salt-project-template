@@ -58,7 +58,7 @@ The same "change it upstream" rule applies to every other template-owned path: `
 #vault#| --- | --- | --- |
 #vault#| `area` | The product or platform domain that **owns** the credential | `webshop`, `salt`, `gitlab`, `monitoring`, `backup`, `dns`, `mail`, `vpn` |
 #vault#| `env` | Closed set: `prod`, `stage`, `dev`, `shared` (`shared` = genuinely environment-independent) | |
-#vault#| `system` | The technology or provider that **issued** the credential | `postgresql`, `mysql`, `redis`, `s3`, `smtp`, `stripe`, `cloudflare`, `registry` |
+#vault#| `system` | The technology or provider that **issued** the credential; `app` when the application itself defines it (signing keys, internal API tokens) | `postgresql`, `mysql`, `redis`, `s3`, `smtp`, `stripe`, `cloudflare`, `registry`, `app` |
 #vault#| `instance` | Which one — the role name, account or logical cluster | `webshop`, `hetzner-hel1`, `webhook`, `salt` |
 #vault#| `key` | The field inside the secret, `snake_case` | `password`, `token`, `access_key`, `secret_key`, `api_key` |
 #vault#
@@ -66,6 +66,31 @@ The same "change it upstream" rule applies to every other template-owned path: `
 #vault#(`<mount>/data/<area>/prod/*` scopes one product, `<mount>/data/+/prod/*` scopes all of
 #vault#production). Never add or drop a level to make something fit — compound the `instance` with
 #vault#`-` instead (`webshop-tmp-prod1`, never `webshop/tmp/prod1`).
+#vault#
+#vault##### Examples
+#vault#
+#vault#| What it is | Vault path (under the prefix) | Keys | In pillar |
+#vault#| --- | --- | --- | --- |
+#vault#| App's database password, production | `webshop/prod/postgresql/webshop` | `password` | `secret('webshop/prod/postgresql/webshop/password')` |
+#vault#| Same, staging: only `env` changes | `webshop/stage/postgresql/webshop` | `password` | `secret('webshop/stage/postgresql/webshop/password')` |
+#vault#| S3 keys: rotate together, so one secret | `webshop/prod/s3/hetzner-hel1` | `access_key`, `secret_key` | `secret('webshop/prod/s3/hetzner-hel1/secret_key')` |
+#vault#| Stripe, one merchant account | `webshop/prod/stripe/acme-doo` | `secret_key`, `webhook_secret` | `secret('webshop/prod/stripe/acme-doo/webhook_secret')` |
+#vault#| A secret the app itself defines (session signing) | `webshop/prod/app/session` | `secret` | `secret('webshop/prod/app/session/secret')` |
+#vault#| Registry login shared by every app | `gitlab/shared/registry/salt` | `username`, `password` | `secret('gitlab/shared/registry/salt/password')` |
+#vault#| DNS API token | `dns/shared/cloudflare/example-com` | `api_token` | `secret('dns/shared/cloudflare/example-com/api_token')` |
+#vault#| SMTP relay account | `mail/shared/smtp/sendgrid` | `username`, `password` | `secret('mail/shared/smtp/sendgrid/password')` |
+#vault#| Salt master signing key (multi-line PEM) | `salt/prod/master/sign` | `private_key`, `public_key` | `secret('salt/prod/master/sign/private_key')` |
+#vault#
+#vault##### Common mistakes
+#vault#
+#vault#| Wrong | Why | Right |
+#vault#| --- | --- | --- |
+#vault#| `webshop/db_password` | two segments, not five | `webshop/prod/postgresql/webshop/password` |
+#vault#| `web1.example.com/postgresql/webshop/password` | hostname; hosts change, the secret doesn't | `webshop/prod/postgresql/webshop/password` |
+#vault#| `webshop/production/postgresql/webshop/password` | `env` must be `prod`, `stage`, `dev` or `shared` | `webshop/prod/...` |
+#vault#| `webshop/prod/gitlab/registry/password` | the registry login belongs to `gitlab`, not to one of its consumers | `gitlab/shared/registry/salt/password` |
+#vault#| `app/webshop/prod/db/password` | mirrors the pillar file path, not the meaning | `webshop/prod/postgresql/webshop/password` |
+#vault#| `webshop/prod/s3/access_key` + `webshop/prod/s3/secret_key` as two secrets | fields that rotate together belong in one secret | one secret `webshop/prod/s3/hetzner-hel1`, two keys |
 #vault#
 #vault#### Vocabulary
 #vault#
