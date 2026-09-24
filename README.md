@@ -268,8 +268,10 @@ answer.
 
 | What it is | Vault path (under the prefix) | Keys | In pillar |
 | --- | --- | --- | --- |
-| App's database password, production | `webshop/prod/postgresql/webshop` | `password` | `secret('webshop/prod/postgresql/webshop/password')` |
-| Same, staging: only `env` changes | `webshop/stage/postgresql/webshop` | `password` | `secret('webshop/stage/postgresql/webshop/password')` |
+| The app's own database role | `webshop/prod/postgresql/webshop` | `password` | `secret('webshop/prod/postgresql/webshop/password')` |
+| A read-only role for reporting (e.g. Metabase) | `webshop/prod/postgresql/reporting` | `password` | `secret('webshop/prod/postgresql/reporting/password')` |
+| The superuser of that database server | `webshop/prod/postgresql/postgres` | `password` | `secret('webshop/prod/postgresql/postgres/password')` |
+| The app's own role, staging: only `env` changes | `webshop/stage/postgresql/webshop` | `password` | `secret('webshop/stage/postgresql/webshop/password')` |
 | S3 keys: rotate together, so one secret | `webshop/prod/s3/hetzner-hel1` | `access_key`, `secret_key` | `secret('webshop/prod/s3/hetzner-hel1/secret_key')` |
 | Stripe, one merchant account | `webshop/prod/stripe/acme-doo` | `secret_key`, `webhook_secret` | `secret('webshop/prod/stripe/acme-doo/webhook_secret')` |
 | A secret the app itself defines (session signing) | `webshop/prod/app/session` | `secret` | `secret('webshop/prod/app/session/secret')` |
@@ -277,6 +279,8 @@ answer.
 | DNS API token | `dns/shared/cloudflare/example-com` | `api_token` | `secret('dns/shared/cloudflare/example-com/api_token')` |
 | SMTP relay account | `mail/shared/smtp/sendgrid` | `username`, `password` | `secret('mail/shared/smtp/sendgrid/password')` |
 | Salt master signing key (multi-line PEM) | `salt/prod/master/sign` | `private_key`, `public_key` | `secret('salt/prod/master/sign/private_key')` |
+
+`webshop` appears twice in the first row because the area and the database role share a name. The instance segment is the role, as the next two rows show.
 
 ### Common mistakes
 
