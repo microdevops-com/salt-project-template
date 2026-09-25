@@ -92,12 +92,17 @@ Never commit a plaintext secret into pillar.
 #vault#
 #vault### Secrets: Vault (`vault_salt_sdb`)
 #vault#
+#vault#"Vault" here means HashiCorp Vault or OpenBao: same API, same commands. The CLI examples below
+#vault#are written as `vault …`; with OpenBao run the same line as `bao …`, with `BAO_ADDR` instead of
+#vault#`VAULT_ADDR` and `~/.bao-token` instead of `~/.vault-token`.
+#vault#
 #vault#### TL;DR — give yourself Vault access
 #vault#
 #vault#Pillar here holds no plaintext secrets, so rendering it locally (`./check_pillar.sh`, `drun ...`)
 #vault#needs your own Vault token. Two minutes, once:
 #vault#
-#vault#1. Open __VAULT_SALT_SDB_URL__/ui/ and sign in the way you normally do (SSO).
+#vault#1. Open __VAULT_SALT_SDB_URL__/ui/ and sign in with the method your Vault admin set up for you
+#vault#   (SSO/OIDC, or username and password).
 #vault#2. Click the person icon (top right) → **Copy token**.
 #vault#3. Put it in `~/.config/vault_salt_sdb/__VAULT_HOST__.conf` — the whole file is these two lines:
 #vault#
@@ -116,54 +121,57 @@ Never commit a plaintext secret into pillar.
 #vault#
 #vault#### How it works
 #vault#
-#vault#Secrets live in HashiCorp Vault at __VAULT_SALT_SDB_URL__ under the prefix
-#vault#`__VAULT_SALT_SDB_PREFIX__/`, and pillar refers to them through the `vault_salt_sdb` SDB driver
-#vault#(`salt/_sdb/vault_salt_sdb.py`), which fetches them at render time:
+#vault#Secrets live in Vault at __VAULT_SALT_SDB_URL__ under the prefix `__VAULT_SALT_SDB_PREFIX__/`, and
+#vault#pillar refers to them through the `vault_salt_sdb` SDB driver (`salt/_sdb/vault_salt_sdb.py`),
+#vault#which fetches them at render time:
 #vault#
 #vault#```
 #vault#{% from 'vault_salt_sdb.jinja' import secret %}
 #vault#
 #vault#myapp:
-#vault#  db_password: "{{ secret('app/db/password') }}"
+#vault#  db_password: "{{ secret('webshop/prod/postgresql/webshop/password') }}"
 #vault#```
 #vault#
-#vault#`secret('app/db/password')` resolves to
-#vault#`sdb://vault_salt_sdb/__VAULT_SALT_SDB_PREFIX__/app/db/password`, read as: first segment = KV
-#vault#mount, last segment = the field inside the secret, everything between = the secret's path.
+#vault#`secret('webshop/prod/postgresql/webshop/password')` resolves to
+#vault#`sdb://vault_salt_sdb/__VAULT_SALT_SDB_PREFIX__/webshop/prod/postgresql/webshop/password`, read as:
+#vault#first segment = KV mount, last segment = the field inside the secret, everything between = the
+#vault#secret's path. How that path is named is fixed by the schema in `AGENTS.md` — follow it.
 #vault#
 #vault##salt#CI authenticates to Vault keylessly (GitLab OIDC) and the salt masters use an AppRole; both are
 #vault##salt#already set up and need nothing from you. Only local renders use your personal token.
 #vault##salt-ssh#CI authenticates to Vault keylessly (GitLab OIDC), already set up and needing nothing from
 #vault##salt-ssh#you. Only local renders use your personal token.
-#vault#
 #vault#### Getting a token, the long way
 #vault#
-#vault#**1. Get read access.** If step 2 gives you a token but reads still fail with `403`, your
-#vault#account has no policy for this repo's secrets. Ask an infra admin to map your SSO/OIDC identity
-#vault#to a Vault policy that
-#vault#can read this repo's secrets. For the prefix `__VAULT_SALT_SDB_PREFIX__` that is (KV v2 — note
-#vault#the `data/` element, which is not part of the sdb URI):
+#vault#**1. Get read access.** If step 2 gives you a token but reads still fail with `403`, your login has
+#vault#no policy for this repo's secrets. Ask a Vault admin to give your login (SSO/OIDC identity, or
+#vault#username) a policy that can read this repo's secrets. In a KV v2 policy the path carries a `data/`
+#vault#element right after the mount, which is not part of the sdb URI:
 #vault#
 #vault#```
-#vault## prefix "iac/example" -> mount "iac", path "example" -> policy path "iac/data/example/*"
+#vault## prefix "microdevops" -> mount "microdevops"               -> policy path "microdevops/data/*"
+#vault## prefix "iac/example" -> mount "iac", path "example"       -> policy path "iac/data/example/*"
 #vault#vault policy write salt-example-ro - <<'EOF'
 #vault#path "iac/data/example/*" { capabilities = ["read"] }
 #vault#EOF
 #vault#```
 #vault#
-#vault#**2. Log in and copy your token.** With the Vault CLI:
+#vault#**2. Log in and copy your token.** With the CLI, using whichever login method you have:
 #vault#
 #vault#```
-#vault#export VAULT_ADDR=__VAULT_SALT_SDB_URL__
-#vault#vault login -method=oidc     # opens a browser; on success the token lands in ~/.vault-token
+#vault#export VAULT_ADDR=__VAULT_SALT_SDB_URL__                 # OpenBao: export BAO_ADDR=...
+#vault#vault login -method=oidc                                 # SSO/OIDC: opens a browser
+#vault#vault login -method=userpass username=<your-username>    # username and password: prompts for it
 #vault#```
+#vault#
+#vault#On success the token lands in `~/.vault-token` (OpenBao: `~/.bao-token`).
 #vault#
 #vault#No CLI installed, or on a machine without a browser? Take the token out of the web UI instead:
 #vault#
-#vault#- open __VAULT_SALT_SDB_URL__/ui/ and sign in with the OIDC/SSO method
+#vault#- open __VAULT_SALT_SDB_URL__/ui/ and sign in with your method
 #vault#- click the user icon (top right) → **Copy token**
 #vault#
-#vault#That is the same kind of token; it just isn't written to `~/.vault-token` for you.
+#vault#That is the same kind of token; it just isn't written to the token file for you.
 #vault#
 #vault#**3. Write it into the driver's auth file.** The driver reads
 #vault#`~/.config/vault_salt_sdb/__VAULT_HOST__.conf` — outside the repo on purpose, so it can never
@@ -173,7 +181,7 @@ Never commit a plaintext secret into pillar.
 #vault#```
 #vault#mkdir -p ~/.config/vault_salt_sdb
 #vault#( umask 077; printf 'method: token\ntoken: %s\n' "$(cat ~/.vault-token)" \
-#vault#    > ~/.config/vault_salt_sdb/__VAULT_HOST__.conf )
+#vault#    > ~/.config/vault_salt_sdb/__VAULT_HOST__.conf )      # OpenBao: ~/.bao-token
 #vault#```
 #vault#
 #vault#With a token copied from the UI, create the same file by hand (mode `0600`) — the whole
@@ -181,7 +189,7 @@ Never commit a plaintext secret into pillar.
 #vault#
 #vault#```
 #vault#method: token
-#vault#token: hvs.CAESIExample...
+#vault#token: <your-token>
 #vault#```
 #vault#
 #vault#**4. Restart the container and verify.** `drun` mounts `~/.config/vault_salt_sdb/` into the
@@ -200,21 +208,26 @@ Never commit a plaintext secret into pillar.
 #vault#
 #vault#### When your token expires
 #vault#
-#vault#OIDC tokens are short-lived by design. The symptom is a pillar render failing with
+#vault#Tokens from a personal login expire; how soon depends on how your Vault admin set up the login
+#vault#method. The symptom is a pillar render failing with
 #vault#`vault_salt_sdb: Vault denied access to <mount>/<path> (403)`. Repeat steps 2–4 — log in again,
-#vault#rewrite `auth.conf`, restart the container. Nothing else to clean up.
+#vault#rewrite your auth file, restart the container. Nothing else to clean up.
 #vault#
 #vault#### Adding or rotating a secret
 #vault#
+#vault#Follow the naming schema and the exact commands in `AGENTS.md`. In short: five segments,
+#vault#`<area>/<env>/<system>/<instance>/<key>`, and `kv put` replaces the whole secret — use `kv patch`
+#vault#to change a single field.
+#vault#
 #vault#```
-#vault#vault kv put iac/example/app/db password=s3cr3t     # mount iac, path example/app/db, field password
-#vault#vault kv get iac/example/app/db
+#vault#vault kv put __VAULT_SALT_SDB_PREFIX__/webshop/prod/postgresql/webshop password=s3cr3t
+#vault#vault kv get __VAULT_SALT_SDB_PREFIX__/webshop/prod/postgresql/webshop
 #vault#```
 #vault#
-#vault#The web UI does the same thing. Then reference it from pillar with `secret('app/db/password')`
-#vault#and run `./check_pillar.sh`. Values are cached in the container for `cache_fresh_for` seconds
-#vault#(see `etc/salt/master.d/vault_salt_sdb.conf`), so a just-rotated secret may take a minute to be
-#vault#picked up locally.
+#vault#The web UI does the same thing. Then reference it from pillar with
+#vault#`secret('webshop/prod/postgresql/webshop/password')` and run `./check_pillar.sh`. Values are cached
+#vault#in the container for `cache_fresh_for` seconds (see `etc/salt/master.d/vault_salt_sdb.conf`), so a
+#vault#just-rotated secret may take a minute to be picked up locally.
 #vault#
 #vault#### Troubleshooting
 #vault#
@@ -225,7 +238,7 @@ Never commit a plaintext secret into pillar.
 #vault#| `secret not found: <mount>/<path> (404)` | Wrong path, or the secret exists but not under this repo's prefix. |
 #vault#| `key '<field>' not found in secret` | Right secret, wrong field — the error lists the available fields. |
 #vault#| `Vault unreachable and no usable cache` | Network/VPN, or Vault is sealed. |
-#vault#| Works in CI, fails locally | Your `auth.conf` is missing/stale, or the container was started before you wrote it. |
+#vault#| Works in CI, fails locally | Your auth file (`__VAULT_HOST__.conf` or `auth.conf`) is missing/stale, or the container was started before you created it. |
 #vault#| `KeyError: 'vault_salt_sdb.get'` | The driver isn't synced into `extension_modules` yet (fresh container, or a just-restarted master); retry in a minute. |
 #vault#
 #vault#Driver internals, the Vault-side CI (OIDC) and master (AppRole) setup are documented in the
