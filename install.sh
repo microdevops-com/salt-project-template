@@ -480,6 +480,8 @@ rm -f pillar/pkg/gitlab-ee.jinja
 rm -f pillar/pkg/gitlab-runner.jinja
 rm -f pillar/pkg/${VENDOR}/forward_root_email.sls
 rm -f pillar/cmd_check_alert/ignore_corrected_nvme_errors.sls
+rm -f pillar/cmd_check_alert/cve-packages_critical.sls
+rm -f pillar/cmd_check_alert/cve-packages_fixed-only_critical.sls
 # remove pkg/ssh_keys
 rm -f pillar/pkg/ssh_keys/${CLIENT}/salt-ssh_runners.sls
 rm -f pillar/pkg/ssh_keys/${CLIENT}/salt_masters.sls
