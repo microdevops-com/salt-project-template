@@ -149,10 +149,9 @@ Never commit a plaintext secret into pillar.
 #vault#element right after the mount, which is not part of the sdb URI:
 #vault#
 #vault#```
-#vault## prefix "microdevops" -> mount "microdevops"               -> policy path "microdevops/data/*"
-#vault## prefix "iac/example" -> mount "iac", path "example"       -> policy path "iac/data/example/*"
-#vault#vault policy write salt-example-ro - <<'EOF'
-#vault#path "iac/data/example/*" { capabilities = ["read"] }
+#vault## prefix "__VAULT_SALT_SDB_PREFIX__" -> mount "__VAULT_SALT_SDB_PREFIX__" -> policy path "__VAULT_SALT_SDB_PREFIX__/data/*"
+#vault#vault policy write salt-__VAULT_SALT_SDB_PREFIX__-ro - <<'EOF'
+#vault#path "__VAULT_SALT_SDB_PREFIX__/data/*" { capabilities = ["read"] }
 #vault#EOF
 #vault#```
 #vault#

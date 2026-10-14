@@ -76,12 +76,15 @@ profile is configured, so repos that do not use Vault are unaffected.
 Set the three vars in `template_install.sh` (presence of `VAULT_SALT_SDB_URL` turns the feature on):
 ```
 VAULT_SALT_SDB_URL=https://vault.example.com \
-VAULT_SALT_SDB_PREFIX=iac/example \
+VAULT_SALT_SDB_PREFIX=example \
 VAULT_SALT_SDB_JWT_ROLE=salt-ci-example \
 ```
 - `VAULT_SALT_SDB_URL` - Vault address. If unset, `install.sh` strips out the profile, the macro
   and the CI OIDC lines (the driver itself stays installed, dormant).
-- `VAULT_SALT_SDB_PREFIX` - per-repo KV path prefix, e.g. `iac/<project>`. Required when the URL is set.
+- `VAULT_SALT_SDB_PREFIX` - this repo's KV v2 mount, e.g. `<project>`. One salt repo = one mount, single
+  segment: the first URI segment is the mount, so policies scope per repo (`<project>/data/*`). Do not
+  nest repos under a shared mount (`iac/<project>`); `install.sh` rejects a prefix containing `/`.
+  Required when the URL is set.
 - `VAULT_SALT_SDB_JWT_ROLE` - Vault jwt auth role name for CI (see *CI auth* below). Required when
   the URL is set. Baked into the profile's inline `auth:` block.
 
@@ -102,7 +105,7 @@ vault auth enable jwt
 vault write auth/jwt/config oidc_discovery_url="https://gitlab.example.com" \
                             bound_issuer="https://gitlab.example.com"
 vault policy write salt-ci-example - <<'EOF'
-path "iac/data/example/*" { capabilities = ["read"] }
+path "example/data/*" { capabilities = ["read"] }
 EOF
 vault write auth/jwt/role/salt-ci-example - <<'EOF'
 { "role_type": "jwt", "user_claim": "project_path",
@@ -239,7 +242,7 @@ myapp:
 The URI is `<mount>/<path>/<key>`: the first segment is the KV mount, the last is the field
 inside the secret, the middle is the secret path. The macro keeps the per-repo prefix in one
 place so secret references stay copy-paste identical across repos. You can also call the driver
-directly: `{{ salt['sdb.get']('sdb://vault_salt_sdb/iac/example/webshop/prod/postgresql/webshop/password') }}`.
+directly: `{{ salt['sdb.get']('sdb://vault_salt_sdb/example/webshop/prod/postgresql/webshop/password') }}`.
 
 ## Secret naming schema
 The path under the prefix is fixed at five segments and describes what the secret **is**, never

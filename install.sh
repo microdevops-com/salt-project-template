@@ -107,6 +107,8 @@ function sed_inplace_common () {
 	if [[ -z ${VAULT_SALT_SDB_PREFIX} ]]; then
 		local LOCAL_VAULT_SALT_SDB_PREFIX=__not_set_in_template_install__
 	else
+		# one salt repo = one KV mount; a nested prefix (iac/<project>) shares a mount between repos
+		if [[ ${VAULT_SALT_SDB_PREFIX} == */* ]]; then echo "Var VAULT_SALT_SDB_PREFIX must be a single KV mount name without '/', got '${VAULT_SALT_SDB_PREFIX}'"; exit 1; fi
 		local LOCAL_VAULT_SALT_SDB_PREFIX=${VAULT_SALT_SDB_PREFIX}
 	fi
 	if [[ -z ${VAULT_SALT_SDB_JWT_ROLE} ]]; then
