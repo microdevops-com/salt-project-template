@@ -72,7 +72,9 @@ drun() {
         [[ -d $auth_dir ]] && auth_mount=(-v "$auth_dir:/root/.config/vault_salt_sdb:ro")
         docker run --hostname salt --detach --rm --name "${name}-$USER" \
             --volume "$top_file:/srv/pillar/top.sls" \
-            --volume "${path}/:/srv/" \
+            --volume "${path}/salt:/srv/salt" \
+            --volume "${path}/formulas:/srv/formulas" \
+            --volume "${path}/pillar:/srv/pillar" \
             --volume "$SSH_AUTH_SOCK:/root/.ssh-agent" \
             "${auth_mount[@]}" \
             --env SSH_AUTH_SOCK=/root/.ssh-agent \
