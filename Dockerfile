@@ -27,6 +27,13 @@ RUN if [[ $(uname -m) =~ x86_64|i386|i686 ]]; then ARCH=amd64; else ARCH=arm64; 
     #&& sed -i -e 's/if not salt.utils.verify.clean_path(root, full, subdir=True):/if False: #not salt.utils.verify.clean_path(root, full, subdir=True):/' /opt/saltstack/salt/lib/python3.10/site-packages/salt/fileserver/roots.py \
     #&& true;
 
+# salt-ssh: ship custom _utils, _wrapper, _tops to remote hosts in ext_mods.tgz
+# https://github.com/saltstack/salt/pull/70400 (not merged upstream, 3006.x is frozen)
+# Each entry is inserted only if missing, so this stays valid on 3007 where "utils" is already present
+RUN f=$(ls /opt/saltstack/salt/lib/python3.*/site-packages/salt/client/ssh/__init__.py) \
+    && for m in tops wrapper utils; do grep -q "^        \"$m\",\$" "$f" || sed -i "/^        \"returners\",\$/a\\        \"$m\"," "$f"; done \
+    && grep -c '^        "\(utils\|wrapper\|tops\)",$' "$f" | grep -qx 3
+
 # Add sysadmws-utils for notify_devilry
 COPY etc/apt/keyrings/sysadmws-apt-key.gpg /etc/apt/keyrings/sysadmws-apt-key.gpg
 RUN echo "deb [signed-by=/etc/apt/keyrings/sysadmws-apt-key.gpg arch=amd64] https://repo.sysadm.ws/sysadmws-apt/ any main" >> /etc/apt/sources.list.d/sysadmws.list \
