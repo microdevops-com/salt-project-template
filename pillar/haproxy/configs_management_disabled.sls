@@ -1,0 +1,1 @@
+../../formulas/microdevops-formula/pillar/haproxy/configs_management_disabled.sls
