@@ -78,7 +78,7 @@ drun() {
             --env SSH_AUTH_SOCK=/root/.ssh-agent \
             "${name}:$USER" \
             -- \
-            bash -c "sleep 2h && kill -s 15 1; rm /srv/pillar/top.sls" ;
+            bash -c "sleep 2h; rm /srv/pillar/top.sls; kill -s 15 1;" ;
         # docker run --detach returns as soon as the container starts, not once
         # entrypoint.sh finishes (ssh keys, roster grains, sdb sync into
         # extension_modules) - entrypoint.sh keeps running server-side in the
@@ -93,6 +93,7 @@ drun() {
         done
     fi
 
+    local opt="";
     if test -t 0; then opt+="i"; fi
     if test -t 1; then opt+="t"; fi
     if [[ -n ${opt} ]]; then opt="-${opt}"; fi
