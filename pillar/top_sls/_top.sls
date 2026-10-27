@@ -27,6 +27,7 @@ base:
     - hosts.__VENDOR__
     - cmd_check_alert.common
     - cmd_check_alert.syshealth
+    - cmd_check_alert.cve-critical
     - ssh_keys.__VENDOR__.root
     - catch_server_mail.__VENDOR__.sentry
     - bootstrap.sshd_prohibit_password
