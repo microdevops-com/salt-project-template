@@ -22,6 +22,8 @@ base:
     - __UFW__.standard
     #salt#- __UFW__.ssh_from_salt_servers
     #salt-ssh#- __UFW__.ssh_from_salt-ssh_runners
+    - __UFW__.cve_2026_98432_mitigation
+    - sysctl.mptcp-disabled
     - heartbeat_mesh.__VENDOR__.sender
     - bootstrap.__CLIENT__
     - hosts.__VENDOR__

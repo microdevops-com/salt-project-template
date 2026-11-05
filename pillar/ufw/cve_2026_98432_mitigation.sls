@@ -1,0 +1,1 @@
+../../formulas/microdevops-formula/pillar/ufw/cve_2026_98432_mitigation.sls
