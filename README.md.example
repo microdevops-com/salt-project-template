@@ -238,6 +238,7 @@ Never commit a plaintext secret into pillar.
 #vault#| `key '<field>' not found in secret` | Right secret, wrong field — the error lists the available fields. |
 #vault#| `Vault unreachable and no usable cache` | Network/VPN, or Vault is sealed. |
 #vault#| Works in CI, fails locally | Your auth file (`__VAULT_HOST__.conf` or `auth.conf`) is missing/stale, or the container was started before you created it. |
+#vault#| `jwt auth has no token (set $VAULT_ID_TOKEN ...)` outside CI | No auth file inside the container, so the driver fell back to the CI-only JWT auth. Usually the container was started with a hand-written `docker run` that doesn't mount `~/.config/vault_salt_sdb/`; use `./.docker_run.sh` / `drun`, or add `-v $HOME/.config/vault_salt_sdb:/root/.config/vault_salt_sdb:ro`. |
 #vault#| `KeyError: 'vault_salt_sdb.get'` | The driver isn't synced into `extension_modules` yet (fresh container, or a just-restarted master); retry in a minute. |
 #vault#
 #vault#Driver internals, the Vault-side CI (OIDC) and master (AppRole) setup are documented in the
