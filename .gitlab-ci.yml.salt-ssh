@@ -1,3 +1,11 @@
+workflow:
+  # Pipelines created by accounting jobs (jobs.py -> gitlab-server-job) pass PIPELINE_NAME=asset:job_id,
+  # other pipelines get no name, so GitLab shows them as before (commit title).
+  name: '$PIPELINE_NAME'
+  rules:
+    - if: $PIPELINE_NAME
+    - when: always
+
 stages:
   - build
   - push
