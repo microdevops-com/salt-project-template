@@ -242,6 +242,7 @@ add_submodule .gitlab-server-job $1 https://github.com/microdevops-com/gitlab-se
 add_submodule salt-k0s-formula $1/formulas https://github.com/SomeBlackMagic/salt-k0s-formula.git
 
 # Copy state py files instead of symlinks as symlinks stopped working for this
+mkdir -p $1/salt/_states
 cp --remove-destination $1/formulas/salt-cloudflare/cloudflare.py $1/salt/_states
 cp --remove-destination $1/formulas/salt-k0s-formula/_states/*.py $1/salt/_states
 # Util py files too: salt-ssh ships _utils in ext_mods.tgz (Dockerfile patch) and tars them without dereferencing, so symlinks would arrive dangling
