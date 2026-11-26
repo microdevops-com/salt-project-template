@@ -47,8 +47,14 @@ Host *
 #   RekeyLimit 1G 1h
     StrictHostKeyChecking no
     ControlMaster=auto
-    ControlPersist=yes
+    # Keep the shared connection 10 min after the last session, not forever: drun containers live for hours
+    # and a master that outlived a network change (laptop sleep, VPN, NAT timeout) made every new salt-ssh hang.
+    ControlPersist=10m
     ControlPath="/ssh-csocks/%C"
+    # Detect a dead connection in ~45 s; the master then exits and the next run opens a fresh one.
+    ServerAliveInterval 15
+    ServerAliveCountMax 3
+    ConnectTimeout 15
     SendEnv LANG LC_*
     HashKnownHosts yes
     GSSAPIAuthentication yes
